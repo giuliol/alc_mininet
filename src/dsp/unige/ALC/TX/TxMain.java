@@ -68,7 +68,8 @@ public class TxMain {
 			{
 				packetsBytes = rqEnc.encode(pBuffer.getData(), FEC);
 				word = CodeWord.fromPacketArray(Packet.from2DByteArray(packetsBytes));
-			    cwBuffer.put(word):
+			   //synchronize on cwbuffer!!
+			   cwBuffer.put(word):
 			}
 		}
 	}
