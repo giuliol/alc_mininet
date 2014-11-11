@@ -15,8 +15,7 @@ public class RQTest {
 		int CWLEN = 35;
 		byte[] data = new byte [SIZE];
 		
-		
-		
+	
 //		CREATE RANDOM DATA
 //		
 		Random R =  new Random(System.currentTimeMillis());

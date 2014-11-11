@@ -13,12 +13,15 @@ package dsp.unige.ALC.utils;
 // Jpeg Group's Jpeg 6a library, Copyright Thomas G. Lane.
 // See license.txt for details.
 
-import java.applet.Applet;
-import java.awt.*;
-import java.awt.image.*;
-import java.io.*;
-import java.util.*;
-import java.lang.*;
+import java.awt.AWTException;
+import java.awt.Frame;
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.awt.image.PixelGrabber;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Vector;
 
 /*
 * JpegEncoder - The JPEG main program which performs a jpeg compression of

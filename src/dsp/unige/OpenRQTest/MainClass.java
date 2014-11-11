@@ -10,7 +10,7 @@ public class MainClass {
 		RQTest t1 = new RQTest();
 		
 		double errc=0;
-		int ITERATIONS = 100;
+		int ITERATIONS = 10;
 //		for(int k=34;k>0;k--){
 //			errc=0;
 //			for(int i=0;i<ITERATIONS;i++)
@@ -19,9 +19,9 @@ public class MainClass {
 //			System.out.println("Raptor codec ok:"+String.format("%6.2f",((double)k/35))+" errc: "+errc);
 //		}
 		
-//		JPEGTest t2 = new JPEGTest();
+		JPEGTest t2 = new JPEGTest();
 //		for(int i=0;i<ITERATIONS;i++)
-//			t2.go();
+			t2.go();
 //		System.out.println("JPEG codec ok");
 
 //		Transmitter tx;
