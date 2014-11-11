@@ -4,7 +4,7 @@ import net.fec.openrq.parameters.FECParameters;
 
 public class Packet {
 
-	public static final int PKTSIZE = 1024;
+	public static final int PKTSIZE = Constants.PKTSIZE;
 	public static final int HEADERSIZE = 6 * Integer.SIZE/8;
 	
 	byte[] data;
@@ -53,5 +53,46 @@ public class Packet {
 			out[i].contentOffset = i*PKTSIZE;
 		}
 		return out;
+	}
+
+	public byte[] buildPacket() {
+		byte[] out = new byte[PKTSIZE + HEADERSIZE];
+		byte[] tmp;
+		
+		// write header
+		tmp = toBytes(codeWordNumber);
+		System.arraycopy(tmp, 0, out, 0, 4);
+
+		tmp = toBytes(sequenceNumber);
+		System.arraycopy(tmp, 0 , out,  Integer.SIZE/8, 4);
+		
+		tmp = toBytes(FEC);
+		System.arraycopy(tmp, 0, out, Integer.SIZE/8 *2, 4);
+
+		tmp = toBytes(contentId);
+		System.arraycopy(tmp, 0, out, Integer.SIZE/8 *3, 4);
+		
+		tmp = toBytes(contentSize);
+		System.arraycopy(tmp, 0, out,  Integer.SIZE/8 *4, 4);
+		
+		tmp = toBytes(contentOffset);
+		System.arraycopy(tmp, 0, out, Integer.SIZE/8 *5, 4);
+		
+		// write payload
+		System.arraycopy(data, 0, out, Integer.SIZE/8 *6, PKTSIZE);
+		
+		return out;
+	}
+	
+	private byte[] toBytes(int i)
+	{
+	  byte[] result = new byte[4];
+
+	  result[0] = (byte) (i >> 24);
+	  result[1] = (byte) (i >> 16);
+	  result[2] = (byte) (i >> 8);
+	  result[3] = (byte) (i /*>> 0*/);
+
+	  return result;
 	}
 }
