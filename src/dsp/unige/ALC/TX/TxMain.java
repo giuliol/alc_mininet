@@ -52,6 +52,7 @@ public class TxMain {
 		byte [] compressedFrame;
 		byte [][] packetsBytes;
 		Packet[] packets;
+		CodeWord word;
 		int contentId = 0;
 		
 		while( cam.hasFrame() && isRunning() ){
@@ -66,18 +67,14 @@ public class TxMain {
 			// buffer full, encode and handle to codeword buffer
 			{
 				packetsBytes = rqEnc.encode(pBuffer.getData(), FEC);
-				packets = Packet.from2DByteArray(packetsBytes);
+				word = CodeWord.fromPacketArray(Packet.from2DByteArray(packetsBytes));
+			    cwBuffer.put(word):
 			}
 		}
 	}
 	
 	private void cleanUp(){
 		cam.close();
-	}
-
-	public void putCodedFrame(byte[] compressedFrame) {
-	
-		
 	}
 
 
