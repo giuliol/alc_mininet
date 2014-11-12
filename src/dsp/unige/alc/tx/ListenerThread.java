@@ -6,6 +6,8 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 
+import dsp.unige.ALC.utils.Packet;
+
 public class ListenerThread extends Thread {
 
 	CodeWordBuffer cwbHandle;
@@ -14,6 +16,7 @@ public class ListenerThread extends Thread {
 	DatagramPacket packet;
 	int listeningPort;
 	ByteBuffer bb;
+	SessionParameters sessionParameters;
 
 	boolean RUNNING = true;
 	
@@ -21,11 +24,12 @@ public class ListenerThread extends Thread {
 		RUNNING = false;
 	}
 	
-	public ListenerThread(CodeWordBuffer cwBuffer) {
+	public ListenerThread(CodeWordBuffer cwBuffer, SessionParameters sessionParameters) {
 		cwbHandle = cwBuffer;
+		this.sessionParameters = sessionParameters;
 	}
 
-	public void setListeningPort(int listeningPort) {
+	public void setBackwardPort(int listeningPort) {
 		this.listeningPort = listeningPort;
 	}
 	
@@ -56,19 +60,28 @@ public class ListenerThread extends Thread {
 	private void parse(byte[] data) {
 		bb=ByteBuffer.wrap(data);
 		
-		// acknowledge word -> delete it from cwbuffer
-		cwbHandle.ack(bb.getInt());
-		// set estimated Rate
-		decisor.updateRate(bb.getDouble());
-		// set measured Loss
-		decisor.updateLoss(bb.getDouble());
+		int codeWordNumber=bb.getInt();
+		double estimatedRate=bb.getDouble();
+		int measuredLoss=bb.getInt();
 		
+		System.out.println("ListenerThread.parse() "+String.format("codew. %d, est. rate: %6.2f, lost: %d",codeWordNumber,estimatedRate,measuredLoss));
+		// acknowledge word -> delete it from cwbuffer
+		cwbHandle.ack(codeWordNumber);
+		// set estimated Rate
+		decisor.updateRate(estimatedRate);
+		// set measured Loss
+		decisor.updateLoss(measuredLoss);
+		
+		sessionParameters.setQ(decisor.decideQ());
+		sessionParameters.setFEC(decisor.decideFEC());
+
 	}
 
 	private void initSocket() {
 		try {
 			socket = new DatagramSocket(listeningPort);
 			packet = new DatagramPacket((new byte [Packet.PKTSIZE + Packet.HEADERSIZE]), Packet.PKTSIZE + Packet.HEADERSIZE);
+			System.out.println("-TX- ListenerThread.initSocket() listening on "+listeningPort);
 		} catch (SocketException e) {
 			e.printStackTrace();
 			Log.i("ListenerThread","error opening listening datagramSocket");

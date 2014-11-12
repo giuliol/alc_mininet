@@ -1,20 +1,21 @@
-package dsp.unige.alc.tx;
+package dsp.unige.ALC.utils;
 
-import dsp.unige.ALC.utils.Constants;
-import net.fec.openrq.parameters.FECParameters;
+import java.net.DatagramPacket;
+import java.nio.ByteBuffer;
+
 
 public class Packet {
 
 	public static final int PKTSIZE = Constants.PKTSIZE;
 	public static final int HEADERSIZE = 6 * Integer.SIZE/8;
 	
-	byte[] data;
-	int sequenceNumber;
-	int codeWordNumber;
-	int FEC;
-	int contentId;
-	int contentOffset;
-	int contentSize;
+	public byte[] data;
+	public int sequenceNumber;
+	public int codeWordNumber;
+	public int FEC;
+	public int contentId;
+	public int contentOffset;
+	public int contentSize;
 	
 	public Packet(){
 		data = new byte[PKTSIZE];
@@ -101,5 +102,28 @@ public class Packet {
 	  result[3] = (byte) (i /*>> 0*/);
 
 	  return result;
+	}
+
+	public static Packet parseNetworkPacket(DatagramPacket packet) {
+		byte[] data = new byte[Packet.PKTSIZE];
+		byte[] header =  new byte[Packet.HEADERSIZE];
+		byte[] networkPacketPayload = packet.getData();
+		
+		System.arraycopy(networkPacketPayload, 0, header, 0, Packet.HEADERSIZE);
+		System.arraycopy(networkPacketPayload, Packet.HEADERSIZE, data, 0, Packet.PKTSIZE);
+
+		Packet out = new Packet();
+		ByteBuffer bb = ByteBuffer.wrap(header);
+		
+		// actual packet parsing
+		out.codeWordNumber = bb.getInt();
+		out.sequenceNumber = bb.getInt();
+		out.FEC = bb.getInt();
+		out.contentId = bb.getInt();
+		out.contentSize = bb.getInt();
+		out.contentOffset = bb.getInt();
+		out.data = data;
+
+		return out;
 	}
 }

@@ -29,7 +29,12 @@ public class RQTest {
 		RQEncoder enc = new RQEncoder();
 		enc.init(SIZE, PKTSIZE);
 		byte[][] pkts=enc.encode(data, CWLEN-DATA);
-		
+		System.out.println("RQTest.go() primo byte "+pkts[0][0]+" contro "+data[0]);
+		for(int i=0;i<pkts.length;i++){
+			System.out.println("RQTest.go() \n");
+			for(int b=0;b<pkts[i].length;b++)
+				System.out.print(pkts[i][b]);
+		}
 		
 		
 		
@@ -48,7 +53,8 @@ public class RQTest {
 		int i;
 		for(i=0;i<pkts.length && dec.handlePacket(pkts[i]) != RQDecoder.DATA_DECODE_COMPLETE ;i++)
 			;
-
+		System.out.println("RQTest.go() primo byte di dec.array "+dec.getDataAsArray()[0]);
+		
 		return compare(data,dec.getDataAsArray());
 
 	}

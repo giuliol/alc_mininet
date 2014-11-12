@@ -14,10 +14,12 @@ public class Decisor {
 	}
 	
 	public int decideFEC(){
-		return 0;
+		//TODO
+		return 1;
 	}
 	
 	public int decideQ(){
-		return 0;
+		//TODO
+		return 20;
 	}
 }

@@ -1,17 +1,15 @@
 package dsp.unige.OpenRQTest;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
-import dsp.unige.ALC.utils.Constants.LOG;
-import dsp.unige.alc.tx.TxMain;
-
-
-
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 
 public class MainClass {
-
+	static JFrame frame;
+	static JPanel panel;
+	static JLabel lTx;
+	static JLabel lRx;
 	public static void main(String[] args) {
 //		RQTest t1 = new RQTest();
 		
@@ -31,18 +29,27 @@ public class MainClass {
 //			t2.go();
 //		System.out.println("JPEG codec ok");
 
-		TxMain tx =  new TxMain();
+		
+
+		System.out.println("MainClass.main() RX start");
+		(new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				RxTest rtest = new RxTest();
+				rtest.go(lRx);				
+			}
+		})).start();
+	
+		
 		try {
-			tx.setDestination(InetAddress.getByName("130.251.18.52"));
-		} catch (UnknownHostException e) {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
 			e.printStackTrace();
-			System.out.println("MainClass.main() error setting address");
 		}
-		tx.setDestinationPort(5558);
-		tx.setLogLevel(LOG.Debug);
-		tx.init("video/highway_qcif.yuv");
-		tx.go();
 		
-		
+		System.out.println("MainClass.main() TX start");
+		TxTest ttest = new TxTest();
+		ttest.go(lTx);
 	}
 }

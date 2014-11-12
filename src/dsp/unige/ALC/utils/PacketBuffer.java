@@ -1,4 +1,5 @@
-package dsp.unige.alc.tx;
+package dsp.unige.ALC.utils;
+
 
 public class PacketBuffer {
 
@@ -19,13 +20,18 @@ public class PacketBuffer {
 		init(l);
 	}
 	
-	public boolean has(int bytes){
+	public boolean hasBytesAvailable(int bytes){
 		return (Math.ceil((double)bytes/Packet.PKTSIZE) <= data.length - position);
 	}
 	
+	public boolean hasPacketsAvailable(int packets){
+		return (packets <= data.length - position);
+	}
+	
 	public void put(Packet[] in){
-		for(int i=0;i<in.length;i++)
+		for(int i=0;i<in.length;i++){
 			data[position++] = in[i];
+		}
 	}
 	
 	public Packet[] getDataClone(){
@@ -47,12 +53,21 @@ public class PacketBuffer {
 	}
 
 	public void fillWithEncoded(byte[][] packetsBytes) {
+//		System.out.println("PacketBuffer.fillWithEncoded() primo byte "+packetsBytes[0][0]);
 		for(int i=0;i<data.length;i++){
-			data[i].data = packetsBytes[i];
+			for(int b=0;b<data[i].data.length;b++){
+				data[i].data[b] = packetsBytes[i][b];
+			}
 		}
+		System.out.println("PacketBuffer.fillWithEncoded() frame "+data[0].contentId+", "+data[0].data[0]);
 	}
 
 	public Packet[] getPackets() {
+		System.out.println("PacketBuffer.getPackets() frame "+data[0].contentId+", "+data[0].data[0]);
 		return data;
+	}
+
+	public void put(Packet in) {
+		data[position++] = in;
 	}
 }

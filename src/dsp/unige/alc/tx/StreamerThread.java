@@ -7,12 +7,13 @@ import java.net.InetAddress;
 import java.net.SocketException;
 
 import dsp.unige.ALC.utils.Constants;
+import dsp.unige.ALC.utils.Packet;
 
 public class StreamerThread extends Thread{
 
 	CodeWordBuffer cwbHandle;
 	DatagramSocket socket;
-	int destinationPort;
+	int forwardPort;
 	InetAddress destination;
 	DatagramPacket packet;
 	boolean RUNNING = true;
@@ -27,7 +28,7 @@ public class StreamerThread extends Thread{
 
 	public void setDestination( InetAddress destination, int destinationPort){
 		this.destination = destination;
-		this.destinationPort =  destinationPort;
+		this.forwardPort =  destinationPort;
 	}
 
 	@Override
@@ -45,7 +46,10 @@ public class StreamerThread extends Thread{
 				}
 
 				try {
-					send(cwbHandle.get());
+					CodeWord toSend = cwbHandle.get();
+					send(toSend);
+//					System.out.println("StreamerThread.run() frame "+toSend.pkts[0].data[0] + ", "+toSend.pkts[0].data[1]);
+//					System.out.println("-TX- StreamerThread.run() sent to "+forwardPort);
 				} catch (IOException e) {
 					e.printStackTrace();
 					Log.i("StreamerThread","error sending packet");
@@ -63,7 +67,7 @@ public class StreamerThread extends Thread{
 
 	private void send(CodeWord codeWord) throws IOException {
 		packet.setAddress(destination);
-		packet.setPort(destinationPort);
+		packet.setPort(forwardPort);
 
 		for(Packet p : codeWord.pkts){
 			packet.setData(p.buildPacket());
