@@ -87,6 +87,7 @@ public class ReceiverThread extends Thread {
 		if(isNewCodeWord(packet.codeWordNumber)){
 			// decode
 			for(Packet p : packetBuffer){
+			// verifica, p.data.length dovrebbe essere 1024+rotti
 				decoder.handlePacket(p.data);
 			}
 			byte [] decodedArray = decoder.getDataAsArray();
