@@ -1,5 +1,6 @@
-package dsp.unige.ALC.TX;
+package dsp.unige.alc.tx;
 
+import dsp.unige.ALC.utils.Constants;
 import net.fec.openrq.parameters.FECParameters;
 
 public class CodeWord {

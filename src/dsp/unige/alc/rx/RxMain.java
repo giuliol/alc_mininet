@@ -1,4 +1,4 @@
-package dsp.unige.ALC.RX;
+package dsp.unige.alc.rx;
 
 public class RxMain {
 	

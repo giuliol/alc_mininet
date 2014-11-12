@@ -23,10 +23,12 @@ public class JPEGTest {
 			ryuv.startReading("video/highway_qcif.yuv");
 			
 			bim = ryuv.nextImageYOnly();
-			while(bim != null){
+			int j=0;
+			while(bim != null && j<10){
 				byte[] data = JpegEncoder.Compress(bim, Q);
 //				System.out.println("JPEGTest.go() len "+data.length);
 				bim = ryuv.nextImageYOnly();
+				j++;
 			}
 
 			baos.close();

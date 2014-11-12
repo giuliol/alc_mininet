@@ -1,4 +1,4 @@
-package dsp.unige.ALC.TX;
+package dsp.unige.alc.tx;
 
 public class PacketBuffer {
 
@@ -20,7 +20,7 @@ public class PacketBuffer {
 	}
 	
 	public boolean has(int bytes){
-		return (bytes <= data.length - position);
+		return (Math.ceil((double)bytes/Packet.PKTSIZE) <= data.length - position);
 	}
 	
 	public void put(Packet[] in){
@@ -35,8 +35,24 @@ public class PacketBuffer {
 	public byte[] getData(){
 		byte [] out =  new byte[data.length * Packet.PKTSIZE];
 		for(int i=0;i<data.length;i++){
+			if(data[i]==null)
+				data[i] = new Packet(data[i-1]);
 			System.arraycopy(data[i].data, 0, out, i*Packet.PKTSIZE, Packet.PKTSIZE);
 		}
 		return out;
+	}
+
+	public void status() {
+		System.out.println("PacketBuffer.status() position: "+position+", total: "+data.length);
+	}
+
+	public void fillWithEncoded(byte[][] packetsBytes) {
+		for(int i=0;i<data.length;i++){
+			data[i].data = packetsBytes[i];
+		}
+	}
+
+	public Packet[] getPackets() {
+		return data;
 	}
 }

@@ -1,4 +1,4 @@
-package dsp.unige.ALC.TX;
+package dsp.unige.alc.tx;
 
 public class Decisor {
 

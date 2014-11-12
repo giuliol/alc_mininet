@@ -1,4 +1,4 @@
-package dsp.unige.ALC.TX;
+package dsp.unige.alc.tx;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -62,6 +62,7 @@ public class ListenerThread extends Thread {
 	private void initSocket() {
 		try {
 			socket = new DatagramSocket(listeningPort);
+			packet = new DatagramPacket((new byte [Packet.PKTSIZE + Packet.HEADERSIZE]), Packet.PKTSIZE + Packet.HEADERSIZE);
 		} catch (SocketException e) {
 			e.printStackTrace();
 			Log.i("ListenerThread","error opening listening datagramSocket");

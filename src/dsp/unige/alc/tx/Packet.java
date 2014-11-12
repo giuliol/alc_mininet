@@ -1,5 +1,6 @@
-package dsp.unige.ALC.TX;
+package dsp.unige.alc.tx;
 
+import dsp.unige.ALC.utils.Constants;
 import net.fec.openrq.parameters.FECParameters;
 
 public class Packet {
@@ -25,10 +26,16 @@ public class Packet {
 		contentSize = -1;
 	}
 	
-	public static Packet[] from2DByteArray(byte [][] array){
-		return null;
+	public Packet(Packet packet) {
+		this.sequenceNumber = packet.sequenceNumber+1;
+		this.codeWordNumber = packet.codeWordNumber;
+		this.FEC = packet.FEC;
+		this.contentId = -1;
+		this.contentOffset = -1;
+		this.contentSize = -1;
+		this.data = new byte[PKTSIZE];
 	}
-	
+
 	public boolean isValid(){
 		return (
 				FEC!=-1 &&
@@ -41,7 +48,7 @@ public class Packet {
 	}
 	
 	public static Packet[] fromByteArray(byte[] img, int contentId){
-		int required = (int) Math.ceil(img.length / PKTSIZE) ;
+		int required = (int) Math.ceil((double)img.length / PKTSIZE) ;
 		Packet [] out = new Packet[required];
 		int bytesLeft;
 		for(int i=0;i<required;i++){

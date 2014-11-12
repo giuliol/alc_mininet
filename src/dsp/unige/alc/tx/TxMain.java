@@ -1,8 +1,10 @@
-package dsp.unige.ALC.TX;
+package dsp.unige.alc.tx;
 
-import java.net.Inet4Address;
+import java.net.InetAddress;
 
 import dsp.unige.ALC.utils.Camera;
+import dsp.unige.ALC.utils.Constants;
+import dsp.unige.ALC.utils.Constants.LOG;
 import dsp.unige.ALC.utils.DummyCamera;
 import dsp.unige.ALC.utils.JpegEncoder;
 import dsp.unige.ALC.utils.RQEncoder;
@@ -23,14 +25,19 @@ public class TxMain {
 	public int Q;
 	public int FEC;
 	public Object BufferLock;
-	private Inet4Address destination;
+	private InetAddress destination;
 	private int destinationPort;
+	private int LOG_LEVEL = 0;
 
-	public void setDestination(Inet4Address destination) {
+	public void setDestination(InetAddress destination) {
 		this.destination = destination;
 	}
 	public void setDestinationPort(int destinationPort) {
 		this.destinationPort = destinationPort;
+	}
+	
+	public void setLogLevel(int level){
+		LOG_LEVEL = level;
 	}
 	
 	public void init(String videoFile){
@@ -43,10 +50,15 @@ public class TxMain {
 		Q = 0;
 		BufferLock = new Object();
 		pBuffer = new PacketBuffer();
-		pBuffer.init(CWLEN * PKTSIZE);
+		pBuffer.init(CWLEN);
 		cwBuffer = new CodeWordBuffer();
 		cwBuffer.init(CWBSIZE);
 		RUNNING = true;
+		
+		rqEnc = new RQEncoder();
+		rqEnc.init(CWLEN * PKTSIZE, PKTSIZE);
+		FEC = 10;
+		
 	}
 
 	public void go(){
@@ -70,7 +82,7 @@ public class TxMain {
 		
 		while( cam.hasFrame() && isRunning() ){
 			rawFrame = cam.getFrame();
-			compressedFrame = JpegEncoder.Compress(rawFrame, Q);
+			compressedFrame = JpegEncoder.Compress(rawFrame, Q,Constants.WIDTH, Constants.HEIGHT);
 			if(pBuffer.has(compressedFrame.length))		
 			// keep filling the packet buffer
 			{ 
@@ -79,9 +91,13 @@ public class TxMain {
 			else		
 			// buffer full, encode and handle to codeword buffer
 			{
+				if(LOG_LEVEL >= LOG.Debug)
+					Log.i("TxMain", "encoding, fec = "+FEC);
 				packetsBytes = rqEnc.encode(pBuffer.getData(), FEC);
-				word = CodeWord.fromPacketArray(Packet.from2DByteArray(packetsBytes), FEC, codeWordNumber++);
+				pBuffer.fillWithEncoded(packetsBytes);
+				word = CodeWord.fromPacketArray(pBuffer.getPackets(), FEC, codeWordNumber++);
 				cwBuffer.put(word);
+				pBuffer.reset();
 			}
 		}
 		
@@ -90,11 +106,16 @@ public class TxMain {
 	
 	private void cleanUp(){
 		cam.close();
+		if(LOG_LEVEL >= LOG.Debug)
+			Log.i("TxMain", "exiting");
 	}
 
 	public boolean isRunning(){
 		return RUNNING;
 	}
 	
+	public void stopRunning(){
+		RUNNING = false;
+	}
 	
 }
