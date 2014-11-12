@@ -11,8 +11,8 @@ import dsp.unige.ALC.utils.RQEncoder;
 
 public class TxMain {
 	
-	private static final int CWLEN = 35;
-	private static final int PKTSIZE = 1024;
+	private static final int CWLEN = Constants.CWLEN;
+	private static final int PKTSIZE = Packet.PKTSIZE;
 	private static final int CWBSIZE = 15;
 
 	private RQEncoder rqEnc;
@@ -24,7 +24,6 @@ public class TxMain {
 	
 	public int Q;
 	public int FEC;
-	public Object BufferLock;
 	private InetAddress destination;
 	private int destinationPort;
 	private int LOG_LEVEL = 0;
@@ -48,7 +47,6 @@ public class TxMain {
 		cam = new DummyCamera();
 		((DummyCamera)cam).init(videoFile,bpf,fps);
 		Q = 0;
-		BufferLock = new Object();
 		pBuffer = new PacketBuffer();
 		pBuffer.init(CWLEN);
 		cwBuffer = new CodeWordBuffer();
@@ -82,6 +80,7 @@ public class TxMain {
 		
 		while( cam.hasFrame() && isRunning() ){
 			rawFrame = cam.getFrame();
+			visualizeFrame(rawFrame);
 			compressedFrame = JpegEncoder.Compress(rawFrame, Q,Constants.WIDTH, Constants.HEIGHT);
 			if(pBuffer.has(compressedFrame.length))		
 			// keep filling the packet buffer
@@ -102,6 +101,9 @@ public class TxMain {
 		cleanUp();
 	}
 	
+	private void visualizeFrame(byte[] rawFrame) {
+		// check if headless
+	}
 	private void cleanUp(){
 		cam.close();
 		if(LOG_LEVEL >= LOG.Debug)
