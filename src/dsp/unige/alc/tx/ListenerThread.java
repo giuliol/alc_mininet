@@ -45,12 +45,18 @@ public class ListenerThread extends Thread {
 			}
 		}
 		
+		cleanUp();
+		
+	}
+
+	private void cleanUp() {
+		socket.close();
 	}
 
 	private void parse(byte[] data) {
 		bb=ByteBuffer.wrap(data);
 		
-		// acknowledge word
+		// acknowledge word -> delete it from cwbuffer
 		cwbHandle.ack(bb.getInt());
 		// set estimated Rate
 		decisor.updateRate(bb.getDouble());

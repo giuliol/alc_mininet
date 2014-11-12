@@ -33,8 +33,13 @@ public class CodeWordBuffer {
 	}
 
 	public synchronized CodeWord get(){
-		buffer.get(0).available = false;
-		return buffer.get(0);
+		for (CodeWord cw : buffer) {
+			if(cw.available){
+				cw.available = false;
+				return cw;
+			}
+		}
+		return null;
 	}
 	
 	public synchronized boolean hasAvailable() {

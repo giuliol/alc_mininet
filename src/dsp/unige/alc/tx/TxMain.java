@@ -57,7 +57,7 @@ public class TxMain {
 		
 		rqEnc = new RQEncoder();
 		rqEnc.init(CWLEN * PKTSIZE, PKTSIZE);
-		FEC = 10;
+		FEC = 1;
 		
 	}
 
@@ -91,8 +91,6 @@ public class TxMain {
 			else		
 			// buffer full, encode and handle to codeword buffer
 			{
-				if(LOG_LEVEL >= LOG.Debug)
-					Log.i("TxMain", "encoding, fec = "+FEC);
 				packetsBytes = rqEnc.encode(pBuffer.getData(), FEC);
 				pBuffer.fillWithEncoded(packetsBytes);
 				word = CodeWord.fromPacketArray(pBuffer.getPackets(), FEC, codeWordNumber++);

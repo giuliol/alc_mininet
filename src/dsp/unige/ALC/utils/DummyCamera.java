@@ -45,13 +45,21 @@ public class DummyCamera implements Camera{
 	}
 
 	private void waitInterFrameTime() {
-		long toSleep = Math.max( (System.currentTimeMillis() - lastFrameTime)  - interFrameTime , 0);
+		long wakeUp = lastFrameTime + interFrameTime;
+		long now = System.currentTimeMillis();
+		long toSleep;
+		
+		if(wakeUp > now)
+			toSleep = wakeUp - now;
+		else
+			toSleep = 0;
 		try {
 			Thread.sleep(toSleep);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			System.out.println("DummyCamera.waitInterFrameTime() error sleeping");
 		}		
+		
 	}
 
 	@Override
