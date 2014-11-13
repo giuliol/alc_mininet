@@ -1,7 +1,11 @@
 package dsp.unige.alc.benchmark;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 
 import jssim.SsimCalculator;
@@ -11,7 +15,39 @@ import dsp.unige.ALC.utils.DummyCamera;
 import dsp.unige.ALC.utils.JpegEncoder;
 
 public class JpegCoderBenchmark {
+	
+	public void go(){
+		int Q;
+		HashMap<String, Double>  results ;
+		
+		File csv =  new File("benchmarks/q_size_ssim.csv");
+		OutputStreamWriter osw = null;
+		
+		try {
+			 osw =  new OutputStreamWriter(new FileOutputStream(csv),Charset.forName("UTF-8"));
+			 osw.write("Q ; Average_Size ; Average_SSIM\n");
+			 for(Q=0;Q<=100;Q++){
+				 results = benchmarkJpeg(Q);
+				 osw.write(String.format("%d ; %6.4f ; %6.4f\n",(int)results.get("Q").doubleValue(),results.get("AvgSize").doubleValue(),results.get("AvgSSIM").doubleValue()));
+				 osw.flush();
+			 }
+		
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
+	public static HashMap<String, Double> benchmarkJpeg(int Q){
+		JpegCoderBenchmark jcb = new JpegCoderBenchmark();
+		long tic = System.currentTimeMillis();
+		HashMap<String, Double> result = jcb.testAll(Q);
+		System.out.println("benchmark for Q="+Q+", "+(System.currentTimeMillis() - tic)/1000d+" seconds");
+		System.out.println(result);
+		return result;
+	}
+	
 
 	public HashMap<String, Double> test(String sequence,int Q){
 
@@ -85,8 +121,8 @@ public class JpegCoderBenchmark {
 
 		HashMap<String, Double> out = new HashMap<>();
 		out.put("Q", (double) Q);
-		out.put("AvgSize", avgSSIM);
-		out.put("AvgSSIM", avgSize);
+		out.put("AvgSize", avgSize);
+		out.put("AvgSSIM", avgSSIM);
 
 		return out;
 	}

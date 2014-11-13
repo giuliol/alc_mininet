@@ -24,37 +24,15 @@ public class MainClass {
 	static JLabel lRx;
 	public static void main(String[] args) {
 
-		int Q;
-		HashMap<String, Double>  results ;
-		
-		File csv =  new File("benchmarks/q_size_ssim.csv");
-		OutputStreamWriter osw = null;
-		
-		try {
-			 osw =  new OutputStreamWriter(new FileOutputStream(csv),Charset.forName("UTF-8"));
-			 osw.write("Q ; Average_Size ; Average_SSIM\n");
-			 for(Q=0;Q<=100;Q++){
-				 results = benchmarkJpeg(Q);
-				 osw.write(String.format("%d ; %6.4f ; %6.4f\n",(int)results.get("Q").doubleValue(),results.get("AvgSize").doubleValue(),results.get("AvgSSIM").doubleValue()));
-				 osw.flush();
-			 }
-		
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
+		benchmarkJpeg();
 	}
 	
-	public static HashMap<String, Double> benchmarkJpeg(int Q){
+	public static void benchmarkJpeg() {
 		JpegCoderBenchmark jcb = new JpegCoderBenchmark();
-		long tic = System.currentTimeMillis();
-		HashMap<String, Double> result = jcb.testAll(Q);
-		System.out.println("benchmark for Q="+Q+", "+(System.currentTimeMillis() - tic)/1000d+" seconds");
-		System.out.println(result);
-		return result;
+		jcb.go();
 	}
+
+
 	
 	public static void benchmarkRQ(){
 		
