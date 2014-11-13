@@ -6,8 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import dsp.unige.alc.tx.Log;
-
 public class DummyVisualizer implements Visualizer {
 
 	FileOutputStream fos;

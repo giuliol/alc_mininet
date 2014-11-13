@@ -2,6 +2,8 @@ package dsp.unige.alc.tx;
 
 import java.util.ArrayList;
 
+import dsp.unige.ALC.utils.CodeWord;
+
 public class CodeWordBuffer {
 	
 	ArrayList<CodeWord> buffer;

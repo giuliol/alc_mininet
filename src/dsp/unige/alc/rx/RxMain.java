@@ -7,12 +7,11 @@ import java.io.IOException;
 
 import net.fec.openrq.parameters.FECParameters;
 import dsp.unige.ALC.utils.Constants;
-import dsp.unige.ALC.utils.DummyVisualizer;
+import dsp.unige.ALC.utils.Log;
 import dsp.unige.ALC.utils.Packet;
 import dsp.unige.ALC.utils.PacketBuffer;
 import dsp.unige.ALC.utils.RQDecoder;
 import dsp.unige.ALC.utils.Visualizer;
-import dsp.unige.alc.tx.Log;
 
 public class RxMain {
 
@@ -76,9 +75,9 @@ public class RxMain {
 				if(imageBuffer.hasToVisualize()){
 					img = imageBuffer.get();
 					visualizer.display(img.bytes, img.id);
-					if(img.id==30){
+					if(img.id==24){
 						try {
-							File file = new File("outputs/30RX.jpg");
+							File file = new File("outputs/24RX.jpg");
 							FileOutputStream fos = null;
 							try {
 								fos = new FileOutputStream(file);
@@ -88,7 +87,7 @@ public class RxMain {
 							fos.write(img.bytes);
 							fos.flush();
 							fos.close();
-							System.out.println("RxMain.go() SCRITTO 30");
+							System.out.println("RxMain.go() SCRITTO 24");
 						} catch (IOException e) {
 							e.printStackTrace();
 						}

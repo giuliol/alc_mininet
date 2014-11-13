@@ -16,6 +16,7 @@ public class RQDecoder {
 	public static final int DATA_DECODE_FAILURE = -1;
 	public static final int UNKNOWN_HANDLEPACKET_ERROR = -2;
 	public static final int INVALID_PACKET = -3;
+	public static final int HEADERSIZE = 8;
 
 
 	public RQDecoder() {

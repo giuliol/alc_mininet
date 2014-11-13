@@ -28,8 +28,9 @@ public class ActualVisualizer implements Visualizer{
 		panel.add(label, BorderLayout.CENTER);
 		panel.setVisible(true);
 		frame.add(panel);
-		frame.setSize(Constants.WIDTH, Constants.HEIGHT);
+//		frame.setSize(Constants.WIDTH*2, Constants.HEIGHT*2);
 		frame.setVisible(true);
+//		frame.pack();
 	}
 	
 	@Override
@@ -37,6 +38,7 @@ public class ActualVisualizer implements Visualizer{
 		
 		ImageIcon image = new ImageIcon(img);
 		label.setIcon(image);
+		frame.pack();
 	}
 
 }

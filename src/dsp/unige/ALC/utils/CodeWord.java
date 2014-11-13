@@ -1,16 +1,14 @@
-package dsp.unige.alc.tx;
+package dsp.unige.ALC.utils;
 
-import dsp.unige.ALC.utils.Constants;
-import dsp.unige.ALC.utils.Packet;
 import net.fec.openrq.parameters.FECParameters;
 
 public class CodeWord {
 	
 	public static final int CWLEN = Constants.CWLEN;
-	Packet[] pkts;
-	int codeWordNumber;
+	public Packet[] pkts;
+	public int codeWordNumber;
 	FECParameters fp;
-	boolean available;
+	public boolean available;
 	
 	public CodeWord(){
 		
@@ -29,7 +27,8 @@ public class CodeWord {
 		out.pkts = pkts;
 		out.available = true;
 		
-		System.out.println("CodeWord.fromPacketArray() frame " + out.pkts[0].contentId+", "+out.pkts[0].data[0]);
+//		System.out.println("CodeWord.fromPacketArray() out.pkts[0].data.length="+out.pkts[0].data.length );
+//		System.out.println("CodeWord.fromPacketArray() frame " + out.pkts[0].contentId+", "+out.pkts[0].data[0]);
 
 		return out;
 		

@@ -1,5 +1,8 @@
 package dsp.unige.alc.rx;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -9,9 +12,9 @@ import java.util.ArrayList;
 
 import net.fec.openrq.parameters.FECParameters;
 import dsp.unige.ALC.utils.Constants;
+import dsp.unige.ALC.utils.Log;
 import dsp.unige.ALC.utils.Packet;
 import dsp.unige.ALC.utils.RQDecoder;
-import dsp.unige.alc.tx.Log;
 
 public class ReceiverThread extends Thread {
 
@@ -49,7 +52,7 @@ public class ReceiverThread extends Thread {
 			e.printStackTrace();
 			Log.i("ReceiverThread", "error opening socket");
 		}
-		networkPacket = new DatagramPacket(new byte[Packet.PKTSIZE + Packet.HEADERSIZE], Packet.PKTSIZE + Packet.HEADERSIZE);
+		networkPacket = new DatagramPacket(new byte[Packet.PKTSIZE + Packet.HEADERSIZE + RQDecoder.HEADERSIZE], Packet.PKTSIZE + Packet.HEADERSIZE + RQDecoder.HEADERSIZE);
 	}
 
 	public void setForwardPort(int localPort){
@@ -61,11 +64,13 @@ public class ReceiverThread extends Thread {
 		super.run();
 
 		initSocket();
+		
 		packetBuffer = new ArrayList<Packet>();
 		checkList = new boolean[Constants.CWLEN];
 
 		while(RUNNING){
 			try {
+//				networkPacket = new DatagramPacket(new byte[Packet.PKTSIZE + Packet.HEADERSIZE + RQDecoder.HEADERSIZE], Packet.PKTSIZE + Packet.HEADERSIZE + RQDecoder.HEADERSIZE);
 				socket.receive(networkPacket);
 				handleNetworkPacket(networkPacket);
 
@@ -81,37 +86,36 @@ public class ReceiverThread extends Thread {
 
 	private void handleNetworkPacket(DatagramPacket networkPacket2) throws IOException {
 		
-		Packet packet = Packet.parseNetworkPacket(networkPacket);
+		Packet packet = Packet.parseNetworkPacket(networkPacket2);
 		long now = System.currentTimeMillis();
-
+		int res = 3;
 		if(isNewCodeWord(packet.codeWordNumber)){
 			// decode
-			for(Packet p : packetBuffer){
-			// verifica, p.data.length dovrebbe essere 1024+rotti
-				decoder.handlePacket(p.data);
+			int j;
+			for( j=0;j<packetBuffer.size()  ;j++){
+				res = decoder.handlePacket(packetBuffer.get(j).data);
+				if (res == RQDecoder.DATA_DECODE_COMPLETE)
+					break;
 			}
+			
 			byte [] decodedArray = decoder.getDataAsArray();
+			if(packetBuffer.get(0).codeWordNumber==0)
+				write(decodedArray);
 			int FEC = packetBuffer.get(0).FEC;
 			int DATA = Constants.CWLEN - FEC;
-			// TODO QUI!!! VVV
 			for(int i=0;i<DATA;i++){
 				packetBuffer.get(i).data = new byte[Packet.PKTSIZE];
 				System.arraycopy(decodedArray, Packet.PKTSIZE * i, packetBuffer.get(i).data, 0,Packet.PKTSIZE);
 			}
-			// da qui in poi packetBuffer dovrebbe essere valido.....
 
 			// handle images
 			Packet tmp;
 			TaggedImage tmpti = new TaggedImage(packetBuffer.get(0).contentSize);
 			tmpti.id = packetBuffer.get(0).contentId;
-//			System.out.println("ReceiverThread.handleNetworkPacket() DATA= "+DATA+", packetbuffer.size()"+packetBuffer.size());
 			for(int i=0;i<packetBuffer.size();i++){
 				tmp = packetBuffer.get(i);
 				if(tmp.contentId!=-1){
 					if(tmp.contentId == tmpti.id){
-//						int howmany =(Math.min(tmp.contentSize - tmp.contentOffset, Packet.PKTSIZE));
-//						System.out
-//								.println("ReceiverThread.handleNetworkPacket() writing on "+tmp.contentId+"  "+howmany+" bytes, from "+ tmp.contentOffset+" to "+( tmp.contentOffset+howmany)+", total "+tmp.contentSize+" bytes");
 						System.arraycopy(tmp.data, 0, tmpti.bytes, tmp.contentOffset,Math.min(tmp.contentSize - tmp.contentOffset, Packet.PKTSIZE) );
 					}
 					else{
@@ -119,9 +123,6 @@ public class ReceiverThread extends Thread {
 							imageBuffer.put(tmpti);
 						tmpti = new TaggedImage(tmp.contentSize);
 						tmpti.id = tmp.contentId;
-//						int howmany =(Math.min(tmp.contentSize - tmp.contentOffset, Packet.PKTSIZE));
-//						System.out
-//								.println("ReceiverThread.handleNetworkPacket() writing on "+tmp.contentId+" "+howmany+" bytes, from "+ tmp.contentOffset+" to "+( tmp.contentOffset+howmany)+", total "+tmp.contentSize+" bytes");
 						System.arraycopy(tmp.data, 0, tmpti.bytes, tmp.contentOffset,Math.min(tmp.contentSize - tmp.contentOffset, Packet.PKTSIZE) );
 					}
 				}
@@ -156,40 +157,41 @@ public class ReceiverThread extends Thread {
 
 			lastSequenceNumberReceived = packet.sequenceNumber;
 			packetBuffer.clear();
-//			System.out.println("ReceiverThread.handleNetworkPacket() frame "+packet.contentId+", "+packet.data[0]+" "+packet.data[1]);
-			packetBuffer.add(packet);
 			checkList = new boolean[Constants.CWLEN];
+			
+			packetBuffer.add(packet);
 			checkList[packet.sequenceNumber]=true;
 
 		}
 		else{
-			packetBuffer.add(packet);
 			lastSequenceNumberReceived = packet.sequenceNumber;
 			lastSequenceNumberReceivedTime = now;
+			
+			packetBuffer.add(packet);
 			checkList[lastSequenceNumberReceived]=true;
 		}
 
-		//		if(packet.codeWordNumber == currentCodeWordNumber){
-		//			if(yetToDecode)
-		//				switch ((decoder.handlePacket(packet.data))) {
-		//				case RQDecoder.DATA_NEED_MORE:
-		//					break;
-		//				case RQDecoder.DATA_DECODE_COMPLETE:
-		//					yetToDecode = false;
-		//					sendFeedBack();
-		//					break;
-		//				case RQDecoder.DATA_DECODE_FAILURE:
-		//					break;
-		//				default:
-		//					break;
-		//				}
-		//		}
-		//		else{
-		//			
-		//		}
+	}
 
+	private void write(byte[] decodedArray) {
+		
+		File file = new File ("outputs/cw1_decArrayRX.dat");
+		FileOutputStream fos = null;
+		try {
+			fos = new FileOutputStream(file);
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		}
+		try {
+			fos.write(decodedArray);
+			fos.flush();
+			fos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 	}
+
 
 	private int countCheckList(boolean[] checkList2) {
 		int lost=0;
@@ -212,11 +214,6 @@ public class ReceiverThread extends Thread {
 		}
 	}
 
-
-	private byte[][] getImagesFromPackets(Packet[] packets) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	private void cleanUp() {
 		socket.close();
