@@ -12,7 +12,12 @@ public class DummyCamera implements Camera{
 	long lastFrameTime;
 	long interFrameTime;
 	int bpf;
+	int totalFrames;
 
+	public int getTotalFrames() {
+		return totalFrames;
+	}
+	
 	public void init(String videoFile, int bpf, int fps){
 		this.videoFile = videoFile;
 		this.bpf = bpf;
@@ -24,9 +29,14 @@ public class DummyCamera implements Camera{
 	public void open() {
 		try {
 			fis = new FileInputStream(new File(videoFile));
+			totalFrames = fis.available() / bpf;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			System.out.println("DummyCamera.open() error opening "+videoFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("DummyCamera.open() error computing available bytes for "+videoFile);
+
 		}
 	}
 

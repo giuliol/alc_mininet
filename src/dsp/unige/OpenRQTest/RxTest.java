@@ -12,8 +12,8 @@ public class RxTest {
 		RxMain rxMain = new RxMain();
 		rxMain.init();
 		
-		ActualVisualizer visualizer = new ActualVisualizer();
-		visualizer.init("RECEIVER");
+		ActualVisualizer visualizer = new ActualVisualizer(l);
+//		visualizer.init("RECEIVER");
 		
 		rxMain.setForwardPort(Constants.FORWARD_PORT);
 		rxMain.setBackwardPort(Constants.BACKWARD_PORT);

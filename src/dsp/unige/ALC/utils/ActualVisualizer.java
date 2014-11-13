@@ -36,7 +36,7 @@ public class ActualVisualizer implements Visualizer{
 		
 		ImageIcon image = new ImageIcon(img);
 		label.setIcon(image);
-		frame.pack();
+//		frame.pack();
 	}
 
 }

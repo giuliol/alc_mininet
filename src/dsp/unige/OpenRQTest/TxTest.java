@@ -21,8 +21,8 @@ public class TxTest {
 			System.out.println("MainClass.main() error setting address");
 		}
 		
-		ActualVisualizer visualizer = new ActualVisualizer();
-		visualizer.init("TRANSMITTER");
+		ActualVisualizer visualizer = new ActualVisualizer(l);
+//		visualizer.init("TRANSMITTER");
 		
 		tx.setForwardPort(Constants.FORWARD_PORT);
 		tx.setBackwardPort(Constants.BACKWARD_PORT);
