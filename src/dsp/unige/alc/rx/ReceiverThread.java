@@ -70,7 +70,6 @@ public class ReceiverThread extends Thread {
 
 		while(RUNNING){
 			try {
-//				networkPacket = new DatagramPacket(new byte[Packet.PKTSIZE + Packet.HEADERSIZE + RQDecoder.HEADERSIZE], Packet.PKTSIZE + Packet.HEADERSIZE + RQDecoder.HEADERSIZE);
 				socket.receive(networkPacket);
 				handleNetworkPacket(networkPacket);
 
@@ -99,8 +98,6 @@ public class ReceiverThread extends Thread {
 			}
 			
 			byte [] decodedArray = decoder.getDataAsArray();
-			if(packetBuffer.get(0).codeWordNumber==0)
-				write(decodedArray);
 			int FEC = packetBuffer.get(0).FEC;
 			int DATA = Constants.CWLEN - FEC;
 			for(int i=0;i<DATA;i++){
@@ -172,26 +169,6 @@ public class ReceiverThread extends Thread {
 		}
 
 	}
-
-	private void write(byte[] decodedArray) {
-		
-		File file = new File ("outputs/cw1_decArrayRX.dat");
-		FileOutputStream fos = null;
-		try {
-			fos = new FileOutputStream(file);
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		}
-		try {
-			fos.write(decodedArray);
-			fos.flush();
-			fos.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
-
 
 	private int countCheckList(boolean[] checkList2) {
 		int lost=0;

@@ -1,10 +1,5 @@
 package dsp.unige.alc.rx;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import net.fec.openrq.parameters.FECParameters;
 import dsp.unige.ALC.utils.Constants;
 import dsp.unige.ALC.utils.Log;
@@ -75,23 +70,6 @@ public class RxMain {
 				if(imageBuffer.hasToVisualize()){
 					img = imageBuffer.get();
 					visualizer.display(img.bytes, img.id);
-					if(img.id==24){
-						try {
-							File file = new File("outputs/24RX.jpg");
-							FileOutputStream fos = null;
-							try {
-								fos = new FileOutputStream(file);
-							} catch (FileNotFoundException e1) {
-								e1.printStackTrace();
-							}
-							fos.write(img.bytes);
-							fos.flush();
-							fos.close();
-							System.out.println("RxMain.go() SCRITTO 24");
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
 				}
 				try {
 					Thread.sleep(1000/Constants.FPS);

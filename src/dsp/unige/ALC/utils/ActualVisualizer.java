@@ -28,9 +28,7 @@ public class ActualVisualizer implements Visualizer{
 		panel.add(label, BorderLayout.CENTER);
 		panel.setVisible(true);
 		frame.add(panel);
-//		frame.setSize(Constants.WIDTH*2, Constants.HEIGHT*2);
 		frame.setVisible(true);
-//		frame.pack();
 	}
 	
 	@Override

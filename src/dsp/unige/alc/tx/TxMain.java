@@ -1,9 +1,5 @@
 package dsp.unige.alc.tx;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.InetAddress;
 
 import dsp.unige.ALC.utils.Camera;
@@ -108,28 +104,7 @@ public class TxMain {
 				rawFrame = cam.getFrame();
 				contentId++;
 				compressedFrame = JpegEncoder.Compress(rawFrame, sessionParameters.getQ(),Constants.WIDTH, Constants.HEIGHT);
-//				System.out.println("TxMain.go() frame "+contentId+", "+compressedFrame[0]+" "+compressedFrame[1]);
-//				System.out.println("TxMain.go() frame "+contentId+", size "+compressedFrame.length);
 				visualizeFrame(JpegEncoder.Compress(rawFrame, 100 ,Constants.WIDTH, Constants.HEIGHT),contentId);
-//				visualizeFrame(compressedFrame, contentId);
-				if(contentId == 24){
-					try {
-						File file = new File("outputs/24TX.jpg");
-						FileOutputStream fos = null;
-						try {
-							fos = new FileOutputStream(file);
-						} catch (FileNotFoundException e1) {
-							e1.printStackTrace();
-						}
-						fos.write(JpegEncoder.Compress(rawFrame, 20 ,Constants.WIDTH, Constants.HEIGHT));
-						fos.flush();
-						fos.close();
-						System.out.println("TxMain.go() SCRITTO 24");
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-
 				if(pBuffer.hasBytesAvailable(compressedFrame.length))		
 					// keep filling the packet buffer
 				{ 
@@ -138,8 +113,6 @@ public class TxMain {
 				else		
 					// buffer full, encode and handle to codeword buffer
 				{
-					if(codeWordNumber==0)
-						write(pBuffer.getData());
 					packetsBytes = rqEnc.encode(pBuffer.getData(), sessionParameters.getFEC());
 					pBuffer.fillWithEncoded(packetsBytes);
 					word = CodeWord.fromPacketArray(pBuffer.getPackets(), sessionParameters.getFEC(), codeWordNumber++);
@@ -181,22 +154,4 @@ public class TxMain {
 		RUNNING = false;
 	}
 
-	private void write(byte[] decodedArray) {
-		
-		File file = new File ("outputs/cw1_decArrayTX.dat");
-		FileOutputStream fos = null;
-		try {
-			fos = new FileOutputStream(file);
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		}
-		try {
-			fos.write(decodedArray);
-			fos.flush();
-			fos.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
 }
