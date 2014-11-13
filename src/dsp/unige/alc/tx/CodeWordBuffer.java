@@ -22,6 +22,9 @@ public class CodeWordBuffer {
 		if(buffer.size() < maxSize){
 			buffer.add(word);
 		}
+		else{
+			System.out.println("CodeWordBuffer.ack() WORD DROP");
+		}
 	}
 	
 	public synchronized boolean ack(int cwNo){

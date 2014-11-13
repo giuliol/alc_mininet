@@ -1,8 +1,5 @@
 package dsp.unige.alc.rx;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -135,7 +132,7 @@ public class ReceiverThread extends Thread {
 			// send feedback
 			int sequenceNumberWindow = lastSequenceNumberReceived - firstSequenceNumberReceived;
 			long time = lastSequenceNumberReceivedTime - firstSequenceNumberReceivedTime;
-			double rEst = sequenceNumberWindow * (Packet.PKTSIZE+Packet.HEADERSIZE) * 8 / (time/1000d);
+			double rEst = sequenceNumberWindow * (Packet.PKTSIZE+Packet.HEADERSIZE+RQDecoder.HEADERSIZE) * 8 / (time/1000d);
 
 			ByteBuffer bb = ByteBuffer.allocate(Constants.FEEDBACK_PKTSIZE);
 			bb.putInt(packetBuffer.get(0).codeWordNumber);
@@ -148,6 +145,7 @@ public class ReceiverThread extends Thread {
 			
 			DatagramPacket reportPacket = new DatagramPacket(report, report.length, networkPacket2.getAddress(), backwardPort);
 			socket.send(reportPacket);
+			System.out.println("ReceiverThread.handleNetworkPacket() Sent report for "+packetBuffer.get(0).codeWordNumber+", received "+(sequenceNumberWindow * (Packet.PKTSIZE+Packet.HEADERSIZE+RQDecoder.HEADERSIZE)) +" bytes in "+(time/1000d)+" secs");
 
 			firstSequenceNumberReceived = packet.sequenceNumber;
 			firstSequenceNumberReceivedTime = now;

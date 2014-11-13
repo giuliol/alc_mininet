@@ -35,8 +35,8 @@ public class RQCoderBenchmark {
 			for(pl = 0; pl< 1; pl+=0.01){
 				osw.write(String.format("%01.6f",pl)+";");
 				results = partial(pl);
+				System.out.print(String.format("%01.6f",pl));
 				for (double d : results) {
-					System.out.print(String.format("%01.6f",d)+" ");
 					osw.write(String.format("%01.6f",d)+";");
 				}
 				System.out.println("");
@@ -62,11 +62,11 @@ public class RQCoderBenchmark {
 		int informationSymbols;
 
 		for(int k=33;k>=0;k--){
-			errc[k]=0;
+			errc[33-k]=0;
 			informationSymbols = k+1;
 			for(int i=0;i<ITERATIONS;i++)
-				errc[k]+=t1.go(informationSymbols,pl);
-			errc[k]=errc[k]/ITERATIONS/CWLEN;
+				errc[33-k]+=t1.go(informationSymbols,pl);
+			errc[33-k]=errc[33-k]/ITERATIONS/CWLEN;
 			//			System.out.println("PLoss = "+pl+", Rc="+String.format("%6.2f",((double)k/35))+" errc: "+errc);
 		}		
 		return errc;

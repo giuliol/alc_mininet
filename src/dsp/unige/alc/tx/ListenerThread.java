@@ -6,6 +6,7 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 
+import dsp.unige.ALC.utils.Constants;
 import dsp.unige.ALC.utils.Log;
 import dsp.unige.ALC.utils.Packet;
 
@@ -65,7 +66,6 @@ public class ListenerThread extends Thread {
 		double estimatedRate=bb.getDouble();
 		int measuredLoss=bb.getInt();
 		
-		System.out.println("ListenerThread.parse() "+String.format("codew. %d, est. rate: %6.2f, lost: %d",codeWordNumber,estimatedRate,measuredLoss));
 		// acknowledge word -> delete it from cwbuffer
 		cwbHandle.ack(codeWordNumber);
 		// set estimated Rate
@@ -73,8 +73,15 @@ public class ListenerThread extends Thread {
 		// set measured Loss
 		decisor.updateLoss(measuredLoss);
 		
-		sessionParameters.setQ(decisor.decideQ());
-		sessionParameters.setFEC(decisor.decideFEC());
+		System.out.println("ListenerThread.parse() received report for "+codeWordNumber+" "+String.format("codew. %d, est. rate: %6.2f, lost: %d",codeWordNumber,estimatedRate,measuredLoss));
+
+		int FEC = decisor.decideFEC();
+		int Q = decisor.decideQ((Constants.CWLEN -(double) FEC)/(double)Constants.CWLEN);
+
+		System.out.println("ListenerThread.parse() decided Q="+Q+", FEC="+FEC);
+		
+		sessionParameters.setQ(Q);
+		sessionParameters.setFEC(FEC);
 
 	}
 

@@ -18,7 +18,9 @@ public class MainClass {
 	static JLabel lRx;
 	public static void main(String[] args) {
 
-		doBenchmarks();
+//		doBenchmarks();
+//		benchmarkRQ();
+		testRX_and_TX();
 
 	}
 

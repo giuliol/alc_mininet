@@ -55,7 +55,6 @@ public class RxMain {
 		fp = FECParameters.newParameters(CWLEN * PKTSIZE, PKTSIZE, 1);
 		dec = new RQDecoder();
 		dec.init(fp);
-		
 
 
 		if(checkAll()){
@@ -72,7 +71,7 @@ public class RxMain {
 					visualizer.display(img.bytes, img.id);
 				}
 				try {
-					Thread.sleep(1000/Constants.FPS);
+					Thread.sleep((long) (1000/(Constants.FPS*1.5d)));
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 					Log.i("RxMain","error sleeping");
