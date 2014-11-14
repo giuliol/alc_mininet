@@ -109,8 +109,8 @@ public class TxMain {
 				contentId++;
 //				System.out.println("TxMain.go() using Q ="+sessionParameters.getQ());
 				compressedFrame = JpegEncoder.Compress(rawFrame, sessionParameters.getQ(),Constants.WIDTH, Constants.HEIGHT);
-//				visualizeFrame(JpegEncoder.Compress(rawFrame, 100 ,Constants.WIDTH, Constants.HEIGHT),contentId);
-				visualizeFrame(compressedFrame, contentId);
+				visualizeFrame(JpegEncoder.Compress(rawFrame, 100 ,Constants.WIDTH, Constants.HEIGHT),contentId);
+//				visualizeFrame(compressedFrame, contentId);
 				avgSize += compressedFrame.length;
 				if(pBuffer.hasBytesAvailable(compressedFrame.length))		
 					// keep filling the packet buffer

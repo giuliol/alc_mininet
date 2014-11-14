@@ -5,6 +5,7 @@ import javax.swing.JLabel;
 import dsp.unige.alc.rx.RxMain;
 import dsp.unige.alc.utils.ActualVisualizer;
 import dsp.unige.alc.utils.Constants;
+import dsp.unige.alc.utils.DoubleVisualizer;
 import dsp.unige.alc.utils.DummyVisualizer;
 
 public class RxTest {
@@ -32,9 +33,12 @@ public class RxTest {
 		RxMain rxMain = new RxMain();
 		rxMain.init();
 		
-		DummyVisualizer visualizer = new DummyVisualizer();
-		visualizer.init(Constants.RECEIVED_JPS_FILENAME);
+//		DummyVisualizer visualizer = new DummyVisualizer();
+//		visualizer.init(Constants.RECEIVED_JPS_FILENAME);
 //		visualizer.init("RECEIVER");
+		
+		DoubleVisualizer visualizer = new DoubleVisualizer();
+		visualizer.init(Constants.RECEIVED_JPS_FILENAME , "RECEIVER");
 		
 		rxMain.setForwardPort(Constants.FORWARD_PORT);
 		rxMain.setBackwardPort(Constants.BACKWARD_PORT);
@@ -42,7 +46,7 @@ public class RxTest {
 
 		System.out.println("Starting receiver on port "+Constants.FORWARD_PORT);
 		System.out.println("Will feedback at transmitter on port "+Constants.BACKWARD_PORT);
-		System.out.println("Writing video frames in "+Constants.FORWARD_PORT);
+		System.out.println("Writing video frames in "+Constants.RECEIVED_JPS_FILENAME);
 
 
 		try {

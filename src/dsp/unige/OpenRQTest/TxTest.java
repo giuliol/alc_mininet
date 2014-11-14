@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import dsp.unige.alc.tx.TxMain;
 import dsp.unige.alc.utils.ActualVisualizer;
 import dsp.unige.alc.utils.Constants;
+import dsp.unige.alc.utils.DoubleVisualizer;
 import dsp.unige.alc.utils.DummyVisualizer;
 import dsp.unige.alc.utils.Constants.LOG;
 
@@ -24,6 +25,7 @@ public class TxTest {
 		
 		ActualVisualizer visualizer = new ActualVisualizer(l);
 //		visualizer.init("TRANSMITTER");
+
 		
 		tx.setForwardPort(Constants.FORWARD_PORT);
 		tx.setBackwardPort(Constants.BACKWARD_PORT);
@@ -48,9 +50,12 @@ public class TxTest {
 		}
 		
 		String videoFile = "video/highway_qcif.yuv";
-		DummyVisualizer visualizer = new DummyVisualizer();
-		visualizer.init(Constants.REFERENCE_JPS_FILENAME);
+//		DummyVisualizer visualizer = new DummyVisualizer();
+//		visualizer.init(Constants.REFERENCE_JPS_FILENAME);
 //		visualizer.init("TRANSMITTER");
+		
+		DoubleVisualizer visualizer = new DoubleVisualizer();
+		visualizer.init(Constants.REFERENCE_JPS_FILENAME , "TRANSMITTER");
 		
 		tx.setForwardPort(Constants.FORWARD_PORT);
 		tx.setBackwardPort(Constants.BACKWARD_PORT);

@@ -21,14 +21,14 @@ public class MainClass {
 //		doBenchmarks();
 //		benchmarkRQ();
 		
-//		testRX_and_TX();  // local test
+		testRX_and_TX();  // local test
 //		if(args.length==0){
 //			System.out.println("error: syntax is\n java -jar transmitter <destination_IP>");
 //			return;
 //		}
 //		else
 //			startTx(args[0]);
-		startRx();
+//		startRx();
 
 	}
 
