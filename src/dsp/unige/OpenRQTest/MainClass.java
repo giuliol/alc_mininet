@@ -20,8 +20,28 @@ public class MainClass {
 
 //		doBenchmarks();
 //		benchmarkRQ();
-		testRX_and_TX();
+		
+//		testRX_and_TX();  // local test
+//		if(args.length==0){
+//			System.out.println("error: syntax is\n java -jar transmitter <destination_IP>");
+//			return;
+//		}
+//		else
+//			startTx(args[0]);
+		startRx();
 
+	}
+
+	private static void startTx(String dest) {
+		TxTest ttest = new TxTest();
+		ttest.goWithDummyScreen(dest);
+		System.out.println("Transmitter done, exiting");
+	}
+
+	private static void startRx() {
+		RxTest rtest = new RxTest();
+		rtest.goWithDummyScreen();	
+		System.out.println("Receiver done, exiting");
 	}
 
 	private static void doBenchmarks() {
@@ -57,7 +77,6 @@ public class MainClass {
 		jcb.go();
 	}
 
-
 	public static void benchmarkRQ(){
 		RQCoderBenchmark rcb = new RQCoderBenchmark();
 		rcb.go();
@@ -81,7 +100,7 @@ public class MainClass {
 			@Override
 			public void run() {
 				RxTest rtest = new RxTest();
-				rtest.go(lRx);				
+				rtest.goWithScreen(lRx);				
 			}
 		})).start();
 
@@ -94,7 +113,7 @@ public class MainClass {
 
 		System.out.println("MainClass.main() TX start");
 		TxTest ttest = new TxTest();
-		ttest.go(lTx);
+		ttest.goWithScreen(lTx);
 	}
 
 	public static void testJpeg(){
