@@ -1,12 +1,12 @@
 package dsp.unige.alc.rx;
 
 import net.fec.openrq.parameters.FECParameters;
-import dsp.unige.ALC.utils.Constants;
-import dsp.unige.ALC.utils.Log;
-import dsp.unige.ALC.utils.Packet;
-import dsp.unige.ALC.utils.PacketBuffer;
-import dsp.unige.ALC.utils.RQDecoder;
-import dsp.unige.ALC.utils.Visualizer;
+import dsp.unige.alc.utils.Constants;
+import dsp.unige.alc.utils.Log;
+import dsp.unige.alc.utils.Packet;
+import dsp.unige.alc.utils.PacketBuffer;
+import dsp.unige.alc.utils.RQDecoder;
+import dsp.unige.alc.utils.Visualizer;
 
 public class RxMain {
 
@@ -50,11 +50,12 @@ public class RxMain {
 
 	}
 
-	public void go(){
+	public void go() throws InterruptedException{
 
 		fp = FECParameters.newParameters(CWLEN * PKTSIZE, PKTSIZE, 1);
 		dec = new RQDecoder();
 		dec.init(fp);
+		long toSleep = 0;
 
 
 		if(checkAll()){
@@ -69,14 +70,17 @@ public class RxMain {
 				if(imageBuffer.hasToVisualize()){
 					img = imageBuffer.get();
 					visualizer.display(img.bytes, img.id);
+					toSleep = imageBuffer.getInterFrameTime();
 				}
 				try {
-					Thread.sleep((long) (1000/(Constants.FPS*1.5d)));
+					Thread.sleep(Math.round(1000d/(Constants.FPS*1.05d)));
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 					Log.i("RxMain","error sleeping");
 				}
 			}
+			rt.stopRunning();
+			rt.join();
 		}
 		else{
 			Log.i("RxMain","checkAll failed");

@@ -1,4 +1,4 @@
-package dsp.unige.ALC.utils;
+package dsp.unige.alc.utils;
 
 public interface Visualizer {
 

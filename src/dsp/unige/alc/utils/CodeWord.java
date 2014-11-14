@@ -1,10 +1,11 @@
-package dsp.unige.ALC.utils;
+package dsp.unige.alc.utils;
 
 import net.fec.openrq.parameters.FECParameters;
 
 public class CodeWord {
 	
 	public static final int CWLEN = Constants.CWLEN;
+	public static final double CODEWORD_SIZE = (Constants.CWLEN *  (Packet.PKTSIZE+Packet.HEADERSIZE+RQDecoder.HEADERSIZE) *8);
 	public Packet[] pkts;
 	public int codeWordNumber;
 	FECParameters fp;

@@ -5,10 +5,10 @@ import java.net.UnknownHostException;
 
 import javax.swing.JLabel;
 
-import dsp.unige.ALC.utils.ActualVisualizer;
-import dsp.unige.ALC.utils.Constants;
-import dsp.unige.ALC.utils.Constants.LOG;
 import dsp.unige.alc.tx.TxMain;
+import dsp.unige.alc.utils.ActualVisualizer;
+import dsp.unige.alc.utils.Constants;
+import dsp.unige.alc.utils.Constants.LOG;
 
 public class TxTest {
 
@@ -29,6 +29,10 @@ public class TxTest {
 		tx.setLogLevel(LOG.Debug);
 		tx.init("video/highway_qcif.yuv");
 		tx.setVisualizer(visualizer);
-		tx.go();
+		try {
+			tx.go();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }

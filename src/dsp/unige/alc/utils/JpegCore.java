@@ -1,4 +1,4 @@
-package dsp.unige.ALC.utils;
+package dsp.unige.alc.utils;
 // Version 1.0a
 // Copyright (C) 1998, James R. Weeks and BioElectroMech.
 // Visit BioElectroMech at www.obrador.com.  Email James@obrador.com.

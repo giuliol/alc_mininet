@@ -2,9 +2,9 @@ package dsp.unige.OpenRQTest;
 
 import javax.swing.JLabel;
 
-import dsp.unige.ALC.utils.ActualVisualizer;
-import dsp.unige.ALC.utils.Constants;
 import dsp.unige.alc.rx.RxMain;
+import dsp.unige.alc.utils.ActualVisualizer;
+import dsp.unige.alc.utils.Constants;
 
 public class RxTest {
 
@@ -19,6 +19,10 @@ public class RxTest {
 		rxMain.setBackwardPort(Constants.BACKWARD_PORT);
 		rxMain.setVisualizer(visualizer);
 		
-		rxMain.go();
+		try {
+			rxMain.go();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }

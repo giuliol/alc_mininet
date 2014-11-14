@@ -6,9 +6,8 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 
-import dsp.unige.ALC.utils.Constants;
-import dsp.unige.ALC.utils.Log;
-import dsp.unige.ALC.utils.Packet;
+import dsp.unige.alc.utils.Constants;
+import dsp.unige.alc.utils.Log;
 
 public class ListenerThread extends Thread {
 
@@ -16,7 +15,7 @@ public class ListenerThread extends Thread {
 	Decisor decisor;
 	DatagramSocket socket;
 	DatagramPacket packet;
-	int listeningPort;
+	int backwardPort;
 	ByteBuffer bb;
 	SessionParameters sessionParameters;
 
@@ -32,7 +31,7 @@ public class ListenerThread extends Thread {
 	}
 
 	public void setBackwardPort(int listeningPort) {
-		this.listeningPort = listeningPort;
+		this.backwardPort = listeningPort;
 	}
 	
 	@Override
@@ -47,7 +46,8 @@ public class ListenerThread extends Thread {
 				parse(packet.getData());
 			} catch (IOException e) {
 				e.printStackTrace();
-				Log.i("ListenerThread", "error receiving packet");
+				Log.i("ListenerThread", "socket timeout");
+				cwbHandle.purge();
 			}
 		}
 		
@@ -76,7 +76,7 @@ public class ListenerThread extends Thread {
 		System.out.println("ListenerThread.parse() received report for "+codeWordNumber+" "+String.format("codew. %d, est. rate: %6.2f, lost: %d",codeWordNumber,estimatedRate,measuredLoss));
 
 		int FEC = decisor.decideFEC();
-		int Q = decisor.decideQ((Constants.CWLEN -(double) FEC)/(double)Constants.CWLEN);
+		int Q = decisor.decideQ((Constants.CWLEN -(double) FEC)/(double)Constants.CWLEN, FEC);
 
 		System.out.println("ListenerThread.parse() decided Q="+Q+", FEC="+FEC);
 		
@@ -87,9 +87,10 @@ public class ListenerThread extends Thread {
 
 	private void initSocket() {
 		try {
-			socket = new DatagramSocket(listeningPort);
-			packet = new DatagramPacket((new byte [Packet.PKTSIZE + Packet.HEADERSIZE]), Packet.PKTSIZE + Packet.HEADERSIZE);
-			System.out.println("-TX- ListenerThread.initSocket() listening on "+listeningPort);
+			socket = new DatagramSocket(backwardPort);
+			packet = new DatagramPacket(new byte[Constants.FEEDBACK_PKTSIZE],Constants.FEEDBACK_PKTSIZE);
+			System.out.println("-TX- ListenerThread.initSocket() listening on "+backwardPort);
+			socket.setSoTimeout(2500);
 		} catch (SocketException e) {
 			e.printStackTrace();
 			Log.i("ListenerThread","error opening listening datagramSocket");

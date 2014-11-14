@@ -6,9 +6,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import dsp.unige.ALC.utils.Constants;
 import dsp.unige.alc.benchmark.JpegCoderBenchmark;
 import dsp.unige.alc.benchmark.RQCoderBenchmark;
+import dsp.unige.alc.utils.Constants;
 
 
 public class MainClass {

@@ -1,4 +1,4 @@
-package dsp.unige.ALC.utils;
+package dsp.unige.alc.utils;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;

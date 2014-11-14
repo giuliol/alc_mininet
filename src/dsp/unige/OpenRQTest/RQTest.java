@@ -2,8 +2,8 @@ package dsp.unige.OpenRQTest;
 
 import java.util.Random;
 
-import dsp.unige.ALC.utils.RQDecoder;
-import dsp.unige.ALC.utils.RQEncoder;
+import dsp.unige.alc.utils.RQDecoder;
+import dsp.unige.alc.utils.RQEncoder;
 
 public class RQTest {
 

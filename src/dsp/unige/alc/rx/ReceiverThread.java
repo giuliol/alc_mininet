@@ -8,10 +8,10 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import net.fec.openrq.parameters.FECParameters;
-import dsp.unige.ALC.utils.Constants;
-import dsp.unige.ALC.utils.Log;
-import dsp.unige.ALC.utils.Packet;
-import dsp.unige.ALC.utils.RQDecoder;
+import dsp.unige.alc.utils.Constants;
+import dsp.unige.alc.utils.Log;
+import dsp.unige.alc.utils.Packet;
+import dsp.unige.alc.utils.RQDecoder;
 
 public class ReceiverThread extends Thread {
 
@@ -29,6 +29,7 @@ public class ReceiverThread extends Thread {
 	private long lastSequenceNumberReceivedTime;
 	private boolean[] checkList;
 	private int backwardPort;
+	private long lastCodeWordTime;
 
 	public void setBackwardPort(int listeningPort) {
 		this.backwardPort = listeningPort;
@@ -80,6 +81,10 @@ public class ReceiverThread extends Thread {
 
 	}
 
+	
+	public void stopRunning(){
+		RUNNING = false;
+	}
 	private void handleNetworkPacket(DatagramPacket networkPacket2) throws IOException {
 		
 		Packet packet = Packet.parseNetworkPacket(networkPacket2);
@@ -106,6 +111,7 @@ public class ReceiverThread extends Thread {
 			Packet tmp;
 			TaggedImage tmpti = new TaggedImage(packetBuffer.get(0).contentSize);
 			tmpti.id = packetBuffer.get(0).contentId;
+			int imageCount = 1;
 			for(int i=0;i<packetBuffer.size();i++){
 				tmp = packetBuffer.get(i);
 				if(tmp.contentId!=-1){
@@ -113,6 +119,7 @@ public class ReceiverThread extends Thread {
 						System.arraycopy(tmp.data, 0, tmpti.bytes, tmp.contentOffset,Math.min(tmp.contentSize - tmp.contentOffset, Packet.PKTSIZE) );
 					}
 					else{
+						imageCount++;
 						if(imageBuffer.has(1))
 							imageBuffer.put(tmpti);
 						tmpti = new TaggedImage(tmp.contentSize);
@@ -123,6 +130,7 @@ public class ReceiverThread extends Thread {
 				else{
 //					System.out.println("ReceiverThread.handleNetworkPacket() i:"+i+" FEC packet "+tmp.codeWordNumber+"|"+tmp.sequenceNumber);
 				}
+				imageBuffer.setReceived(imageCount);
 			}
 
 			// reinit decoder
@@ -133,11 +141,14 @@ public class ReceiverThread extends Thread {
 			int sequenceNumberWindow = lastSequenceNumberReceived - firstSequenceNumberReceived;
 			long time = lastSequenceNumberReceivedTime - firstSequenceNumberReceivedTime;
 			double rEst = sequenceNumberWindow * (Packet.PKTSIZE+Packet.HEADERSIZE+RQDecoder.HEADERSIZE) * 8 / (time/1000d);
-
+			long interCodeWordTime = now - lastCodeWordTime;
+			lastCodeWordTime = now;
+			
 			ByteBuffer bb = ByteBuffer.allocate(Constants.FEEDBACK_PKTSIZE);
 			bb.putInt(packetBuffer.get(0).codeWordNumber);
 			bb.putDouble(rEst);
 			bb.putInt(countCheckList(checkList));
+			bb.putLong(interCodeWordTime);
 			bb.rewind();
 
 			byte[] report =  new byte[Constants.FEEDBACK_PKTSIZE];
