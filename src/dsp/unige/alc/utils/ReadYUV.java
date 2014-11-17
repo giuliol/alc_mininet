@@ -7,11 +7,11 @@ package dsp.unige.alc.utils;
  * can read in color
  */
 
-import java.io.*;
-import javax.swing.*;
-import java.awt.image.*;
-import javax.imageio.*;
-import java.util.*;
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 public class ReadYUV
 {
@@ -85,7 +85,6 @@ public class ReadYUV
 	
 	public int getGrayScaleFromY(int x, int y)
 	{
-		int arraySize = height * width;
 		int Y = unsignedByteToInt(oneFrame[y * width + x]);
 		
 		int R = Y;

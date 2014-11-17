@@ -55,13 +55,13 @@ public class RQDecoder {
 
 		switch (sbDec.putEncodingPacket(value)) {
 		case DECODED:
-//			System.out.println("Test.handlePacket() decoded!");
+			Log.i("RQDecoder.handle()","successfully decoded");
 			return DATA_DECODE_COMPLETE;
 		case INCOMPLETE:
-//			System.out.println("Test.handlePacket() need more encoding packets!");
+//			Log.i("Test.handlePacket()","need more encoding packets!");
 			return DATA_NEED_MORE;
 		case DECODING_FAILURE:
-//			System.out.println("Test.handlePacket() decode failure");
+			Log.i("Test.handlePacket()","decode failure");
 			return DATA_DECODE_FAILURE;
 		default:
 			return UNKNOWN_HANDLEPACKET_ERROR;

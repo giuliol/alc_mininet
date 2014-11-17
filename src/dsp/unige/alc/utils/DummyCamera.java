@@ -32,10 +32,10 @@ public class DummyCamera implements Camera{
 			totalFrames = fis.available() / bpf;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-			System.out.println("DummyCamera.open() error opening "+videoFile);
+			Log.i("DummyCamera.open()","error opening "+videoFile);
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("DummyCamera.open() error computing available bytes for "+videoFile);
+			Log.i("DummyCamera.open()","error computing available bytes for "+videoFile);
 
 		}
 	}
@@ -48,7 +48,7 @@ public class DummyCamera implements Camera{
 			fis.read(frame);
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("DummyCamera.getFrame() error reading frame");
+			Log.i("DummyCamera.getFrame()","error reading frame");
 		}
 		lastFrameTime = System.currentTimeMillis();
 		return frame;
@@ -62,14 +62,14 @@ public class DummyCamera implements Camera{
 		if(wakeUp > now)
 			toSleep = wakeUp - now;
 		else{
-			System.out.println("DummyCamera.waitInterFrameTime() warning: "+ (now - wakeUp) + " seconds late.");
+			Log.i("DummyCamera.waitInterFrameTime()","warning: "+ (now - wakeUp) + " seconds late.");
 			toSleep = 0;
 		}
 		try {
 			Thread.sleep(toSleep);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-			System.out.println("DummyCamera.waitInterFrameTime() error sleeping");
+			Log.i("DummyCamera.waitInterFrameTime()","error sleeping");
 		}		
 		
 	}
@@ -80,7 +80,7 @@ public class DummyCamera implements Camera{
 			fis.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("DummyCamera.close() error closing fileinputstream");
+			Log.i("DummyCamera.close()","error closing fileinputstream");
 		}
 	}
 

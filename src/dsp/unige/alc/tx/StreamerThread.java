@@ -64,7 +64,7 @@ public class StreamerThread extends Thread{
 
 	private void cleanUp() {
 		forwardsocket.close();
-		System.out.println("StreamerThread.cleanUp() exiting");
+		Log.i("StreamerThread.cleanUp()","exiting");
 	}
 
 	private void send(CodeWord codeWord) throws IOException {

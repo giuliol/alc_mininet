@@ -44,7 +44,6 @@ public class ReceiverThread extends Thread {
 	private void initSocket(){
 		try {
 			socket = new DatagramSocket(forwardPort);
-			System.out.println("-RX- ReceiverThread.initSocket() listening on "+forwardPort);
 
 		} catch (SocketException e) {
 			e.printStackTrace();
@@ -156,7 +155,7 @@ public class ReceiverThread extends Thread {
 			
 			DatagramPacket reportPacket = new DatagramPacket(report, report.length, networkPacket2.getAddress(), backwardPort);
 			socket.send(reportPacket);
-			System.out.println("ReceiverThread.handleNetworkPacket() Sent report for "+packetBuffer.get(0).codeWordNumber+", received "+(sequenceNumberWindow * (Packet.PKTSIZE+Packet.HEADERSIZE+RQDecoder.HEADERSIZE)) +" bytes in "+(time/1000d)+" secs");
+			Log.i("ReceiverThread.handleNetworkPacket()","Sent report for "+packetBuffer.get(0).codeWordNumber+", received "+(sequenceNumberWindow * (Packet.PKTSIZE+Packet.HEADERSIZE+RQDecoder.HEADERSIZE)) +" bytes in "+(time/1000d)+" secs");
 
 			firstSequenceNumberReceived = packet.sequenceNumber;
 			firstSequenceNumberReceivedTime = now;

@@ -1,11 +1,8 @@
 package dsp.unige.alc.utils;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
-import javax.imageio.ImageIO;
 
 public class JpegEncoder {
 
@@ -20,7 +17,7 @@ public class JpegEncoder {
 		try {
 			baos.flush();
 		} catch (IOException e) {
-			System.out.println("JpegEncoder.Compress() error flushing ByteArrayOutputStream");
+			Log.i("JpegEncoder.Compress()","error flushing ByteArrayOutputStream");
 			e.printStackTrace();
 		}
 		return baos.toByteArray();
@@ -43,7 +40,7 @@ public class JpegEncoder {
 		try {
 			baos.flush();
 		} catch (IOException e) {
-			System.out.println("JpegEncoder.Compress() error flushing ByteArrayOutputStream");
+			Log.i("JpegEncoder.Compress()","error flushing ByteArrayOutputStream");
 			e.printStackTrace();
 		}
 		return baos.toByteArray();

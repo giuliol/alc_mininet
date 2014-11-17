@@ -42,20 +42,6 @@ public class ORQcore {
         return OpenRQ.newEncoder(data, off, fecParams);
     }
     
-//    
-//    /**
-//     * Encodes all source blocks from a data encoder, sequentially.
-//     * 
-//     * @param dataEnc
-//     *            A data encoder
-//     */
-//    public static void encodeData(DataEncoder dataEnc, int nr) {
-//
-//        for (SourceBlockEncoder sbEnc : dataEnc.sourceBlockIterable()) {
-//            encodeSourceBlock(sbEnc,nr);
-//        }
-//    }
-
     /**
      * Encodes a specific source block from a data encoder.
      * 

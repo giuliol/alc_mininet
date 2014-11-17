@@ -20,12 +20,13 @@ public class ListenerThread extends Thread {
 	SessionParameters sessionParameters;
 
 	boolean RUNNING = true;
-	
+
 	public void stopRunning() {
 		RUNNING = false;
 	}
-	
-	public ListenerThread(CodeWordBuffer cwBuffer, SessionParameters sessionParameters) {
+
+	public ListenerThread(CodeWordBuffer cwBuffer,
+			SessionParameters sessionParameters) {
 		cwbHandle = cwBuffer;
 		this.sessionParameters = sessionParameters;
 	}
@@ -33,14 +34,14 @@ public class ListenerThread extends Thread {
 	public void setBackwardPort(int listeningPort) {
 		this.backwardPort = listeningPort;
 	}
-	
+
 	@Override
 	public void run() {
 		super.run();
-		
+
 		initSocket();
-		
-		while(RUNNING){
+
+		while (RUNNING) {
 			try {
 				socket.receive(packet);
 				parse(packet.getData());
@@ -50,9 +51,9 @@ public class ListenerThread extends Thread {
 				cwbHandle.purge();
 			}
 		}
-		
+
 		cleanUp();
-		
+
 	}
 
 	private void cleanUp() {
@@ -60,26 +61,31 @@ public class ListenerThread extends Thread {
 	}
 
 	private void parse(byte[] data) {
-		bb=ByteBuffer.wrap(data);
-		
-		int codeWordNumber=bb.getInt();
-		double estimatedRate=bb.getDouble();
-		int measuredLoss=bb.getInt();
-		
+		bb = ByteBuffer.wrap(data);
+
+		int codeWordNumber = bb.getInt();
+		double estimatedRate = bb.getDouble();
+		int measuredLoss = bb.getInt();
+
 		// acknowledge word -> delete it from cwbuffer
 		cwbHandle.ack(codeWordNumber);
 		// set estimated Rate
 		decisor.updateRate(estimatedRate);
 		// set measured Loss
 		decisor.updateLoss(measuredLoss);
-		
-		System.out.println("ListenerThread.parse() received report for "+codeWordNumber+" "+String.format("codew. %d, est. rate: %6.2f, lost: %d",codeWordNumber,estimatedRate,measuredLoss));
+
+		Log.i("ListenerThread.parse()","received report for "
+				+ codeWordNumber
+				+ " "
+				+ String.format("codew. %d, est. rate: %6.2f, lost: %d",
+						codeWordNumber, estimatedRate, measuredLoss));
 
 		int FEC = decisor.decideFEC();
-		int Q = decisor.decideQ((Constants.CWLEN -(double) FEC)/(double)Constants.CWLEN, FEC);
+		int Q = decisor.decideQ((Constants.CWLEN - (double) FEC)
+				/ (double) Constants.CWLEN, FEC);
 
-		System.out.println("ListenerThread.parse() decided Q="+Q+", FEC="+FEC);
-		
+		Log.i("ListenerThread.parse()","decided Q=" + Q + ", FEC=" + FEC);
+
 		sessionParameters.setQ(Q);
 		sessionParameters.setFEC(FEC);
 
@@ -88,12 +94,12 @@ public class ListenerThread extends Thread {
 	private void initSocket() {
 		try {
 			socket = new DatagramSocket(backwardPort);
-			packet = new DatagramPacket(new byte[Constants.FEEDBACK_PKTSIZE],Constants.FEEDBACK_PKTSIZE);
-			System.out.println("-TX- ListenerThread.initSocket() listening on "+backwardPort);
+			packet = new DatagramPacket(new byte[Constants.FEEDBACK_PKTSIZE],
+					Constants.FEEDBACK_PKTSIZE);
 			socket.setSoTimeout(2500);
 		} catch (SocketException e) {
 			e.printStackTrace();
-			Log.i("ListenerThread","error opening listening datagramSocket");
+			Log.i("ListenerThread", "error opening listening datagramSocket");
 		}
 	}
 

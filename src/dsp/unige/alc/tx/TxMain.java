@@ -5,15 +5,14 @@ import java.net.InetAddress;
 import dsp.unige.alc.utils.Camera;
 import dsp.unige.alc.utils.CodeWord;
 import dsp.unige.alc.utils.Constants;
+import dsp.unige.alc.utils.Constants.LOG;
 import dsp.unige.alc.utils.DummyCamera;
 import dsp.unige.alc.utils.JpegEncoder;
 import dsp.unige.alc.utils.Log;
 import dsp.unige.alc.utils.Packet;
 import dsp.unige.alc.utils.PacketBuffer;
-import dsp.unige.alc.utils.RQDecoder;
 import dsp.unige.alc.utils.RQEncoder;
 import dsp.unige.alc.utils.Visualizer;
-import dsp.unige.alc.utils.Constants.LOG;
 
 public class TxMain {
 
@@ -100,40 +99,37 @@ public class TxMain {
 		lt.start();
 		sessionParameters.setFEC(1);
 		
-		double avgSize = 0;
+//		double avgSize = 0;
 
-		int framesInCodeword =0 ;
+//		int framesInCodeword =0 ;
 		if(checkAll())
 			while( cam.hasFrame() && isRunning() ){
 				rawFrame = cam.getFrame();
 				contentId++;
-//				System.out.println("TxMain.go() using Q ="+sessionParameters.getQ());
 				compressedFrame = JpegEncoder.Compress(rawFrame, sessionParameters.getQ(),Constants.WIDTH, Constants.HEIGHT);
 				visualizeFrame(JpegEncoder.Compress(rawFrame, 100 ,Constants.WIDTH, Constants.HEIGHT),contentId);
-//				visualizeFrame(compressedFrame, contentId);
-				avgSize += compressedFrame.length;
+//				avgSize += compressedFrame.length;
 				if(pBuffer.hasBytesAvailable(compressedFrame.length))		
 					// keep filling the packet buffer
 				{ 
 					pBuffer.put(Packet.fromByteArray(compressedFrame, contentId ));
-					framesInCodeword++;
+//					framesInCodeword++;
 				}
 				else		
 					// buffer full, encode and handle to codeword buffer
 				{
-					long tic = System.currentTimeMillis();
-					System.out.println("TxMain.go() got "+framesInCodeword+ " frames in last cw. Estimated "+(framesInCodeword* decisor.getRate() / (CWLEN *  (Packet.PKTSIZE+Packet.HEADERSIZE+RQDecoder.HEADERSIZE) *8)));
-					System.out.println("TxMain.go() avg size = "+(avgSize / framesInCodeword)+", Q="+sessionParameters.getQ());
-					avgSize = 0;
+//					long tic = System.currentTimeMillis();
+//					System.out.println("TxMain.go() got "+framesInCodeword+ " frames in last cw. Estimated "+(framesInCodeword* decisor.getRate() / (CWLEN *  (Packet.PKTSIZE+Packet.HEADERSIZE+RQDecoder.HEADERSIZE) *8)));
+//					System.out.println("TxMain.go() avg size = "+(avgSize / framesInCodeword)+", Q="+sessionParameters.getQ());
+//					avgSize = 0;
 					packetsBytes = rqEnc.encode(pBuffer.getData(), sessionParameters.getFEC());
 					pBuffer.fillWithEncoded(packetsBytes);
 					word = CodeWord.fromPacketArray(pBuffer.getPackets(), sessionParameters.getFEC(), codeWordNumber++);
 					cwBuffer.put(word);
 					pBuffer.reset();
 					pBuffer.put(Packet.fromByteArray(compressedFrame, contentId ));
-					framesInCodeword = 1;
-					
-					System.out.println("TxMain.go() PROCESSING TIME: "+(System.currentTimeMillis() - tic));
+//					framesInCodeword = 1;
+//					System.out.println("TxMain.go() PROCESSING TIME: "+(System.currentTimeMillis() - tic));
 				}
 			}
 		lt.stopRunning();

@@ -1,9 +1,10 @@
 package dsp.unige.alc.utils;
 
-import java.io.*;
-import javax.swing.*;
-import java.awt.image.*;
-import java.util.*;
+import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.FileOutputStream;
+import java.util.LinkedList;
 
 public class WriteYUV
 {

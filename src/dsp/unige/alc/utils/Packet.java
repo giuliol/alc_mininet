@@ -110,8 +110,6 @@ public class Packet {
 
 		byte[] networkPacketPayload = packet.getData();
 
-		//		System.out.println("Packet.parseNetworkPacket() packet.getdata().length="+packet.getData().length);
-
 		System.arraycopy(networkPacketPayload, 0, header, 0, Packet.HEADERSIZE);
 		System.arraycopy(networkPacketPayload, Packet.HEADERSIZE, data, 0,Packet.PKTSIZE + RQDecoder.HEADERSIZE);
 
@@ -127,24 +125,6 @@ public class Packet {
 		out.contentSize = bb.getInt();
 		out.contentOffset = bb.getInt();
 		out.data = data;
-
-//		System.out.println("Packet.parseNetworkPacket() pacchetto "+out.codeWordNumber+"|"+out.sequenceNumber);
-//		int i=0;
-//		for (byte b : networkPacketPayload) {
-//			if(i%16 == 0)
-//				System.out.println("");
-//			System.out.print(String.format("%02x ",b));
-//
-//			i++;
-//		}
-//		System.out.println("");
-
-//		int howmany = Math.min(out.contentSize - out.contentOffset,Packet.PKTSIZE + RQDecoder.HEADERSIZE) ;
-//		System.out.println("Packet.parseNetworkPacket() contains "+howmany+" frame "+out.contentId+"data last bytes ("+(howmany-8)+"):: ");
-//		for(int i=8;i>0;i--){
-//			System.out.print(String.format("%x ",networkPacketPayload[networkPacketPayload.length-i]));
-//		}
-//		System.out.print("\n");
 
 		return out;
 	}

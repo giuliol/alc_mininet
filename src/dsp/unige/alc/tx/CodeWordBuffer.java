@@ -3,6 +3,7 @@ package dsp.unige.alc.tx;
 import java.util.ArrayList;
 
 import dsp.unige.alc.utils.CodeWord;
+import dsp.unige.alc.utils.Log;
 
 public class CodeWordBuffer {
 	
@@ -19,12 +20,11 @@ public class CodeWordBuffer {
 	}
 
 	public synchronized void put(CodeWord word) {
-		System.out.println("CodeWordBuffer.put() OCCUPANCY " +((int)(100*buffer.size()/(double)maxSize)));
 		if(buffer.size() < maxSize){
 			buffer.add(word);
 		}
 		else{
-			System.out.println("CodeWordBuffer.ack() WORD DROP");
+			Log.i("CodeWordBuffer.put()","WORD DROP");
 		}
 	}
 	
@@ -58,7 +58,7 @@ public class CodeWordBuffer {
 
 	public void purge() {
 		int toRemove = Math.min(3, buffer.size());
-		System.out.println("CodeWordBuffer.purge() dropping "+toRemove);
+		Log.i("CodeWordBuffer.purge()","dropping "+toRemove);
 
 		for(int i=0;i<toRemove;i++)
 			buffer.remove(0);

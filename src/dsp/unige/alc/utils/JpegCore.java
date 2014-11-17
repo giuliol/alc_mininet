@@ -30,7 +30,11 @@ import java.util.Vector;
 
 public class JpegCore extends Frame
 {
-    Thread runner;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -4298637788285462948L;
+	Thread runner;
     BufferedOutputStream outStream;
     Image image;
     JpegInfo JpegObj;
@@ -95,7 +99,7 @@ public class JpegCore extends Frame
         try {
                 outStream.flush();
         } catch (IOException e) {
-                System.out.println("IO Error: " + e.getMessage());
+                Log.i("JpegCore.Compress()","IO Error: " + e.getMessage());
         }
     }
 
@@ -315,7 +319,7 @@ public class JpegCore extends Frame
         try {
                 out.write(data, 0, 2);
         } catch (IOException e) {
-                System.out.println("IO Error: " + e.getMessage());
+                Log.i("JpegCore.WriteMarker()","IO Error: " + e.getMessage());
         }
     }
         
@@ -325,7 +329,7 @@ public class JpegCore extends Frame
                 length = (((int) (data[2] & 0xFF)) << 8) + (int) (data[3] & 0xFF) + 2;
                 out.write(data, 0, length);
         } catch (IOException e) {
-                System.out.println("IO Error: " + e.getMessage());
+                Log.i("JpegCore.WriteArray()","IO Error: " + e.getMessage());
         }
     }
 }
@@ -969,7 +973,7 @@ class Huffman
                         outStream.write(c);
                 }
                 catch (IOException e) {
-                        System.out.println("IO Error: " + e.getMessage());
+                        Log.i("JpegCore","IO Error: " + e.getMessage());
                 }
                 if (c == 0xFF) {
                         try
@@ -977,7 +981,7 @@ class Huffman
                                 outStream.write(0);
                         }
                         catch (IOException e) {
-                                System.out.println("IO Error: " + e.getMessage());
+                                Log.i("JpegCore","IO Error: " + e.getMessage());
                         }
                 }
                 PutBuffer <<= 8;
@@ -998,14 +1002,14 @@ class Huffman
                                 outStream.write(c);
                         }
                         catch (IOException e) {
-                                System.out.println("IO Error: " + e.getMessage());
+                                Log.i("JpegCore","IO Error: " + e.getMessage());
                         }
                         if (c == 0xFF) {
                                 try {
                                         outStream.write(0);
                                 }
                                 catch (IOException e) {
-                                        System.out.println("IO Error: " + e.getMessage());
+                                        Log.i("JpegCore","IO Error: " + e.getMessage());
                                 }
                         }
                         PutBuffer <<= 8;
@@ -1018,7 +1022,7 @@ class Huffman
                                 outStream.write(c);
                         }
                         catch (IOException e) {
-                                System.out.println("IO Error: " + e.getMessage());
+                                Log.i("JpegCore","IO Error: " + e.getMessage());
                         }
                 }
         }

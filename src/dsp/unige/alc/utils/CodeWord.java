@@ -27,9 +27,6 @@ public class CodeWord {
 		out.fp = FECParameters.newParameters(CodeWord.CWLEN * Packet.PKTSIZE, Packet.PKTSIZE, 1);
 		out.pkts = pkts;
 		out.available = true;
-		
-//		System.out.println("CodeWord.fromPacketArray() out.pkts[0].data.length="+out.pkts[0].data.length );
-//		System.out.println("CodeWord.fromPacketArray() frame " + out.pkts[0].contentId+", "+out.pkts[0].data[0]);
 
 		return out;
 		
