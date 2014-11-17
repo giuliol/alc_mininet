@@ -1,5 +1,7 @@
 package dsp.unige.alc.rx;
 
+import java.io.Writer;
+
 import net.fec.openrq.parameters.FECParameters;
 import dsp.unige.alc.utils.Constants;
 import dsp.unige.alc.utils.Log;
@@ -21,6 +23,7 @@ public class RxMain {
 	private FECParameters fp;
 	private ImageBuffer imageBuffer;
 	private Visualizer visualizer;
+	private Writer logWriter;
 
 
 	public void setVisualizer(Visualizer visualizer) {
@@ -60,6 +63,7 @@ public class RxMain {
 		if(checkAll()){
 
 			ReceiverThread rt = new ReceiverThread(imageBuffer, dec);
+			rt.setLogWriter(logWriter);
 			rt.setForwardPort(forwardPort);
 			rt.setBackwardPort(Constants.BACKWARD_PORT);
 			rt.start();
@@ -74,14 +78,14 @@ public class RxMain {
 					Thread.sleep(Math.round(1000d/(Constants.FPS*1.05d)));
 				} catch (InterruptedException e) {
 					e.printStackTrace();
-					Log.i("RxMain","error sleeping");
+					Log.i(logWriter,"RxMain","error sleeping");
 				}
 			}
 			rt.stopRunning();
 			rt.join();
 		}
 		else{
-			Log.i("RxMain","checkAll failed");
+			Log.i(logWriter,"RxMain","checkAll failed");
 		}
 		cleanUp();
 
@@ -94,10 +98,15 @@ public class RxMain {
 		isOK = isOK && (visualizer != null);
 		isOK = isOK && (forwardPort != 0);
 		isOK = isOK && (backwardPort != 0);
+		isOK = isOK && (logWriter != null);
 
 		return isOK;
 	}
 	private void cleanUp(){
 
+	}
+
+	public void setWriter(Writer logWriter) {
+		this.logWriter = logWriter;
 	}
 }

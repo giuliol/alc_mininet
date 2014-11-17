@@ -1,6 +1,7 @@
 package dsp.unige.alc.tx;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
@@ -20,6 +21,7 @@ public class ListenerThread extends Thread {
 	SessionParameters sessionParameters;
 
 	boolean RUNNING = true;
+	private Writer logWriter;
 
 	public void stopRunning() {
 		RUNNING = false;
@@ -47,7 +49,7 @@ public class ListenerThread extends Thread {
 				parse(packet.getData());
 			} catch (IOException e) {
 				e.printStackTrace();
-				Log.i("ListenerThread", "socket timeout");
+				Log.i(logWriter,"ListenerThread", "socket timeout");
 				cwbHandle.purge();
 			}
 		}
@@ -74,7 +76,7 @@ public class ListenerThread extends Thread {
 		// set measured Loss
 		decisor.updateLoss(measuredLoss);
 
-		Log.i("ListenerThread.parse()","received report for "
+		Log.i(logWriter,"ListenerThread.parse()","received report for "
 				+ codeWordNumber
 				+ " "
 				+ String.format("codew. %d, est. rate: %6.2f, lost: %d",
@@ -84,7 +86,7 @@ public class ListenerThread extends Thread {
 		int Q = decisor.decideQ((Constants.CWLEN - (double) FEC)
 				/ (double) Constants.CWLEN, FEC);
 
-		Log.i("ListenerThread.parse()","decided Q=" + Q + ", FEC=" + FEC);
+		Log.i(logWriter,"ListenerThread.parse()","decided Q=" + Q + ", FEC=" + FEC);
 
 		sessionParameters.setQ(Q);
 		sessionParameters.setFEC(FEC);
@@ -99,10 +101,14 @@ public class ListenerThread extends Thread {
 			socket.setSoTimeout(2500);
 		} catch (SocketException e) {
 			e.printStackTrace();
-			Log.i("ListenerThread", "error opening listening datagramSocket");
+			Log.i(logWriter,"ListenerThread", "error opening listening datagramSocket");
 		}
 	}
 
+	public void setLogWriter(Writer logWriter) {
+		this.logWriter = logWriter;
+	}
+	
 	public void setDecisor(Decisor decisor) {
 		this.decisor = decisor;
 	}

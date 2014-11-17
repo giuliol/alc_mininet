@@ -1,6 +1,7 @@
 package dsp.unige.alc.tx;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -19,6 +20,7 @@ public class StreamerThread extends Thread{
 	InetAddress destination;
 	DatagramPacket forwardPacket;
 	boolean RUNNING = true;
+	private Writer logWriter;
 
 	public void stopRunning(){
 		RUNNING = false;
@@ -47,7 +49,7 @@ public class StreamerThread extends Thread{
 //					System.out.println("-TX- StreamerThread.run() sent to "+forwardPort);
 				} catch (IOException e ) {
 					e.printStackTrace();
-					Log.i("StreamerThread","error sending packet");
+					Log.i(logWriter,"StreamerThread","error sending packet");
 				}
 			}
 			else{
@@ -64,7 +66,7 @@ public class StreamerThread extends Thread{
 
 	private void cleanUp() {
 		forwardsocket.close();
-		Log.i("StreamerThread.cleanUp()","exiting");
+		Log.i(logWriter,"StreamerThread.cleanUp()","exiting");
 	}
 
 	private void send(CodeWord codeWord) throws IOException {
@@ -79,7 +81,7 @@ public class StreamerThread extends Thread{
 				Thread.sleep(Constants.STREAMER_SLEEPTIME);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-				Log.i("StreamerThread","error sleeping");
+				Log.i(logWriter,"StreamerThread","error sleeping");
 			}
 			
 		}
@@ -91,8 +93,12 @@ public class StreamerThread extends Thread{
 			forwardsocket = new DatagramSocket();
 		} catch (SocketException e) {
 			e.printStackTrace();
-			Log.i("StreamerThread","StreamerThread.initSocket() error opening socket");
+			Log.i(logWriter,"StreamerThread","StreamerThread.initSocket() error opening socket");
 		}
+	}
+	
+	public void setLogWriter(Writer logWriter) {
+		this.logWriter = logWriter;
 	}
 
 

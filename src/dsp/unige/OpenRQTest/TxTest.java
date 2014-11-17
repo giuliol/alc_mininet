@@ -1,5 +1,9 @@
 package dsp.unige.OpenRQTest;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
@@ -60,9 +64,17 @@ public class TxTest {
 		DoubleVisualizer visualizer = new DoubleVisualizer();
 		visualizer.init(path+"/"+Constants.REFERENCE_JPS_FILENAME , "TRANSMITTER, path "+path);
 		
+		Writer logWriter = null;
+		try {
+			logWriter = new FileWriter(new File(path+"/"+Constants.TRANSMITTER_LOGFILE));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
 		tx.setForwardPort(Constants.FORWARD_PORT);
 		tx.setBackwardPort(Constants.BACKWARD_PORT);
 		tx.setLogLevel(LOG.Debug);
+		tx.setLogWriter(logWriter);
 		tx.init(videoFile);
 		tx.setVisualizer(visualizer);
 		

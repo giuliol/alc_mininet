@@ -1,5 +1,9 @@
 package dsp.unige.OpenRQTest;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Date;
 
 import javax.swing.JLabel;
@@ -43,9 +47,17 @@ public class RxTest {
 		DoubleVisualizer visualizer = new DoubleVisualizer();
 		visualizer.init(path+"/"+Constants.RECEIVED_JPS_FILENAME , "RECEIVER, path "+path);
 		
+		Writer logWriter = null;
+		try {
+			logWriter = new FileWriter(new File(path+"/"+Constants.RECEIVER_LOGFILE));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
 		rxMain.setForwardPort(Constants.FORWARD_PORT);
 		rxMain.setBackwardPort(Constants.BACKWARD_PORT);
 		rxMain.setVisualizer(visualizer);
+		rxMain.setWriter(logWriter);
 		
 		Date d =  new Date(System.currentTimeMillis());
 		System.out.println("### "+d.toString());

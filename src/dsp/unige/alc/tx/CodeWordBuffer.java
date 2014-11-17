@@ -1,5 +1,6 @@
 package dsp.unige.alc.tx;
 
+import java.io.Writer;
 import java.util.ArrayList;
 
 import dsp.unige.alc.utils.CodeWord;
@@ -9,6 +10,7 @@ public class CodeWordBuffer {
 	
 	ArrayList<CodeWord> buffer;
 	int maxSize;
+	private Writer logWriter;
 	
 	public CodeWordBuffer(){
 		
@@ -24,7 +26,7 @@ public class CodeWordBuffer {
 			buffer.add(word);
 		}
 		else{
-			Log.i("CodeWordBuffer.put()","WORD DROP");
+			Log.i(logWriter,"CodeWordBuffer.put()","WORD DROP");
 		}
 	}
 	
@@ -58,10 +60,14 @@ public class CodeWordBuffer {
 
 	public void purge() {
 		int toRemove = Math.min(3, buffer.size());
-		Log.i("CodeWordBuffer.purge()","dropping "+toRemove);
+		Log.i(logWriter,"CodeWordBuffer.purge()","dropping "+toRemove);
 
 		for(int i=0;i<toRemove;i++)
 			buffer.remove(0);
+	}
+	
+	public void setLogWriter(Writer logWriter) {
+		this.logWriter = logWriter;
 	}
 	
 }

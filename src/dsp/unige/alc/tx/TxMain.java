@@ -1,5 +1,6 @@
 package dsp.unige.alc.tx;
 
+import java.io.Writer;
 import java.net.InetAddress;
 
 import dsp.unige.alc.utils.Camera;
@@ -33,6 +34,7 @@ public class TxMain {
 	private int LOG_LEVEL = 0;
 	private SessionParameters sessionParameters;
 	private Visualizer visualizer;
+	private Writer logWriter;
 
 	public void setDestination(InetAddress destination) {
 		this.destination = destination;
@@ -61,6 +63,7 @@ public class TxMain {
 		pBuffer.init(CWLEN);
 		cwBuffer = new CodeWordBuffer();
 		cwBuffer.init(CWBSIZE);
+		cwBuffer.setLogWriter(logWriter);
 		RUNNING = true;
 
 		rqEnc = new RQEncoder();
@@ -91,11 +94,13 @@ public class TxMain {
 
 		StreamerThread st = new StreamerThread(cwBuffer);
 		st.setDestination(destination, forwardPort);
+		st.setLogWriter(logWriter);
 		st.start();
 
 		ListenerThread lt = new ListenerThread(cwBuffer,sessionParameters);
 		lt.setDecisor(decisor);
 		lt.setBackwardPort(backwardPort);
+		lt.setLogWriter(logWriter);
 		lt.start();
 		sessionParameters.setFEC(1);
 		
@@ -159,7 +164,7 @@ public class TxMain {
 		cam.close();
 		
 		if(LOG_LEVEL >= LOG.Debug)
-			Log.i("TxMain", "exiting");
+			Log.i(logWriter,"TxMain", "exiting");
 	}
 
 	public boolean isRunning(){
@@ -168,6 +173,9 @@ public class TxMain {
 
 	public void stopRunning(){
 		RUNNING = false;
+	}
+	public void setLogWriter(Writer logWriter) {
+		this.logWriter = logWriter;
 	}
 
 }

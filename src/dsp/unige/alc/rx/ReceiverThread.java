@@ -1,6 +1,7 @@
 package dsp.unige.alc.rx;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
@@ -30,6 +31,11 @@ public class ReceiverThread extends Thread {
 	private boolean[] checkList;
 	private int backwardPort;
 	private long lastCodeWordTime;
+	private Writer logWriter;
+	
+	public void setLogWriter(Writer logWriter) {
+		this.logWriter = logWriter;
+	}
 
 	public void setBackwardPort(int listeningPort) {
 		this.backwardPort = listeningPort;
@@ -47,7 +53,7 @@ public class ReceiverThread extends Thread {
 
 		} catch (SocketException e) {
 			e.printStackTrace();
-			Log.i("ReceiverThread", "error opening socket");
+			Log.i(logWriter,"ReceiverThread", "error opening socket");
 		}
 		networkPacket = new DatagramPacket(new byte[Packet.PKTSIZE + Packet.HEADERSIZE + RQDecoder.HEADERSIZE], Packet.PKTSIZE + Packet.HEADERSIZE + RQDecoder.HEADERSIZE);
 	}
@@ -72,7 +78,7 @@ public class ReceiverThread extends Thread {
 
 			} catch (IOException e) {
 				e.printStackTrace();
-				Log.i("ReceiverThread","error receiving packet");
+				Log.i(logWriter,"ReceiverThread","error receiving packet");
 			}
 		}
 
@@ -155,7 +161,7 @@ public class ReceiverThread extends Thread {
 			
 			DatagramPacket reportPacket = new DatagramPacket(report, report.length, networkPacket2.getAddress(), backwardPort);
 			socket.send(reportPacket);
-			Log.i("ReceiverThread.handleNetworkPacket()","Sent report for "+packetBuffer.get(0).codeWordNumber+", received "+(sequenceNumberWindow * (Packet.PKTSIZE+Packet.HEADERSIZE+RQDecoder.HEADERSIZE)) +" bytes in "+(time/1000d)+" secs");
+			Log.i(logWriter,"ReceiverThread.handleNetworkPacket()","Sent report for "+packetBuffer.get(0).codeWordNumber+", received "+(sequenceNumberWindow * (Packet.PKTSIZE+Packet.HEADERSIZE+RQDecoder.HEADERSIZE)) +" bytes in "+(time/1000d)+" secs");
 
 			firstSequenceNumberReceived = packet.sequenceNumber;
 			firstSequenceNumberReceivedTime = now;
@@ -194,7 +200,7 @@ public class ReceiverThread extends Thread {
 		}
 		else{
 			if(codeWordNumber<currentCodeWordNumber)
-				Log.i("ReceiverThread","error: received old codeword!");
+				Log.i(logWriter,"ReceiverThread","error: received old codeword!");
 			return false;
 		}
 	}
