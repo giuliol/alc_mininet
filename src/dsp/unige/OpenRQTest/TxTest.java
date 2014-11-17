@@ -58,7 +58,7 @@ public class TxTest {
 		String videoFile = "video/highway_qcif.yuv";
 		
 		DoubleVisualizer visualizer = new DoubleVisualizer();
-		visualizer.init(Constants.REFERENCE_JPS_FILENAME , "TRANSMITTER");
+		visualizer.init(path+"/"+Constants.REFERENCE_JPS_FILENAME , "TRANSMITTER, path "+path);
 		
 		tx.setForwardPort(Constants.FORWARD_PORT);
 		tx.setBackwardPort(Constants.BACKWARD_PORT);

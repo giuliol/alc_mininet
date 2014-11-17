@@ -41,7 +41,7 @@ public class RxTest {
 		rxMain.init();
 		
 		DoubleVisualizer visualizer = new DoubleVisualizer();
-		visualizer.init(Constants.RECEIVED_JPS_FILENAME , "RECEIVER");
+		visualizer.init(path+"/"+Constants.RECEIVED_JPS_FILENAME , "RECEIVER, path "+path);
 		
 		rxMain.setForwardPort(Constants.FORWARD_PORT);
 		rxMain.setBackwardPort(Constants.BACKWARD_PORT);
