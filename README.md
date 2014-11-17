@@ -1,4 +1,4 @@
-* Pulire log e ordinarli con timestamp, premettendo metadati su path - 30 min
+* ~~Pulire log e ordinarli con timestamp, premettendo metadati su path - 30 min ~~
 * Allocatore in c: chiudere il main attuale in una classe, chiamarlo  periodicamente e eseguire netem direttamente da li - 45 min
 * Script mininet python: deve cercare e parsare tutti i txt di conf -uno per esperimento-, creare struttura N cartelle per N path,  copiarci dentro N copie dei jar, far partire l allocatore, far partire i ricevitori,  e quindi i tx -120 min
 * Parser dei file jps. - 60 min 
