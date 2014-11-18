@@ -15,6 +15,7 @@ import dsp.unige.alc.utils.ActualVisualizer;
 import dsp.unige.alc.utils.Constants;
 import dsp.unige.alc.utils.Constants.LOG;
 import dsp.unige.alc.utils.DoubleVisualizer;
+import dsp.unige.alc.utils.Log;
 
 public class TxTest {
 
@@ -79,13 +80,13 @@ public class TxTest {
 		tx.setVisualizer(visualizer);
 		
 		Date d =  new Date(System.currentTimeMillis());
-		System.out.println("### "+d.toString());
-		System.out.println("Receiver for path "+path);
-		System.out.println("Starting transmitter. Sending frames to "+dest +" on port "+Constants.FORWARD_PORT);
-		System.out.println("Will listen for feedback on port "+Constants.BACKWARD_PORT);
-		System.out.println("Dummy camera opened video file "+videoFile);
-		System.out.println("Writing reference video frames on "+Constants.REFERENCE_JPS_FILENAME);
-		System.out.println("### ");
+		Log.i(logWriter,"INIT","### "+d.toString());
+		Log.i(logWriter,"INIT","Receiver for path "+path);
+		Log.i(logWriter,"INIT","Starting transmitter. Sending frames to "+dest +" on port "+Constants.FORWARD_PORT);
+		Log.i(logWriter,"INIT","Will listen for feedback on port "+Constants.BACKWARD_PORT);
+		Log.i(logWriter,"INIT","Dummy camera opened video file "+videoFile);
+		Log.i(logWriter,"INIT","Writing reference video frames on "+Constants.REFERENCE_JPS_FILENAME);
+		Log.i(logWriter,"INIT","### ");
 
 		try {
 			tx.go();

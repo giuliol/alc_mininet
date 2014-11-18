@@ -20,7 +20,7 @@ public class Log {
 
 		try {
 			System.out.println("["+text+"] "+tag + " " + msg);
-			out.write("["+text+"] "+tag + " " + msg);
+			out.write("["+text+"] "+tag + " " + msg + "\n");
 			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();

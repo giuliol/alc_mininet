@@ -12,6 +12,7 @@ import dsp.unige.alc.rx.RxMain;
 import dsp.unige.alc.utils.ActualVisualizer;
 import dsp.unige.alc.utils.Constants;
 import dsp.unige.alc.utils.DoubleVisualizer;
+import dsp.unige.alc.utils.Log;
 
 public class RxTest {
 	
@@ -60,12 +61,12 @@ public class RxTest {
 		rxMain.setWriter(logWriter);
 		
 		Date d =  new Date(System.currentTimeMillis());
-		System.out.println("### "+d.toString());
-		System.out.println("Receiver for path "+path);
-		System.out.println("Starting receiver on port "+Constants.FORWARD_PORT);
-		System.out.println("Will feedback at transmitter on port "+Constants.BACKWARD_PORT);
-		System.out.println("Writing video frames in "+Constants.RECEIVED_JPS_FILENAME);
-		System.out.println("### ");
+		Log.i(logWriter,"INIT","### "+d.toString());
+		Log.i(logWriter,"INIT","Receiver for path "+path);
+		Log.i(logWriter,"INIT","Starting receiver on port "+Constants.FORWARD_PORT);
+		Log.i(logWriter,"INIT","Will feedback at transmitter on port "+Constants.BACKWARD_PORT);
+		Log.i(logWriter,"INIT","Writing video frames in "+Constants.RECEIVED_JPS_FILENAME);
+		Log.i(logWriter,"INIT","### ");
 
 
 		try {

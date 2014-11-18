@@ -165,6 +165,7 @@ public class TxMain {
 		
 		if(LOG_LEVEL >= LOG.Debug)
 			Log.i(logWriter,"TxMain", "exiting");
+		
 	}
 
 	public boolean isRunning(){
