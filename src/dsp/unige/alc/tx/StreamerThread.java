@@ -15,7 +15,7 @@ import dsp.unige.alc.utils.Packet;
 public class StreamerThread extends Thread{
 
 	CodeWordBuffer cwbHandle;
-	DatagramSocket forwardsocket;
+	DatagramSocket forwardSocket;
 	int forwardPort;
 	InetAddress destination;
 	DatagramPacket forwardPacket;
@@ -60,12 +60,24 @@ public class StreamerThread extends Thread{
 				}
 			}
 		}
-		
+		Log.i(logWriter,"StreamerThread","done, terminating");
+		sendTerminationPacket();
 		cleanUp();
 	}
 
+	private void sendTerminationPacket() {
+		try {
+			forwardPacket.setData(Packet.buildTerminator());
+			forwardSocket.send(forwardPacket);
+			Log.i(logWriter,"StreamerThread.sendTerminationCodeword()","termination packet sent");
+		} catch (IOException e) {
+			Log.i(logWriter,"StreamerThread.sendTerminationCodeword()","error sending termination packet");
+			e.printStackTrace();
+		}
+	}
+
 	private void cleanUp() {
-		forwardsocket.close();
+		forwardSocket.close();
 		Log.i(logWriter,"StreamerThread.cleanUp()","exiting");
 	}
 
@@ -75,7 +87,7 @@ public class StreamerThread extends Thread{
 
 		for(Packet p : codeWord.pkts){
 			forwardPacket.setData(p.buildPacket());
-			forwardsocket.send(forwardPacket);
+			forwardSocket.send(forwardPacket);
 			
 			try {
 				Thread.sleep(Constants.STREAMER_SLEEPTIME);
@@ -90,7 +102,7 @@ public class StreamerThread extends Thread{
 	private void initSocket() {
 		try {
 			forwardPacket = new DatagramPacket(new byte[Packet.PKTSIZE + Packet.HEADERSIZE], Packet.PKTSIZE + Packet.HEADERSIZE);
-			forwardsocket = new DatagramSocket();
+			forwardSocket = new DatagramSocket();
 		} catch (SocketException e) {
 			e.printStackTrace();
 			Log.i(logWriter,"StreamerThread","StreamerThread.initSocket() error opening socket");

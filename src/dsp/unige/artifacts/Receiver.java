@@ -17,6 +17,7 @@ public class Receiver {
 			rtest.setPath(path);
 			rtest.goWithDummyScreen();	
 			System.out.println("Receiver done, exiting");
+			System.exit(0);
 		}
 	}
 }

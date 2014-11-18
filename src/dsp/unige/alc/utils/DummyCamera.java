@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Writer;
 
 public class DummyCamera implements Camera{
 
@@ -13,6 +14,11 @@ public class DummyCamera implements Camera{
 	long interFrameTime;
 	int bpf;
 	int totalFrames;
+	Writer logWriter;
+	
+	public void setLogWriter(Writer logWriter) {
+		this.logWriter = logWriter;
+	}
 
 	public int getTotalFrames() {
 		return totalFrames;
@@ -32,10 +38,10 @@ public class DummyCamera implements Camera{
 			totalFrames = fis.available() / bpf;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-			Log.i("DummyCamera.open()","error opening "+videoFile);
+			Log.i(logWriter,"DummyCamera.open()","error opening "+videoFile);
 		} catch (IOException e) {
 			e.printStackTrace();
-			Log.i("DummyCamera.open()","error computing available bytes for "+videoFile);
+			Log.i(logWriter,"DummyCamera.open()","error computing available bytes for "+videoFile);
 
 		}
 	}
@@ -48,7 +54,7 @@ public class DummyCamera implements Camera{
 			fis.read(frame);
 		} catch (IOException e) {
 			e.printStackTrace();
-			Log.i("DummyCamera.getFrame()","error reading frame");
+			Log.i(logWriter,"DummyCamera.getFrame()","error reading frame");
 		}
 		lastFrameTime = System.currentTimeMillis();
 		return frame;
@@ -62,14 +68,14 @@ public class DummyCamera implements Camera{
 		if(wakeUp > now)
 			toSleep = wakeUp - now;
 		else{
-			Log.i("DummyCamera.waitInterFrameTime()","warning: "+ (now - wakeUp) + " seconds late.");
+			Log.i(logWriter,"DummyCamera.waitInterFrameTime()","warning: "+ (now - wakeUp) + " seconds late.");
 			toSleep = 0;
 		}
 		try {
 			Thread.sleep(toSleep);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-			Log.i("DummyCamera.waitInterFrameTime()","error sleeping");
+			Log.i(logWriter,"DummyCamera.waitInterFrameTime()","error sleeping");
 		}		
 		
 	}
@@ -80,7 +86,7 @@ public class DummyCamera implements Camera{
 			fis.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-			Log.i("DummyCamera.close()","error closing fileinputstream");
+			Log.i(logWriter,"DummyCamera.close()","error closing fileinputstream");
 		}
 	}
 

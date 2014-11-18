@@ -32,6 +32,11 @@ public class ReceiverThread extends Thread {
 	private int backwardPort;
 	private long lastCodeWordTime;
 	private Writer logWriter;
+	private RxMain callerHandle;
+	
+	public void setCallerHandle(RxMain callerHandle) {
+		this.callerHandle = callerHandle;
+	}
 	
 	public void setLogWriter(Writer logWriter) {
 		this.logWriter = logWriter;
@@ -89,10 +94,16 @@ public class ReceiverThread extends Thread {
 	
 	public void stopRunning(){
 		RUNNING = false;
+		callerHandle.stopRunning();
 	}
 	private void handleNetworkPacket(DatagramPacket networkPacket2) throws IOException {
 		
 		Packet packet = Packet.parseNetworkPacket(networkPacket2);
+		if(packet.isTerminationCw()){
+			Log.i(logWriter,"ReceiverThread.handleNetworkPacket()","termination codeword received");
+			stopRunning();
+			return;
+		}
 		long now = System.currentTimeMillis();
 		int res = 3;
 		if(isNewCodeWord(packet.codeWordNumber)){

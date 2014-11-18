@@ -22,6 +22,7 @@ public class DoubleVisualizer implements Visualizer {
 	
 	public void close(){
 		dv.close();
+		av.close();
 	}
 
 }

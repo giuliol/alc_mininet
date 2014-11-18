@@ -66,6 +66,7 @@ public class RxMain {
 			rt.setLogWriter(logWriter);
 			rt.setForwardPort(forwardPort);
 			rt.setBackwardPort(Constants.BACKWARD_PORT);
+			rt.setCallerHandle(this);
 			rt.start();
 
 			TaggedImage img;

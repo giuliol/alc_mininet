@@ -12,7 +12,6 @@ public class CodeWord {
 	public boolean available;
 	
 	public CodeWord(){
-		
 	}
 	
 	public static CodeWord fromPacketArray(Packet[] pkts, int fEC, int cwNo) {
@@ -31,4 +30,5 @@ public class CodeWord {
 		return out;
 		
 	}
+
 }

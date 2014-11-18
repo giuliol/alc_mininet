@@ -17,6 +17,7 @@ public class Transmitter {
 			ttest.setPath(path);
 			ttest.goWithDummyScreen(dest);
 			System.out.println("Transmitter done, exiting");
+			System.exit(0);
 		}
 	}
 }

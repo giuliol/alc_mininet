@@ -58,6 +58,7 @@ public class TxMain {
 
 		cam = new DummyCamera();
 		((DummyCamera)cam).init(videoFile,bpf,fps);
+		((DummyCamera)cam).setLogWriter(logWriter);
 
 		pBuffer = new PacketBuffer();
 		pBuffer.init(CWLEN);
@@ -108,8 +109,9 @@ public class TxMain {
 
 //		int framesInCodeword =0 ;
 		if(checkAll())
-			while( cam.hasFrame() && isRunning() ){
+			while( cam.hasFrame() && isRunning()){
 				rawFrame = cam.getFrame();
+
 				contentId++;
 				compressedFrame = JpegEncoder.Compress(rawFrame, sessionParameters.getQ(),Constants.WIDTH, Constants.HEIGHT);
 				visualizeFrame(JpegEncoder.Compress(rawFrame, 100 ,Constants.WIDTH, Constants.HEIGHT),contentId);
@@ -137,6 +139,8 @@ public class TxMain {
 //					System.out.println("TxMain.go() PROCESSING TIME: "+(System.currentTimeMillis() - tic));
 				}
 			}
+		
+		Log.i(logWriter,"main","done, stopping");
 		lt.stopRunning();
 		st.stopRunning();
 		lt.join();

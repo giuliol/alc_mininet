@@ -18,7 +18,7 @@ public class Packet {
 	public int contentSize;
 
 	public Packet(){
-		data = new byte[PKTSIZE];
+		data = new byte[PKTSIZE + RQDecoder.HEADERSIZE];
 		sequenceNumber = -1;
 		codeWordNumber = -1;
 		FEC = -1;
@@ -34,7 +34,7 @@ public class Packet {
 		this.contentId = -1;
 		this.contentOffset = -1;
 		this.contentSize = -1;
-		this.data = new byte[PKTSIZE];
+		this.data = new byte[PKTSIZE + RQDecoder.HEADERSIZE];
 	}
 
 	public boolean isValid(){
@@ -113,7 +113,6 @@ public class Packet {
 		System.arraycopy(networkPacketPayload, 0, header, 0, Packet.HEADERSIZE);
 		System.arraycopy(networkPacketPayload, Packet.HEADERSIZE, data, 0,Packet.PKTSIZE + RQDecoder.HEADERSIZE);
 
-
 		Packet out = new Packet();
 		ByteBuffer bb = ByteBuffer.wrap(header);
 
@@ -127,5 +126,16 @@ public class Packet {
 		out.data = data;
 
 		return out;
+	}
+
+	public boolean isTerminationCw() {
+		return (codeWordNumber == Integer.MIN_VALUE);
+	}
+
+
+	public static byte[] buildTerminator() {
+		Packet out =  new Packet();
+		out.codeWordNumber = Integer.MIN_VALUE;
+		return out.buildPacket();
 	}
 }

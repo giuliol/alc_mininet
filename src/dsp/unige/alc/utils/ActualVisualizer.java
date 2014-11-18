@@ -40,4 +40,9 @@ public class ActualVisualizer implements Visualizer{
 //		frame.pack();
 	}
 
+	public void close() {
+		frame.removeAll();
+		frame.dispose();
+	}
+
 }
