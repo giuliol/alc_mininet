@@ -21,7 +21,7 @@ public class PacketBuffer {
 	}
 	
 	public boolean hasBytesAvailable(int bytes){
-		return (Math.ceil((double)bytes/Packet.PKTSIZE) <= data.length - position);
+		return (Math.ceil((double)bytes/(Packet.NET_PAYLOAD)) <= data.length - position);
 	}
 	
 	public boolean hasPacketsAvailable(int packets){
