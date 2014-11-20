@@ -14,7 +14,7 @@ import dsp.unige.alc.tx.TxMain;
 import dsp.unige.alc.utils.ActualVisualizer;
 import dsp.unige.alc.utils.Constants;
 import dsp.unige.alc.utils.Constants.LOG;
-import dsp.unige.alc.utils.DoubleVisualizer;
+import dsp.unige.alc.utils.DummyVisualizer;
 import dsp.unige.alc.utils.Log;
 
 public class TxTest {
@@ -62,8 +62,8 @@ public class TxTest {
 		
 		String videoFile = path+"/video/highway_qcif.yuv";
 		
-		DoubleVisualizer visualizer = new DoubleVisualizer();
-		visualizer.init(path+"/"+Constants.REFERENCE_JPS_FILENAME , "TRANSMITTER, path "+path);
+		DummyVisualizer visualizer = new DummyVisualizer();
+		visualizer.init(path+"/"+Constants.REFERENCE_JPS_FILENAME);
 		
 		Writer logWriter = null;
 		try {
