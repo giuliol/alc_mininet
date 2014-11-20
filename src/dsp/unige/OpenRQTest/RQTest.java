@@ -48,7 +48,7 @@ public class RQTest {
 		int i;
 		for(i=0;i<pkts.length && dec.handlePacket(pkts[i]) != RQDecoder.DATA_DECODE_COMPLETE ;i++)
 			;
-		
+		System.out.println("RQTest.go() richiesti "+i+" iterazioni");
 		return compare(data,dec.getDataAsArray());
 
 	}
@@ -119,7 +119,7 @@ public class RQTest {
 		int i;
 		for(i=0;i<pkts.length && dec.handlePacket(pkts[i]) != RQDecoder.DATA_DECODE_COMPLETE ;i++)
 			;
-
+		System.out.println("RQTest.go2() sono bastati "+i+" pacchetti");
 		return compare(data,dec.getDataAsArray());
 	}
 

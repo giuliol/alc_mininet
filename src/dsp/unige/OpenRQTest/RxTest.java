@@ -11,7 +11,7 @@ import javax.swing.JLabel;
 import dsp.unige.alc.rx.RxMain;
 import dsp.unige.alc.utils.ActualVisualizer;
 import dsp.unige.alc.utils.Constants;
-import dsp.unige.alc.utils.DummyVisualizer;
+import dsp.unige.alc.utils.DoubleVisualizer;
 import dsp.unige.alc.utils.Log;
 
 public class RxTest {
@@ -45,8 +45,8 @@ public class RxTest {
 		RxMain rxMain = new RxMain();
 		rxMain.init();
 		
-		DummyVisualizer visualizer = new DummyVisualizer();
-		visualizer.init(path+"/"+Constants.RECEIVED_JPS_FILENAME);
+		DoubleVisualizer visualizer = new DoubleVisualizer();
+		visualizer.init(path+"/"+Constants.RECEIVED_JPS_FILENAME, "RECEIVER, path "+path);
 		
 		Writer logWriter = null;
 		try {

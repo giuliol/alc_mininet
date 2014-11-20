@@ -58,10 +58,11 @@ public class Packet {
 		for(int i=0;i<required;i++){
 			out[i] = new Packet();
 			bytesLeft = img.length - NET_PAYLOAD*i;
-			System.arraycopy(img, i*NET_PAYLOAD, out[i].data, 0, Math.min(NET_PAYLOAD,bytesLeft));
-			System.arraycopy(toBytes(contentId), 0, out[i].data, Math.min(NET_PAYLOAD,bytesLeft), Integer.SIZE/8);
-			System.arraycopy(toBytes(img.length), 0, out[i].data, Math.min(NET_PAYLOAD,bytesLeft)+Integer.SIZE/8, Integer.SIZE/8);
-			System.arraycopy(toBytes(i*NET_PAYLOAD), 0, out[i].data, Math.min(NET_PAYLOAD,bytesLeft)+Integer.SIZE/8*2, Integer.SIZE/8);
+			System.arraycopy(toBytes(contentId), 0, out[i].data,0 , Integer.SIZE/8);
+			System.arraycopy(toBytes(img.length), 0, out[i].data,Integer.SIZE/8, Integer.SIZE/8);
+			System.arraycopy(toBytes(i*NET_PAYLOAD), 0, out[i].data,Integer.SIZE/8*2, Integer.SIZE/8);
+			System.arraycopy(img, i*NET_PAYLOAD, out[i].data, Integer.SIZE/8 * 3, Math.min(NET_PAYLOAD,bytesLeft));
+
 
 			out[i].contentId = contentId;
 			out[i].contentSize = img.length;
@@ -123,7 +124,6 @@ public class Packet {
 		Packet out = new Packet();
 		ByteBuffer bb = ByteBuffer.wrap(header);
 
-		// actual packet parsing
 		out.codeWordNumber = bb.getInt();
 		out.sequenceNumber = bb.getInt();
 		out.FEC = bb.getInt();

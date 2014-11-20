@@ -108,13 +108,28 @@ public class ReceiverThread extends Thread {
 		int res = 3;
 		if(isNewCodeWord(packet.codeWordNumber)){
 			// decode
+			ArrayList<Integer> lista = new ArrayList<>();
+			for(int i=0;i<checkList.length;i++)
+			{
+				if(!checkList[i])
+					lista.add(i);
+			}
+			String persi = "";
+			for (Integer integer : lista) {
+				persi += " "+integer;
+			}
+			System.out.println("ReceiverThread.handleNetworkPacket() persi "+persi);
+			
 			int j;
 			for( j=0;j<packetBuffer.size()  ;j++){
 				res = decoder.handlePacket(packetBuffer.get(j).data);
 				if (res == RQDecoder.DATA_DECODE_COMPLETE)
 					break;
 			}
+			System.out.println("ReceiverThread.handleNetworkPacket() persi "+persi+", "+decoder.isDecoded());
+
 			
+			System.out.println("ReceiverThread.handleNetworkPacket() handled "+j+" packets");
 			byte [] decodedArray = decoder.getDataAsArray();
 			int FEC = packetBuffer.get(0).FEC;
 			int DATA = Constants.CWLEN - FEC;
@@ -127,8 +142,7 @@ public class ReceiverThread extends Thread {
 			for(int i=0;i<DATA;i++){
 				tmp = new Packet();
 				tmp.data = new byte[Packet.NET_PAYLOAD];
-				System.arraycopy(decodedArray, Packet.PKTSIZE * i + Packet.IMG_METADATA_SIZE, packetBuffer.get(i).data, 0,Packet.NET_PAYLOAD);
-				
+				System.arraycopy(decodedArray, Packet.PKTSIZE * i + Packet.IMG_METADATA_SIZE, tmp.data, 0,Packet.NET_PAYLOAD);
 				System.arraycopy(decodedArray, Packet.PKTSIZE * i , intBytes, 0, Integer.SIZE/8 * 3);
 				bb = ByteBuffer.wrap(intBytes);
 				
@@ -146,8 +160,10 @@ public class ReceiverThread extends Thread {
 				tmp = packetBuffer.get(i);
 				if(tmp.contentId!=-1){
 					if(tmp.contentId == tmpti.id){
-						System.out
-								.println("ReceiverThread.handleNetworkPacket() da tmp che è " +tmp.data.length+", in tmpti.bytes che è "+tmpti.bytes.length+", da "+tmp.contentOffset+" a "+Math.min(tmp.contentSize - tmp.contentOffset, Packet.NET_PAYLOAD));
+//						System.out
+//								.println("contentId "+tmp.contentId+", contentsize "+tmp.contentSize+", contentoffset "+tmp.contentOffset);
+//						System.out
+//								.println("ReceiverThread.handleNetworkPacket() da tmp che è " +tmp.data.length+", in tmpti.bytes che è "+tmpti.bytes.length+", da "+tmp.contentOffset+" a "+Math.min(tmp.contentSize - tmp.contentOffset, Packet.NET_PAYLOAD));
 						System.arraycopy(tmp.data, 0, tmpti.bytes, tmp.contentOffset,Math.min(tmp.contentSize - tmp.contentOffset, Packet.NET_PAYLOAD) );
 					}
 					else{
@@ -167,6 +183,7 @@ public class ReceiverThread extends Thread {
 
 			// reinit decoder
 			decoder = new RQDecoder();
+			System.out.println("RQEncoder.init() FECParameters.newParameters("+(Constants.CWLEN * Packet.PKTSIZE)+", "+Packet.PKTSIZE+", 1);");
 			decoder.init(FECParameters.newParameters(Constants.CWLEN * Packet.PKTSIZE, Packet.PKTSIZE, 1));
 
 			// send feedback
