@@ -34,7 +34,8 @@ public class Test {
 			@Override
 			public void run() {
 				RxTest rtest = new RxTest();
-				rtest.goWithScreen(lRx);				
+				rtest.setPath(0);
+				rtest.goWithDummyScreen();				
 			}
 		})).start();
 
@@ -47,6 +48,7 @@ public class Test {
 
 		System.out.println("MainClass.main() TX start");
 		TxTest ttest = new TxTest();
-		ttest.goWithScreen(lTx);
+		ttest.setPath(0);
+		ttest.goWithDummyScreen("127.0.0.1");
 	}
 }

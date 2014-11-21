@@ -63,7 +63,7 @@ public class TxTest {
 		String videoFile = path+"/video/highway_qcif.yuv";
 		
 		DoubleVisualizer visualizer = new DoubleVisualizer();
-		visualizer.init(path+"/"+Constants.REFERENCE_JPS_FILENAME , "TRANSMITTER, path "+path);
+		visualizer.init(path+"/"+Constants.REFERENCE_JPS_FILENAME, "TRANSMITTER, path "+path);
 		
 		Writer logWriter = null;
 		try {

@@ -58,7 +58,7 @@ public class RQCoderBenchmark {
 		RQTest t1 = new RQTest();
 
 		double []errc=new double[34];
-		int ITERATIONS = 1000;
+		int ITERATIONS = 1;
 		int informationSymbols;
 
 		for(int k=33;k>=0;k--){

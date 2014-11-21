@@ -52,7 +52,6 @@ public class RQDecoder {
 	private int handle(EncodingPacket value) {
 		int sbn = value.sourceBlockNumber();
 		SourceBlockDecoder sbDec =  add.sourceBlock(sbn);
-
 		switch (sbDec.putEncodingPacket(value)) {
 		case DECODED:
 			Log.i("RQDecoder.handle()","successfully decoded");
@@ -70,6 +69,10 @@ public class RQDecoder {
 
 	public byte[] getDataAsArray(){
 		return add.dataArray();
+	}
+
+	public boolean isDecoded() {
+		return add.isDataDecoded();
 	}
 
 }

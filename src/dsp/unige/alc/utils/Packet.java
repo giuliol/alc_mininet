@@ -8,6 +8,8 @@ public class Packet {
 
 	public static final int PKTSIZE = Constants.PKTSIZE;
 	public static final int HEADERSIZE = 6 * Integer.SIZE/8;
+	public static final int IMG_METADATA_SIZE = 3 * Integer.SIZE/8;
+	public static final int NET_PAYLOAD = PKTSIZE - IMG_METADATA_SIZE;
 
 	public byte[] data;
 	public int sequenceNumber;
@@ -49,16 +51,22 @@ public class Packet {
 	}
 
 	public static Packet[] fromByteArray(byte[] img, int contentId){
-		int required = (int) Math.ceil((double)img.length / PKTSIZE) ;
+		
+		int required = (int) Math.ceil((double)img.length / (NET_PAYLOAD)) ;
 		Packet [] out = new Packet[required];
 		int bytesLeft;
 		for(int i=0;i<required;i++){
 			out[i] = new Packet();
-			bytesLeft = img.length - PKTSIZE*i;
-			System.arraycopy(img, i*PKTSIZE, out[i].data, 0, Math.min(PKTSIZE,bytesLeft));
+			bytesLeft = img.length - NET_PAYLOAD*i;
+			System.arraycopy(toBytes(contentId), 0, out[i].data,0 , Integer.SIZE/8);
+			System.arraycopy(toBytes(img.length), 0, out[i].data,Integer.SIZE/8, Integer.SIZE/8);
+			System.arraycopy(toBytes(i*NET_PAYLOAD), 0, out[i].data,Integer.SIZE/8*2, Integer.SIZE/8);
+			System.arraycopy(img, i*NET_PAYLOAD, out[i].data, Integer.SIZE/8 * 3, Math.min(NET_PAYLOAD,bytesLeft));
+
+
 			out[i].contentId = contentId;
 			out[i].contentSize = img.length;
-			out[i].contentOffset = i*PKTSIZE;
+			out[i].contentOffset = i*NET_PAYLOAD;
 		}
 		return out;
 	}
@@ -92,7 +100,7 @@ public class Packet {
 		return out;
 	}
 
-	private byte[] toBytes(int i)
+	static private byte[] toBytes(int i)
 	{
 		byte[] result = new byte[4];
 
@@ -116,7 +124,6 @@ public class Packet {
 		Packet out = new Packet();
 		ByteBuffer bb = ByteBuffer.wrap(header);
 
-		// actual packet parsing
 		out.codeWordNumber = bb.getInt();
 		out.sequenceNumber = bb.getInt();
 		out.FEC = bb.getInt();
