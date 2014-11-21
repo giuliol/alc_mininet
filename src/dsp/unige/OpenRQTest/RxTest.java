@@ -1,7 +1,6 @@
 package dsp.unige.OpenRQTest;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Date;
@@ -47,10 +46,12 @@ public class RxTest {
 		
 		DoubleVisualizer visualizer = new DoubleVisualizer();
 		visualizer.init(path+"/"+Constants.RECEIVED_JPS_FILENAME, "RECEIVER, path "+path);
+//		DummyVisualizer visualizer =  new DummyVisualizer();
+//		visualizer.init(path+"/"+Constants.RECEIVED_JPS_FILENAME);
 		
 		Writer logWriter = null;
 		try {
-			logWriter = new FileWriter(new File(path+"/"+Constants.RECEIVER_LOGFILE));
+			logWriter = new FastFileWriter(new File(path+"/"+Constants.RECEIVER_LOGFILE));
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -72,6 +73,11 @@ public class RxTest {
 		try {
 			rxMain.go();
 		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		try {
+			logWriter.close();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		visualizer.close();

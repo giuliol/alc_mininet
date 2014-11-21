@@ -49,7 +49,7 @@ public class RxMain {
 		//		visualizer = new DummyVisualizer();
 		//		((DummyVisualizer)visualizer).init("outputs/received.jps");
 		imageBuffer = new ImageBuffer();
-		imageBuffer.init(3 * Constants.FPS);
+		imageBuffer.init(10 * Constants.FPS);
 
 	}
 
@@ -76,7 +76,7 @@ public class RxMain {
 					visualizer.display(img.bytes, img.id);
 				}
 				try {
-					Thread.sleep(Math.round(1000d/(Constants.FPS*1.05d)));
+					Thread.sleep(Math.round(1000d/(Constants.FPS*5)));
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 					Log.i(logWriter,"RxMain","error sleeping");

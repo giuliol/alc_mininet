@@ -19,7 +19,13 @@ public class MainClass {
 	public static void main(String[] args) {
 
 //		doBenchmarks();
-		benchmarkRQ();
+//		benchmarkRQ();
+		RQTest rt  = new RQTest();
+		double er;
+		for(int i=34;i>0;i--){
+			System.out.println("\n\nMainClass.main() DATA = "+i+", FEC ="+(35-i));
+			er = rt.go3(i, 0.3);
+		}
 		
 //		testRX_and_TX();  // local test
 //		if(args.length==0){
@@ -31,6 +37,7 @@ public class MainClass {
 //		startRx();
 
 	}
+
 
 	private static void startTx(String dest) {
 		TxTest ttest = new TxTest();

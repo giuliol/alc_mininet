@@ -32,7 +32,8 @@ public class RQDecoder {
 	
 	public void init(FECParameters fpp){
 		fp = fpp;
-		add = OpenRQ.newDecoderWithTwoOverhead(fpp);
+		add = OpenRQ.newDecoderWithTwoOverhead(fp);
+		System.out.println("RQDecoder.Decode() encoding. datalength  "+fp.dataLength()+", sourceblocks "+fp.numberOfSourceBlocks()+", totalsymbols "+fp.totalSymbols());
 	}
 	
 	public FECParameters getFecParameters() {

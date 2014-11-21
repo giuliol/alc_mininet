@@ -47,6 +47,7 @@ public class StreamerThread extends Thread{
 					send(toSend);
 //					System.out.println("StreamerThread.run() frame "+toSend.pkts[0].data[0] + ", "+toSend.pkts[0].data[1]);
 //					System.out.println("-TX- StreamerThread.run() sent to "+forwardPort);
+					Log.i(logWriter, "StreamerThread","Sent codeword "+toSend.codeWordNumber);
 				} catch (IOException e ) {
 					e.printStackTrace();
 					Log.i(logWriter,"StreamerThread","error sending packet");

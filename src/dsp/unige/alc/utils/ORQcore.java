@@ -9,8 +9,6 @@ import net.fec.openrq.parameters.FECParameters;
 
 public class ORQcore {
 
-
-
 	/**
      * Returns an encoder for data inside an array of bytes.
      * 
@@ -80,29 +78,6 @@ public class ORQcore {
         return pkts;
     
     }
-    
-//    private static int numberOfRepairSymbols() {
-//        // return a number of repair symbols to encode
-//        // (e.g. the number may depend on a channel loss rate)
-//    	return REP_SYM;
-//    }
-    
-    
-    
-//    private static void sendPacket(EncodingPacket pac, int n) {
-//    	
-//        // send the packet to the receiver
-//    	pkts[n]=pac.asArray();
-//    }
-    
-//    static byte [][] pkts =  new byte [REP_SYM*2][];
-    
-//    public static byte[][] getPacketsArray() {
-//		// TODO Auto-generated method stub
-//    	return pkts;
-//
-//	}
-    
     
     
     

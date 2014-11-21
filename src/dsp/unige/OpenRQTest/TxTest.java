@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 import dsp.unige.alc.tx.TxMain;
 import dsp.unige.alc.utils.ActualVisualizer;
 import dsp.unige.alc.utils.Constants;
+import dsp.unige.alc.utils.DummyVisualizer;
 import dsp.unige.alc.utils.Constants.LOG;
 import dsp.unige.alc.utils.DoubleVisualizer;
 import dsp.unige.alc.utils.Log;
@@ -64,10 +65,12 @@ public class TxTest {
 		
 		DoubleVisualizer visualizer = new DoubleVisualizer();
 		visualizer.init(path+"/"+Constants.REFERENCE_JPS_FILENAME, "TRANSMITTER, path "+path);
+//		DummyVisualizer visualizer =  new DummyVisualizer();
+//		visualizer.init(path+"/"+Constants.REFERENCE_JPS_FILENAME);
 		
 		Writer logWriter = null;
 		try {
-			logWriter = new FileWriter(new File(path+"/"+Constants.TRANSMITTER_LOGFILE));
+			logWriter = new FastFileWriter(new File(path+"/"+Constants.TRANSMITTER_LOGFILE));
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -91,6 +94,11 @@ public class TxTest {
 		try {
 			tx.go();
 		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		try {
+			logWriter.close();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		visualizer.close();

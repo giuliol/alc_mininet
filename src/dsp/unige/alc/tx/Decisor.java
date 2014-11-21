@@ -28,11 +28,12 @@ public class Decisor {
 	}
 	
 	public int decideFEC(){
-		int idx = (int) Math.round(100d*getLoss()*2.5/Constants.CWLEN);
+		int idx = (int) Math.round(100d*getLoss()/Constants.CWLEN);
 		return Math.max(OPTIMAL_FEC_LUT[idx],1);
+//		return 33;
 	}
 	
-	public int decideQ(double rc, int FEC){
+	public int decideQ(int FEC){
 		double codeWordsPerSecond = getRate() / CodeWord.CODEWORD_SIZE;
 		int targetFrames = (int) Math.ceil(Constants.FPS/ codeWordsPerSecond);
 //		System.out.println("Decisor.decideQ() R="+getRate()+" bit/s, cw="+CodeWord.CODEWORD_SIZE+" bit/cw");
@@ -50,7 +51,7 @@ public class Decisor {
 	private int q_r(int perFrame) {
 //		(int) Math.round(100d*(1-Math.exp((100d-perFrame)/3000d)))
 		int i;
-		for(i=0;i<=SIZES_LUT.length-1 && SIZES_LUT[i]<perFrame;i++)
+		for(i=0;i<=SIZES_LUT.length-2 && SIZES_LUT[i]<perFrame;i++)
 			;
 		
 		double deltai = Math.abs(perFrame - SIZES_LUT[i]);

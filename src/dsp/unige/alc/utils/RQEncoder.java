@@ -23,7 +23,6 @@ public class RQEncoder {
 	}
 	
 	public byte [][]encode(byte[] data, int FEC){
-		
 		ArrayDataEncoder ade = ORQcore.getEncoder(data,fp);
 		return ORQcore.encodeBlock(ade, 0,FEC);
 		

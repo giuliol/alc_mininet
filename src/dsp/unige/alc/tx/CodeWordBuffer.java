@@ -58,7 +58,7 @@ public class CodeWordBuffer {
 		return false;
 	}
 
-	public void purge() {
+	public synchronized void purge() {
 		int toRemove = Math.min(3, buffer.size());
 		Log.i(logWriter,"CodeWordBuffer.purge()","dropping "+toRemove);
 

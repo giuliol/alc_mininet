@@ -67,12 +67,9 @@ public class TxMain {
 		cwBuffer.setLogWriter(logWriter);
 		RUNNING = true;
 
-		rqEnc = new RQEncoder();
-		rqEnc.init(CWLEN * PKTSIZE, PKTSIZE);
-
 		sessionParameters = new SessionParameters();
 		sessionParameters.setQ(60);
-		sessionParameters.setFEC(1);
+		sessionParameters.setFEC(5);
 
 		decisor = new Decisor();
 
@@ -103,7 +100,6 @@ public class TxMain {
 		lt.setBackwardPort(backwardPort);
 		lt.setLogWriter(logWriter);
 		lt.start();
-		sessionParameters.setFEC(1);
 		
 //		double avgSize = 0;
 
@@ -129,6 +125,8 @@ public class TxMain {
 //					System.out.println("TxMain.go() got "+framesInCodeword+ " frames in last cw. Estimated "+(framesInCodeword* decisor.getRate() / (CWLEN *  (Packet.PKTSIZE+Packet.HEADERSIZE+RQDecoder.HEADERSIZE) *8)));
 //					System.out.println("TxMain.go() avg size = "+(avgSize / framesInCodeword)+", Q="+sessionParameters.getQ());
 //					avgSize = 0;
+					rqEnc = new RQEncoder();
+					rqEnc.init((CWLEN-sessionParameters.getFEC()) * PKTSIZE, PKTSIZE);
 					packetsBytes = rqEnc.encode(pBuffer.getData(), sessionParameters.getFEC());
 					pBuffer.fillWithEncoded(packetsBytes);
 					word = CodeWord.fromPacketArray(pBuffer.getPackets(), sessionParameters.getFEC(), codeWordNumber++);
@@ -140,7 +138,7 @@ public class TxMain {
 				}
 			}
 		
-		Log.i(logWriter,"main","done, stopping");
+		Log.i(logWriter,"main","done, stopping - last content id sent = "+contentId);
 		lt.stopRunning();
 		st.stopRunning();
 		lt.join();

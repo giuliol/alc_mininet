@@ -14,7 +14,7 @@ public abstract class Constants {
 	public static final int BACKWARD_PORT = 5557;
 	public static final int DECISOR_WINDOWS_SIZE = 5;
 	public static final long MAX_INTERFRAME_TIME = 1000 / FPS;
-	public static final int CODEWORD_BUFFER_SIZE = 15;
+	public static final int CODEWORD_BUFFER_SIZE = 50;
 	public static final String RECEIVED_JPS_FILENAME = "RECEIVED.jps";  
 	public static final String REFERENCE_JPS_FILENAME = "REFERENCE.jps";
 	public static final String TRANSMITTER_LOGFILE = "tx_logfile.log";  
