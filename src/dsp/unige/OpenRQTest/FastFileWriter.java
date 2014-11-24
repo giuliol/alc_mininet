@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class FastFileWriter extends FileWriter {
 
-	char[] buffer =  new char[100000];
+	char[] buffer =  new char[800000];
 	int pos = 0;
 	
 	public FastFileWriter(File file) throws IOException {

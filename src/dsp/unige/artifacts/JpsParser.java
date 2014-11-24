@@ -39,7 +39,7 @@ public class JpsParser {
 				if(advance)
 					received = TaggedJpegImage.readFromFileInputStream(receivedFIS);
 
-								System.out.println("REF.:"+reference.contentId+", REC.:"+received.contentId);
+//								System.out.print("REF.:"+reference.contentId+", REC.:"+received.contentId+"\t");
 				if(reference.contentId == received.contentId){
 					double ssim = 0;
 					try {
@@ -48,10 +48,11 @@ public class JpsParser {
 					}
 					ssims.add(new TimeReferencedSSIM(ssim, received.tstamp));
 					advance = true;
+//					System.out.print(ssim+" \n");
 				}
 				else if (reference.contentId < received.contentId){
 					ssims.add(new TimeReferencedSSIM(0, -1));
-//					System.out.println("Lost frame "+reference.contentId);
+					System.out.print("Lost\n");
 					advance = false;
 				}
 				else{

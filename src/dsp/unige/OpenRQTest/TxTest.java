@@ -48,6 +48,8 @@ public class TxTest {
 			tx.go();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -94,6 +96,8 @@ public class TxTest {
 		try {
 			tx.go();
 		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		try {

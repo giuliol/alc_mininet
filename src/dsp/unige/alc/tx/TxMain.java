@@ -59,17 +59,25 @@ public class TxMain {
 		cam = new DummyCamera();
 		((DummyCamera)cam).init(videoFile,bpf,fps);
 		((DummyCamera)cam).setLogWriter(logWriter);
+		
+		sessionParameters = new SessionParameters();
+		sessionParameters.setQ(60);
+		sessionParameters.setFEC(5);
+
 
 		pBuffer = new PacketBuffer();
-		pBuffer.init(CWLEN);
+		pBuffer.setSp(sessionParameters);
+		try {
+			pBuffer.init(CWLEN);
+		} catch (Exception e) {
+			stopRunning();
+			e.printStackTrace();
+		}
 		cwBuffer = new CodeWordBuffer();
 		cwBuffer.init(CWBSIZE);
 		cwBuffer.setLogWriter(logWriter);
 		RUNNING = true;
 
-		sessionParameters = new SessionParameters();
-		sessionParameters.setQ(60);
-		sessionParameters.setFEC(5);
 
 		decisor = new Decisor();
 
@@ -79,7 +87,7 @@ public class TxMain {
 		this.visualizer = visualizer;
 	}
 
-	public void go() throws InterruptedException{
+	public void go() throws Exception{
 
 		cam.open();
 
@@ -101,9 +109,6 @@ public class TxMain {
 		lt.setLogWriter(logWriter);
 		lt.start();
 		
-//		double avgSize = 0;
-
-//		int framesInCodeword =0 ;
 		if(checkAll())
 			while( cam.hasFrame() && isRunning()){
 				rawFrame = cam.getFrame();
@@ -111,7 +116,7 @@ public class TxMain {
 				contentId++;
 				compressedFrame = JpegEncoder.Compress(rawFrame, sessionParameters.getQ(),Constants.WIDTH, Constants.HEIGHT);
 				visualizeFrame(JpegEncoder.Compress(rawFrame, 100 ,Constants.WIDTH, Constants.HEIGHT),contentId);
-//				avgSize += compressedFrame.length;
+//				System.out.println("TxMain.go() adding "+contentId);
 				if(pBuffer.hasBytesAvailable(compressedFrame.length))		
 					// keep filling the packet buffer
 				{ 
@@ -121,10 +126,7 @@ public class TxMain {
 				else		
 					// buffer full, encode and handle to codeword buffer
 				{
-//					long tic = System.currentTimeMillis();
-//					System.out.println("TxMain.go() got "+framesInCodeword+ " frames in last cw. Estimated "+(framesInCodeword* decisor.getRate() / (CWLEN *  (Packet.PKTSIZE+Packet.HEADERSIZE+RQDecoder.HEADERSIZE) *8)));
-//					System.out.println("TxMain.go() avg size = "+(avgSize / framesInCodeword)+", Q="+sessionParameters.getQ());
-//					avgSize = 0;
+//					System.out.println("TxMain.go() no! gotta encode first..");
 					rqEnc = new RQEncoder();
 					rqEnc.init((CWLEN-sessionParameters.getFEC()) * PKTSIZE, PKTSIZE);
 					packetsBytes = rqEnc.encode(pBuffer.getData(), sessionParameters.getFEC());
@@ -133,8 +135,8 @@ public class TxMain {
 					cwBuffer.put(word);
 					pBuffer.reset();
 					pBuffer.put(Packet.fromByteArray(compressedFrame, contentId ));
-//					framesInCodeword = 1;
-//					System.out.println("TxMain.go() PROCESSING TIME: "+(System.currentTimeMillis() - tic));
+//					System.out.println("TxMain.go() added.");
+
 				}
 			}
 		

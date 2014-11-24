@@ -33,7 +33,6 @@ public class RQDecoder {
 	public void init(FECParameters fpp){
 		fp = fpp;
 		add = OpenRQ.newDecoderWithTwoOverhead(fp);
-		System.out.println("RQDecoder.Decode() encoding. datalength  "+fp.dataLength()+", sourceblocks "+fp.numberOfSourceBlocks()+", totalsymbols "+fp.totalSymbols());
 	}
 	
 	public FECParameters getFecParameters() {
@@ -55,7 +54,7 @@ public class RQDecoder {
 		SourceBlockDecoder sbDec =  add.sourceBlock(sbn);
 		switch (sbDec.putEncodingPacket(value)) {
 		case DECODED:
-			Log.i("RQDecoder.handle()","successfully decoded");
+//			Log.i("RQDecoder.handle()","successfully decoded");
 			return DATA_DECODE_COMPLETE;
 		case INCOMPLETE:
 //			Log.i("Test.handlePacket()","need more encoding packets!");

@@ -203,6 +203,7 @@ public class ReceiverThread extends Thread {
 
 			// handle images
 			TaggedImage tmpti = new TaggedImage(packetBuffer.get(0).contentSize);
+			System.out.println("ReceiverThread.handleNetworkPacket() first content = "+ packetBuffer.get(0).contentId);
 			tmpti.id = packetBuffer.get(0).contentId;
 			int imageCount = 1;
 			for(int i=0;i<DATA;i++){
@@ -216,13 +217,22 @@ public class ReceiverThread extends Thread {
 							//						.println("handlenetpacket. Copio "+ Math.min(tmp.contentSize - tmp.contentOffset, Math.min(Packet.NET_PAYLOAD,tmp.contentSize)) +" da tmp che è di "+tmp.data.length+" in tmpti.bytes che è di "+tmpti.bytes.length+" a partire da "+ tmp.contentOffset);
 
 							System.arraycopy(tmp.data, 0, tmpti.bytes, tmp.contentOffset,Math.min(tmp.contentSize - tmp.contentOffset, Packet.NET_PAYLOAD) );
+						
+//							System.out
+//									.println("ReceiverThread.handleNetworkPacket() i="+i+", condition = "+(tmp.contentSize - tmp.contentOffset <= Packet.NET_PAYLOAD ));
+							if(tmp.contentSize - tmp.contentOffset <= Packet.NET_PAYLOAD )
+								if(imageBuffer.has(1))
+									imageBuffer.put(tmpti);
+								else
+									Log.i(logWriter,"ReceiverThread.handleNetworkPacket()","DROPP!");
+							
 						}
 						else{
 							imageCount++;
-							if(imageBuffer.has(1))
-								imageBuffer.put(tmpti);
 							tmpti = new TaggedImage(tmp.contentSize);
 							tmpti.id = tmp.contentId;
+//							System.out
+//									.println("ReceiverThread.handleNetworkPacket() got "+tmpti.id);
 							//						System.out
 							//								.println("contentid: "+tmp.contentId+" contentsize: "+tmp.contentSize+", offset "+ tmp.contentOffset);
 							//						System.out
@@ -237,10 +247,11 @@ public class ReceiverThread extends Thread {
 				else{
 					//					System.out.println("ReceiverThread.handleNetworkPacket() i:"+i+" FEC packet "+tmp.codeWordNumber+"|"+tmp.sequenceNumber);
 				}
-				imageBuffer.setReceived(imageCount);
+
 			}
-
-
+			
+			imageBuffer.setReceived(imageCount);
+			
 			firstSequenceNumberReceived = packet.sequenceNumber;
 			firstSequenceNumberReceivedTime = now;
 

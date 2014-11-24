@@ -6,7 +6,6 @@ import net.fec.openrq.parameters.FECParameters;
 import dsp.unige.alc.utils.Constants;
 import dsp.unige.alc.utils.Log;
 import dsp.unige.alc.utils.Packet;
-import dsp.unige.alc.utils.PacketBuffer;
 import dsp.unige.alc.utils.RQDecoder;
 import dsp.unige.alc.utils.Visualizer;
 
@@ -17,7 +16,6 @@ public class RxMain {
 
 	private int backwardPort;
 	private boolean RUNNING = true;
-	private PacketBuffer pBuffer;
 	private int forwardPort;
 	private RQDecoder dec;
 	private FECParameters fp;
@@ -44,12 +42,10 @@ public class RxMain {
 
 	public void init(){
 
-		pBuffer = new PacketBuffer();
-		pBuffer.init(CWLEN);
 		//		visualizer = new DummyVisualizer();
 		//		((DummyVisualizer)visualizer).init("outputs/received.jps");
 		imageBuffer = new ImageBuffer();
-		imageBuffer.init(10 * Constants.FPS);
+		imageBuffer.init(30 * Constants.FPS);
 
 	}
 
@@ -73,10 +69,11 @@ public class RxMain {
 			while(RUNNING){
 				if(imageBuffer.hasToVisualize()){
 					img = imageBuffer.get();
+//					System.out.println("RxMain.go() got "+img.id);
 					visualizer.display(img.bytes, img.id);
 				}
 				try {
-					Thread.sleep(Math.round(1000d/(Constants.FPS*5)));
+					Thread.sleep(Math.round(1000d/(Constants.FPS)));
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 					Log.i(logWriter,"RxMain","error sleeping");

@@ -1,27 +1,36 @@
 package dsp.unige.alc.utils;
 
+import dsp.unige.alc.tx.SessionParameters;
+
 
 public class PacketBuffer {
 
 	Packet[] data;
 	int position;
+	SessionParameters sp;
+	
+	public void setSp(SessionParameters sp) {
+		this.sp = sp;
+	}
 	
 	public PacketBuffer(){
 		
 	}
 	
-	public void init(int size){
+	public void init(int size) throws Exception{
 		data = new Packet[size];
 		position = 0;
+		if(sp == null)
+			throw new Exception("Session parameters reference not set!!");
 	}
 	
-	public void reset(){
+	public void reset() throws Exception{
 		int l = data.length;
 		init(l);
 	}
 	
 	public boolean hasBytesAvailable(int bytes){
-		return (Math.ceil((double)bytes/(Packet.NET_PAYLOAD)) <= data.length - position);
+		return (Math.ceil((double)bytes/(Packet.NET_PAYLOAD)) <= (data.length - sp.getFEC()) - position);
 	}
 	
 	public boolean hasPacketsAvailable(int packets){

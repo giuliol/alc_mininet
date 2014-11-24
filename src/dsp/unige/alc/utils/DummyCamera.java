@@ -68,7 +68,7 @@ public class DummyCamera implements Camera{
 		if(wakeUp > now)
 			toSleep = wakeUp - now;
 		else{
-			Log.i(logWriter,"DummyCamera.waitInterFrameTime()","warning: "+ (now - wakeUp) + " seconds late.");
+//			Log.i(logWriter,"DummyCamera.waitInterFrameTime()","warning: "+ (now - wakeUp) + " ms late.");
 			toSleep = 0;
 		}
 		try {
