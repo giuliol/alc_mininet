@@ -18,7 +18,11 @@ public abstract class Constants {
 	public static final String RECEIVED_JPS_FILENAME = "RECEIVED.jps";  
 	public static final String REFERENCE_JPS_FILENAME = "REFERENCE.jps";
 	public static final String TRANSMITTER_LOGFILE = "tx_logfile.log";  
-	public static final String RECEIVER_LOGFILE = "rx_logfile.log";  
+	public static final String RECEIVER_LOGFILE = "rx_logfile.log";
+	public static final long UDP_SLEEPTIME = 500;
+	public static final String TERMINATION_ACK = "TERMINATION_ACK";
+	public static final int TERMINATION_SOCKET_PORT = 5550;
+	public static final String TERMINATION_MSG = "DIE!";  
 
 
 

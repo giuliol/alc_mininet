@@ -37,12 +37,7 @@ public class ReceiverThread extends Thread {
 	private int backwardPort;
 	private long lastCodeWordTime;
 	private Writer logWriter;
-	private RxMain callerHandle;
 	private boolean FIRST_PACKET;
-
-	public void setCallerHandle(RxMain callerHandle) {
-		this.callerHandle = callerHandle;
-	}
 
 	public void setLogWriter(Writer logWriter) {
 		this.logWriter = logWriter;
@@ -128,16 +123,10 @@ public class ReceiverThread extends Thread {
 
 	public void stopRunning(){
 		RUNNING = false;
-		callerHandle.stopRunning();
 	}
 	private void handleNetworkPacket(DatagramPacket networkPacket2) throws IOException {
 
 		Packet packet = Packet.parseNetworkPacket(networkPacket2);
-		if(packet.isTerminationCw()){
-			Log.i(logWriter,"ReceiverThread.handleNetworkPacket()","termination codeword received");
-			stopRunning();
-			return;
-		}
 		long now = System.currentTimeMillis();
 		int res = 3;
 		if(isNewCodeWord(packet.codeWordNumber)){
@@ -217,22 +206,22 @@ public class ReceiverThread extends Thread {
 							//						.println("handlenetpacket. Copio "+ Math.min(tmp.contentSize - tmp.contentOffset, Math.min(Packet.NET_PAYLOAD,tmp.contentSize)) +" da tmp che è di "+tmp.data.length+" in tmpti.bytes che è di "+tmpti.bytes.length+" a partire da "+ tmp.contentOffset);
 
 							System.arraycopy(tmp.data, 0, tmpti.bytes, tmp.contentOffset,Math.min(tmp.contentSize - tmp.contentOffset, Packet.NET_PAYLOAD) );
-						
-//							System.out
-//									.println("ReceiverThread.handleNetworkPacket() i="+i+", condition = "+(tmp.contentSize - tmp.contentOffset <= Packet.NET_PAYLOAD ));
+
+							//							System.out
+							//									.println("ReceiverThread.handleNetworkPacket() i="+i+", condition = "+(tmp.contentSize - tmp.contentOffset <= Packet.NET_PAYLOAD ));
 							if(tmp.contentSize - tmp.contentOffset <= Packet.NET_PAYLOAD )
 								if(imageBuffer.has(1))
 									imageBuffer.put(tmpti);
 								else
 									Log.i(logWriter,"ReceiverThread.handleNetworkPacket()","DROPP!");
-							
+
 						}
 						else{
 							imageCount++;
 							tmpti = new TaggedImage(tmp.contentSize);
 							tmpti.id = tmp.contentId;
-//							System.out
-//									.println("ReceiverThread.handleNetworkPacket() got "+tmpti.id);
+							//							System.out
+							//									.println("ReceiverThread.handleNetworkPacket() got "+tmpti.id);
 							//						System.out
 							//								.println("contentid: "+tmp.contentId+" contentsize: "+tmp.contentSize+", offset "+ tmp.contentOffset);
 							//						System.out
@@ -249,9 +238,9 @@ public class ReceiverThread extends Thread {
 				}
 
 			}
-			
+
 			imageBuffer.setReceived(imageCount);
-			
+
 			firstSequenceNumberReceived = packet.sequenceNumber;
 			firstSequenceNumberReceivedTime = now;
 
@@ -273,6 +262,11 @@ public class ReceiverThread extends Thread {
 
 	}
 
+
+	private boolean sendTerminationAck(DatagramPacket terminationP) {
+		return false;
+
+	}
 
 	private void sendFeedBack(int thisCodeWordNumber, double rEst,
 			int countCheckList, long interCodeWordTime, DatagramPacket networkPacket2) {

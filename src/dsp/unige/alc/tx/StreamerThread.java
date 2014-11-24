@@ -1,10 +1,15 @@
 package dsp.unige.alc.tx;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Writer;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.SocketException;
 
 import dsp.unige.alc.utils.CodeWord;
@@ -40,7 +45,7 @@ public class StreamerThread extends Thread{
 		super.run();
 		initSocket(); 
 
-		while(RUNNING){
+		while(RUNNING || cwbHandle.hasAvailable()){
 			if(cwbHandle.hasAvailable()){
 				try {
 					CodeWord toSend = cwbHandle.get();
@@ -53,7 +58,7 @@ public class StreamerThread extends Thread{
 			}
 			else{
 				try {
-					Thread.sleep(500);
+					Thread.sleep(Constants.UDP_SLEEPTIME);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -61,18 +66,37 @@ public class StreamerThread extends Thread{
 		}
 		Log.i(logWriter,"StreamerThread","done, terminating");
 		sendTerminationPacket();
+		System.out.println("StreamerThread.run() sent, exiting");
 		cleanUp();
 	}
 
-	private void sendTerminationPacket() {
-		try {
-			forwardPacket.setData(Packet.buildTerminator());
-			forwardSocket.send(forwardPacket);
-			Log.i(logWriter,"StreamerThread.sendTerminationCodeword()","termination packet sent");
-		} catch (IOException e) {
-			Log.i(logWriter,"StreamerThread.sendTerminationCodeword()","error sending termination packet");
+	private boolean sendTerminationPacket() {
+		System.out.println("Connecting to " + destination.toString()
+				+ " on port " + Constants.TERMINATION_SOCKET_PORT);
+		try{
+			Socket client = new Socket( destination.getHostName(), Constants.TERMINATION_SOCKET_PORT);
+			System.out.println("Just connected to "
+					+ client.getRemoteSocketAddress());
+			OutputStream outToServer = client.getOutputStream();
+			DataOutputStream out =
+					new DataOutputStream(outToServer);
+
+			out.writeUTF(Constants.TERMINATION_MSG);
+			InputStream inFromServer = client.getInputStream();
+			DataInputStream in =
+					new DataInputStream(inFromServer);
+			String response = in.readUTF();
+			if(response.equals(Constants.TERMINATION_ACK)){
+				
+				client.close();
+				return true;
+			}
+			client.close();
+		}
+		catch (Exception e ){
 			e.printStackTrace();
 		}
+		return false;
 	}
 
 	private void cleanUp() {

@@ -1,6 +1,7 @@
 package dsp.unige.artifacts;
 
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -33,11 +34,15 @@ public class JpsParser {
 			boolean advance = true;
 			
 
-			while(referenceFIS.available()>0 && receivedFIS.available()>0){
+			while(referenceFIS.available()>0){
 
 				reference = TaggedJpegImage.readFromFileInputStream(referenceFIS);
 				if(advance)
-					received = TaggedJpegImage.readFromFileInputStream(receivedFIS);
+					try {
+						received = TaggedJpegImage.readFromFileInputStream(receivedFIS);
+					} catch (EOFException e1) {
+						received.data = null;
+					}
 
 //								System.out.print("REF.:"+reference.contentId+", REC.:"+received.contentId+"\t");
 				if(reference.contentId == received.contentId){
@@ -52,17 +57,13 @@ public class JpsParser {
 				}
 				else if (reference.contentId < received.contentId){
 					ssims.add(new TimeReferencedSSIM(0, -1));
-					System.out.print("Lost\n");
+					System.out.print(" + ");
 					advance = false;
 				}
 				else{
-					try {
-						Thread.sleep(50);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					System.out.println("Grosso problema.. ref.id>received.id");
-					System.out.println("REF.:"+reference.contentId+", REC.:"+received.contentId);
+//					System.out.println("Grosso problema.. ref.id>received.id");
+					ssims.add(new TimeReferencedSSIM(0, -1));
+					System.out.print(" + ");
 				}
 
 			}
@@ -82,18 +83,24 @@ public class JpsParser {
 		int lost = 0;
 		int count = 0;
 		
-		FileOutputStream fos = new FileOutputStream(new File(working_dir+"/results.csv"));
-		OutputStreamWriter osw = new OutputStreamWriter(fos);
+		FileOutputStream rfos = new FileOutputStream(new File(working_dir+"/results.txt"));
+		OutputStreamWriter rosw = new OutputStreamWriter(rfos);
+		
+		FileOutputStream sfos = new FileOutputStream(new File(working_dir+"/ssims.csv"));
+		OutputStreamWriter sosw = new OutputStreamWriter(sfos);
+		
 		for (TimeReferencedSSIM timeReferencedSSIM : ssims) {
 			avg += timeReferencedSSIM.ssim;
-			osw.write(timeReferencedSSIM.time +";"+timeReferencedSSIM.ssim+"\n");
+			sosw.write(timeReferencedSSIM.time +";"+timeReferencedSSIM.ssim+"\n");
 			count++;
 			if(timeReferencedSSIM.ssim == 0)
 				lost++;
 		}
-		osw.write("# avg.ssim = "+(String.format("%2.4f",avg/count))+"\n# lost "+lost);
-		osw.flush();
-		osw.close();
+		rosw.write("# avg.ssim = "+(String.format("%2.4f",avg/count))+"\n# lost "+lost);
+		rosw.flush();
+		rosw.close();
+		sosw.flush();
+		sosw.close();
 		System.out.println("Avg. ssim: "+(String.format("%2.4f",avg/count))+", "+lost+" frames lost");
 		
 	}

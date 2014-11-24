@@ -23,7 +23,6 @@ public class RxMain {
 	private Visualizer visualizer;
 	private Writer logWriter;
 
-
 	public void setVisualizer(Visualizer visualizer) {
 		this.visualizer = visualizer;
 	}
@@ -62,11 +61,14 @@ public class RxMain {
 			rt.setLogWriter(logWriter);
 			rt.setForwardPort(forwardPort);
 			rt.setBackwardPort(Constants.BACKWARD_PORT);
-			rt.setCallerHandle(this);
 			rt.start();
 
+			TerminatorThread tt = new TerminatorThread();
+			tt.setCallerHandle(this);
+			tt.start();
+			
 			TaggedImage img;
-			while(RUNNING){
+			while(RUNNING || imageBuffer.hasToVisualize()){
 				if(imageBuffer.hasToVisualize()){
 					img = imageBuffer.get();
 //					System.out.println("RxMain.go() got "+img.id);
@@ -81,6 +83,8 @@ public class RxMain {
 			}
 			rt.stopRunning();
 			rt.join();
+			tt.join();
+			Log.i(logWriter,"RxMain","Test terminated correctly, exiting");
 		}
 		else{
 			Log.i(logWriter,"RxMain","checkAll failed");
