@@ -3,7 +3,9 @@ package dsp.unige.artifacts;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 import jssim.SsimCalculator;
@@ -18,6 +20,8 @@ public class JpsParser {
 
 		String working_dir = args[0];
 		try {
+
+
 			FileInputStream receivedFIS = new FileInputStream(new File(working_dir+"/RECEIVED.jps"));
 			FileInputStream referenceFIS = new FileInputStream(new File(working_dir+"/REFERENCE.jps"));
 
@@ -27,28 +31,42 @@ public class JpsParser {
 			ArrayList<TimeReferencedSSIM> ssims = new ArrayList<>();
 
 			boolean advance = true;
+			
 
-			while(referenceFIS.available()>0){
+			while(referenceFIS.available()>0 && receivedFIS.available()>0){
 
 				reference = TaggedJpegImage.readFromFileInputStream(referenceFIS);
 				if(advance)
 					received = TaggedJpegImage.readFromFileInputStream(receivedFIS);
 
+								System.out.println("REF.:"+reference.contentId+", REC.:"+received.contentId);
 				if(reference.contentId == received.contentId){
-					double ssim = getSSIM(reference.data , received.data);
+					double ssim = 0;
+					try {
+						 ssim = getSSIM(reference.data , received.data);
+					} catch (Exception e) {
+					}
 					ssims.add(new TimeReferencedSSIM(ssim, received.tstamp));
 					advance = true;
 				}
 				else if (reference.contentId < received.contentId){
 					ssims.add(new TimeReferencedSSIM(0, -1));
-					System.out.println("Lost frame "+reference.contentId);
+//					System.out.println("Lost frame "+reference.contentId);
+					advance = false;
 				}
 				else{
+					try {
+						Thread.sleep(50);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 					System.out.println("Grosso problema.. ref.id>received.id");
+					System.out.println("REF.:"+reference.contentId+", REC.:"+received.contentId);
 				}
 
 			}
-
+			
+			writeResults(ssims,working_dir);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -57,20 +75,49 @@ public class JpsParser {
 
 	}
 
-	private static double getSSIM(byte[] fullQuality, byte[] compressed) {
-		SsimCalculator sc;
-		try {
-			sc = new SsimCalculator(fullQuality);
-			return sc.compareTo(compressed); 
-		} catch (SsimException | IOException e) {
-			e.printStackTrace();
-			System.out.println("JpegCoderBenchmark.getSSIM() error calculating SSIM");
+	private static void writeResults(ArrayList<TimeReferencedSSIM> ssims,String working_dir) throws IOException {
+
+		double avg = 0;
+		int lost = 0;
+		int count = 0;
+		
+		FileOutputStream fos = new FileOutputStream(new File(working_dir+"/results.csv"));
+		OutputStreamWriter osw = new OutputStreamWriter(fos);
+		for (TimeReferencedSSIM timeReferencedSSIM : ssims) {
+			avg += timeReferencedSSIM.ssim;
+			osw.write(timeReferencedSSIM.time +";"+timeReferencedSSIM.ssim+"\n");
+			count++;
+			if(timeReferencedSSIM.ssim == 0)
+				lost++;
 		}
-		return 0;
+		osw.write("# avg.ssim = "+(String.format("%2.4f",avg/count))+"\n# lost "+lost);
+		osw.flush();
+		osw.close();
+		System.out.println("Avg. ssim: "+(String.format("%2.4f",avg/count))+", "+lost+" frames lost");
+		
+	}
+
+	private static double getSSIM(byte[] fullQuality, byte[] compressed) {
+		if(fullQuality == null)
+			throw new NullPointerException("fullquality");
+		else if(compressed == null)
+			throw new NullPointerException("fullquality");
+		else{
+			SsimCalculator sc;
+			try {
+				sc = new SsimCalculator(fullQuality);
+				return sc.compareTo(compressed); 
+			} catch (SsimException | IOException e) {
+				e.printStackTrace();
+				System.out.println("JpegCoderBenchmark.getSSIM() error calculating SSIM");
+			}
+			return 0;
+		}
 	}
 
 	private static void usage() {
 		System.out.println("Syntax error. Usage:\njava -jar parser <working_dir>");
+		System.exit(1);
 	}
 
 	static class TimeReferencedSSIM{
