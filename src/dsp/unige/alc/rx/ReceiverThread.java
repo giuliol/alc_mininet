@@ -192,12 +192,12 @@ public class ReceiverThread extends Thread {
 
 			// handle images
 			TaggedImage tmpti = new TaggedImage(packetBuffer.get(0).contentSize);
-			System.out.println("ReceiverThread.handleNetworkPacket() first content = "+ packetBuffer.get(0).contentId);
+//			System.out.println("ReceiverThread.handleNetworkPacket() first content = "+ packetBuffer.get(0).contentId);
 			tmpti.id = packetBuffer.get(0).contentId;
 			int imageCount = 1;
 			for(int i=0;i<DATA;i++){
 				tmp = packetBuffer.get(i);
-				if(tmp.contentId!=-1 && tmp.contentSize>0 && tmp.contentId >-1 ){
+				if(tmp.contentId!=-1 && tmp.contentSize>0 ){
 					try{
 						if(tmp.contentId == tmpti.id){
 							//						System.out
@@ -234,7 +234,7 @@ public class ReceiverThread extends Thread {
 					}
 				}
 				else{
-					//					System.out.println("ReceiverThread.handleNetworkPacket() i:"+i+" FEC packet "+tmp.codeWordNumber+"|"+tmp.sequenceNumber);
+						Log.i(logWriter,"ReceiverThread.handleNetworkPacket()","i:"+i+" id|size "+tmp.contentId+"|"+tmp.contentSize);
 				}
 
 			}
@@ -259,12 +259,6 @@ public class ReceiverThread extends Thread {
 			packetBuffer.add(packet);
 			checkList[lastSequenceNumberReceived]=true;
 		}
-
-	}
-
-
-	private boolean sendTerminationAck(DatagramPacket terminationP) {
-		return false;
 
 	}
 

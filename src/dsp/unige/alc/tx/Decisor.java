@@ -28,9 +28,8 @@ public class Decisor {
 	}
 	
 	public int decideFEC(){
-		int idx = (int) Math.round(100d*getLoss()*1.3/Constants.CWLEN);
+		int idx = (int) Math.round(100d*Math.min(getLoss()*2,Constants.CWLEN-1)/Constants.CWLEN);
 		return Math.max(OPTIMAL_FEC_LUT[idx],1);
-//		return 33;
 	}
 	
 	public int decideQ(int FEC){
