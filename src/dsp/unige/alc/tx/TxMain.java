@@ -103,7 +103,7 @@ public class TxMain {
 		st.setLogWriter(logWriter);
 		st.start();
 
-		ListenerThread lt = new ListenerThread(cwBuffer,sessionParameters);
+		FeedbackListenerThread lt = new FeedbackListenerThread(cwBuffer,sessionParameters);
 		lt.setDecisor(decisor);
 		lt.setBackwardPort(backwardPort);
 		lt.setLogWriter(logWriter);

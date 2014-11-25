@@ -28,27 +28,22 @@ public class Decisor {
 	}
 	
 	public int decideFEC(){
-		int idx = (int) Math.round(100d*Math.min(getLoss()*2,Constants.CWLEN-1)/Constants.CWLEN);
+		int idx = (int) Math.round(100d*Math.min(getLoss(),Constants.CWLEN-1)/Constants.CWLEN);
 		return Math.max(OPTIMAL_FEC_LUT[idx],1);
 	}
 	
 	public int decideQ(int FEC){
 		double codeWordsPerSecond = getRate() / CodeWord.CODEWORD_SIZE;
 		int targetFrames = (int) Math.ceil(Constants.FPS/ codeWordsPerSecond);
-//		System.out.println("Decisor.decideQ() R="+getRate()+" bit/s, cw="+CodeWord.CODEWORD_SIZE+" bit/cw");
-//		System.out.println("Decisor.decideQ() measured "+codeWordsPerSecond+" cw/s. Aiming at "+targetFrames + " in next codeword");
-//				System.out.println("TxMain.go() got "+framesInCodeword+ " frames in last cw. Estimated "+(framesInCodeword* decisor.getRate() / (CWLEN *  (Packet.PKTSIZE+Packet.HEADERSIZE+RQDecoder.HEADERSIZE) *8)));
-		double effectivePayload = Packet.PKTSIZE * (Constants.CWLEN - FEC); // in BYTES!!
+		double effectivePayload = Packet.NET_PAYLOAD * (Constants.CWLEN - FEC); // in BYTES!!
 		
 		int perFrame = (int) Math.round(effectivePayload / targetFrames);
-//		System.out.println("Decisor.decideQ() per frame "+perFrame);
 		
 		int dec = q_r(perFrame);
 		return Math.max(Math.min(dec, 99),0);
 	}
 	
 	private int q_r(int perFrame) {
-//		(int) Math.round(100d*(1-Math.exp((100d-perFrame)/3000d)))
 		int i;
 		for(i=0;i<=SIZES_LUT.length-2 && SIZES_LUT[i]<perFrame;i++)
 			;

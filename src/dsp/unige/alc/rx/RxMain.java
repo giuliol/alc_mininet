@@ -44,7 +44,7 @@ public class RxMain {
 		//		visualizer = new DummyVisualizer();
 		//		((DummyVisualizer)visualizer).init("outputs/received.jps");
 		imageBuffer = new ImageBuffer();
-		imageBuffer.init(30 * Constants.FPS);
+		imageBuffer.init(Constants.IMAGE_BUFFER_SIZE);
 
 	}
 
@@ -71,7 +71,6 @@ public class RxMain {
 			while(RUNNING || imageBuffer.hasToVisualize()){
 				if(imageBuffer.hasToVisualize()){
 					img = imageBuffer.get();
-//					System.out.println("RxMain.go() got "+img.id);
 					visualizer.display(img.bytes, img.id);
 				}
 				try {

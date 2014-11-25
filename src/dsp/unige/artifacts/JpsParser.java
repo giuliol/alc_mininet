@@ -14,6 +14,8 @@ import jssim.SsimException;
 
 public class JpsParser {
 
+	private static final double LENGTH = 30;
+
 	public static void main(String[] args) {
 
 		if(args.length<1)
@@ -37,6 +39,7 @@ public class JpsParser {
 			while(referenceFIS.available()>0){
 
 				reference = TaggedJpegImage.readFromFileInputStream(referenceFIS);
+				setProgress(reference.contentId,2000);
 				if(advance)
 					try {
 						received = TaggedJpegImage.readFromFileInputStream(receivedFIS);
@@ -57,13 +60,13 @@ public class JpsParser {
 				}
 				else if (reference.contentId < received.contentId){
 					ssims.add(new TimeReferencedSSIM(0, -1));
-					System.out.print(" + ");
+//					System.out.print(" + ");
 					advance = false;
 				}
 				else{
 //					System.out.println("Grosso problema.. ref.id>received.id");
 					ssims.add(new TimeReferencedSSIM(0, -1));
-					System.out.print(" + ");
+//					System.out.print(" + ");
 				}
 
 			}
@@ -75,6 +78,28 @@ public class JpsParser {
 		}
 
 
+	}
+
+	private static void setProgress(int progress,int max) {
+		int pr = (int) Math.round((double)progress/(double)max*100);
+		printProgBar(pr);
+	}
+	
+	public static void printProgBar(int percent){
+	    StringBuilder bar = new StringBuilder("[");
+
+	    for(int i = 0; i < 50; i++){
+	        if( i < (percent/2)){
+	            bar.append("=");
+	        }else if( i == (percent/2)){
+	            bar.append(">");
+	        }else{
+	            bar.append(" ");
+	        }
+	    }
+
+	    bar.append("]   " + percent + "%     ");
+	    System.out.print("\r" + bar.toString());
 	}
 
 	private static void writeResults(ArrayList<TimeReferencedSSIM> ssims,String working_dir) throws IOException {
@@ -101,7 +126,7 @@ public class JpsParser {
 		rosw.close();
 		sosw.flush();
 		sosw.close();
-		System.out.println("Avg. ssim: "+(String.format("%2.4f",avg/count))+", "+lost+" frames lost");
+		System.out.println("\n\nAvg. ssim: "+(String.format("%2.4f",avg/count))+", "+lost+" frames lost");
 		
 	}
 

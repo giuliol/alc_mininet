@@ -44,15 +44,6 @@ public class ImageBuffer {
 		return out;
 	}
 
-	public synchronized void setReceived(int rcv){
-		receivedFramesInWord = rcv;
-		timeStamp = System.currentTimeMillis() - timeStamp;
-
-	}
-	
-	public synchronized long getInterFrameTime() {
-		return Math.min(Math.round((double)timeStamp / receivedFramesInWord) , MAX_INTERFRAME_TIME ) ;
-	}
 	public boolean hasToVisualize() {
 //		System.out.println("ImageBuffer.hasToVisualize() occupa "+occupancy);
 		return (occupancy >= 1);

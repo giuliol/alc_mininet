@@ -3,17 +3,13 @@ package dsp.unige.alc.tx;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.Writer;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.nio.ByteBuffer;
 
-import dsp.unige.alc.utils.Constants;
 import dsp.unige.alc.utils.Log;
 
-public class ListenerThread extends Thread {
+public class FeedbackListenerThread extends Thread {
 
 	CodeWordBuffer cwbHandle;
 	Decisor decisor;
@@ -33,7 +29,7 @@ public class ListenerThread extends Thread {
 		RUNNING = false;
 	}
 
-	public ListenerThread(CodeWordBuffer cwBuffer,
+	public FeedbackListenerThread(CodeWordBuffer cwBuffer,
 			SessionParameters sessionParameters) {
 		cwbHandle = cwBuffer;
 		this.sessionParameters = sessionParameters;

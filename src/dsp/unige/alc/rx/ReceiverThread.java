@@ -128,126 +128,22 @@ public class ReceiverThread extends Thread {
 
 		Packet packet = Packet.parseNetworkPacket(networkPacket2);
 		long now = System.currentTimeMillis();
-		int res = 3;
 		if(isNewCodeWord(packet.codeWordNumber)){
 
-			// send feedback
-			int sequenceNumberWindow = lastSequenceNumberReceived - firstSequenceNumberReceived;
-			long time = lastSequenceNumberReceivedTime - firstSequenceNumberReceivedTime;
-			long interCodeWordTime = now - lastCodeWordTime;
-			lastCodeWordTime = now;
-			int thisCodeWordNumber = packetBuffer.get(0).codeWordNumber;
-			sendFeedBack(thisCodeWordNumber, estimateR(sequenceNumberWindow, time), countCheckList(checkList) ,interCodeWordTime,networkPacket2);
-
-			// decode
-
-			///DEBUG
-			ArrayList<Integer> lista = new ArrayList<>();
-			for(int i=0;i<checkList.length;i++)
-			{
-				if(!checkList[i])
-					lista.add(i);
-			}
-			String persi = "";
-			for (Integer integer : lista) {
-				persi += " "+integer;
-			}
-			////DEBUG
-
-			// reinit decoder
+			Log.i(logWriter,"HandleNetworkPackeT()","received first codeword of "+packet.codeWordNumber);
+			
 			int FEC = packetBuffer.get(0).FEC;
 			int DATA = Constants.CWLEN - FEC;
-			decoder = new RQDecoder();
-			decoder.init(FECParameters.newParameters(DATA * Packet.PKTSIZE, Packet.PKTSIZE, 1));
-
-			int j;
-			for( j=0;j<packetBuffer.size()  ;j++){
-				res = decoder.handlePacket(packetBuffer.get(j).data);
-				if (res == RQDecoder.DATA_DECODE_COMPLETE)
-					break;
-			}
-			j++;
-			System.out.println("ReceiverThread.handleNetworkPacket() handled "+j+", lost "+persi+", "+decoder.isDecoded());
-
-			byte [] decodedArray = decoder.getDataAsArray();
-
-			ByteBuffer bb;
-			packetBuffer.clear();
-			Packet tmp;
-
-			//			byte[] intBytes = new byte[Integer.SIZE/8 * 3];
-			bb = ByteBuffer.wrap(decodedArray);
-
-			for(int i=0;i<DATA;i++){
-				tmp = new Packet();
-				tmp.data = new byte[Packet.NET_PAYLOAD];
-
-				System.arraycopy(decodedArray, Packet.PKTSIZE * i + Packet.IMG_METADATA_SIZE, tmp.data, 0,Packet.NET_PAYLOAD);
-
-				tmp.contentId = bb.getInt(Packet.PKTSIZE * i);
-				tmp.contentSize = bb.getInt(Packet.PKTSIZE * i + Integer.SIZE/8);
-				tmp.contentOffset = bb.getInt(Packet.PKTSIZE * i + Integer.SIZE/8 * 2);
-				packetBuffer.add(tmp);
-			}
-
-			// handle images
-			TaggedImage tmpti = new TaggedImage(packetBuffer.get(0).contentSize);
-//			System.out.println("ReceiverThread.handleNetworkPacket() first content = "+ packetBuffer.get(0).contentId);
-			tmpti.id = packetBuffer.get(0).contentId;
-			int imageCount = 1;
-			for(int i=0;i<DATA;i++){
-				tmp = packetBuffer.get(i);
-				if(tmp.contentId!=-1 && tmp.contentSize>0 ){
-					try{
-						if(tmp.contentId == tmpti.id){
-							//						System.out
-							//						.println("contentid: "+tmp.contentId+" contentsize: "+tmp.contentSize+", offset "+ tmp.contentOffset);
-							//				System.out
-							//						.println("handlenetpacket. Copio "+ Math.min(tmp.contentSize - tmp.contentOffset, Math.min(Packet.NET_PAYLOAD,tmp.contentSize)) +" da tmp che è di "+tmp.data.length+" in tmpti.bytes che è di "+tmpti.bytes.length+" a partire da "+ tmp.contentOffset);
-
-							System.arraycopy(tmp.data, 0, tmpti.bytes, tmp.contentOffset,Math.min(tmp.contentSize - tmp.contentOffset, Packet.NET_PAYLOAD) );
-
-							//							System.out
-							//									.println("ReceiverThread.handleNetworkPacket() i="+i+", condition = "+(tmp.contentSize - tmp.contentOffset <= Packet.NET_PAYLOAD ));
-							if(tmp.contentSize - tmp.contentOffset <= Packet.NET_PAYLOAD )
-								if(imageBuffer.has(1))
-									imageBuffer.put(tmpti);
-								else
-									Log.i(logWriter,"ReceiverThread.handleNetworkPacket()","DROPP!");
-
-						}
-						else{
-							imageCount++;
-							tmpti = new TaggedImage(tmp.contentSize);
-							tmpti.id = tmp.contentId;
-							//							System.out
-							//									.println("ReceiverThread.handleNetworkPacket() got "+tmpti.id);
-							//						System.out
-							//								.println("contentid: "+tmp.contentId+" contentsize: "+tmp.contentSize+", offset "+ tmp.contentOffset);
-							//						System.out
-							//								.println("handlenetpacket. Copio "+ Math.min(tmp.contentSize - tmp.contentOffset, Math.min(Packet.NET_PAYLOAD,tmp.contentSize)) +" da tmp che è di "+tmp.data.length+" in tmpti.bytes che è di "+tmpti.bytes.length+" a partire da "+ tmp.contentOffset);
-							System.arraycopy(tmp.data, 0, tmpti.bytes, tmp.contentOffset,Math.min(tmp.contentSize - tmp.contentOffset, Math.min(Packet.NET_PAYLOAD,tmp.contentSize)) );
-						}
-					}
-					catch (Exception e){
-						Log.i(logWriter,"receverthread","error in reconstructed metadata");
-					}
-				}
-				else{
-						Log.i(logWriter,"ReceiverThread.handleNetworkPacket()","i:"+i+" id|size "+tmp.contentId+"|"+tmp.contentSize);
-				}
-
-			}
-
-			imageBuffer.setReceived(imageCount);
-
-			firstSequenceNumberReceived = packet.sequenceNumber;
-			firstSequenceNumberReceivedTime = now;
-
-			lastSequenceNumberReceived = packet.sequenceNumber;
-			packetBuffer.clear();
-			checkList = new boolean[Constants.CWLEN];
-
+			
+			// send feedback
+			sendFeedBack(now, networkPacket2);
+			
+			// decode
+			byte [] decodedArray = decodeBuffer(DATA);
+			
+			// rebuild images
+			rebuildImages( decodedArray, DATA, now, packet);
+			
 			packetBuffer.add(packet);
 			checkList[packet.sequenceNumber]=true;
 
@@ -258,8 +154,117 @@ public class ReceiverThread extends Thread {
 
 			packetBuffer.add(packet);
 			checkList[lastSequenceNumberReceived]=true;
+			
 		}
 
+	}
+
+	private void rebuildImages(byte[] decodedArray, int DATA, long now, Packet packet) {
+		ByteBuffer bb;
+		packetBuffer.clear();
+		Packet tmp;
+
+		//			byte[] intBytes = new byte[Integer.SIZE/8 * 3];
+		bb = ByteBuffer.wrap(decodedArray);
+
+		for(int i=0;i<DATA;i++){
+			tmp = new Packet();
+			tmp.data = new byte[Packet.NET_PAYLOAD];
+
+			System.arraycopy(decodedArray, Packet.PKTSIZE * i + Packet.IMG_METADATA_SIZE, tmp.data, 0,Packet.NET_PAYLOAD);
+
+			tmp.contentId = bb.getInt(Packet.PKTSIZE * i);
+			tmp.contentSize = bb.getInt(Packet.PKTSIZE * i + Integer.SIZE/8);
+			tmp.contentOffset = bb.getInt(Packet.PKTSIZE * i + Integer.SIZE/8 * 2);
+			packetBuffer.add(tmp);
+		}
+
+		// handle images
+		TaggedImage tmpti = new TaggedImage(packetBuffer.get(0).contentSize);
+//		System.out.println("ReceiverThread.handleNetworkPacket() first content = "+ packetBuffer.get(0).contentId);
+		tmpti.id = packetBuffer.get(0).contentId;
+		for(int i=0;i<DATA;i++){
+			tmp = packetBuffer.get(i);
+			if(tmp.contentId!=-1 && tmp.contentSize>0 ){
+				try{
+					if(tmp.contentId == tmpti.id){
+						//						System.out
+						//						.println("contentid: "+tmp.contentId+" contentsize: "+tmp.contentSize+", offset "+ tmp.contentOffset);
+						//				System.out
+						//						.println("handlenetpacket. Copio "+ Math.min(tmp.contentSize - tmp.contentOffset, Math.min(Packet.NET_PAYLOAD,tmp.contentSize)) +" da tmp che è di "+tmp.data.length+" in tmpti.bytes che è di "+tmpti.bytes.length+" a partire da "+ tmp.contentOffset);
+
+						System.arraycopy(tmp.data, 0, tmpti.bytes, tmp.contentOffset,Math.min(tmp.contentSize - tmp.contentOffset, Packet.NET_PAYLOAD) );
+
+						//							System.out
+						//									.println("ReceiverThread.handleNetworkPacket() i="+i+", condition = "+(tmp.contentSize - tmp.contentOffset <= Packet.NET_PAYLOAD ));
+						if(tmp.contentSize - tmp.contentOffset <= Packet.NET_PAYLOAD ){
+//							Log.i(logWriter, "receiverthread","putting "+tmpti.id);
+							if(imageBuffer.has(1))
+								imageBuffer.put(tmpti);
+							else
+								Log.i(logWriter,"ReceiverThread.handleNetworkPacket()","DROPP!");
+						}
+
+					}
+					else{
+						tmpti = new TaggedImage(tmp.contentSize);
+						tmpti.id = tmp.contentId;
+						//							System.out
+						//									.println("ReceiverThread.handleNetworkPacket() got "+tmpti.id);
+						//						System.out
+						//								.println("contentid: "+tmp.contentId+" contentsize: "+tmp.contentSize+", offset "+ tmp.contentOffset);
+						//						System.out
+						//								.println("handlenetpacket. Copio "+ Math.min(tmp.contentSize - tmp.contentOffset, Math.min(Packet.NET_PAYLOAD,tmp.contentSize)) +" da tmp che è di "+tmp.data.length+" in tmpti.bytes che è di "+tmpti.bytes.length+" a partire da "+ tmp.contentOffset);
+						System.arraycopy(tmp.data, 0, tmpti.bytes, tmp.contentOffset,Math.min(tmp.contentSize - tmp.contentOffset, Math.min(Packet.NET_PAYLOAD,tmp.contentSize)) );
+					}
+				}
+				catch (Exception e){
+					Log.i(logWriter,"receverthread","error in reconstructed metadata");
+				}
+			}
+			else{
+//					Log.i(logWriter,"ReceiverThread.handleNetworkPacket()","i:"+i+" id|size "+tmp.contentId+"|"+tmp.contentSize);
+			}
+
+		}
+
+		firstSequenceNumberReceived = packet.sequenceNumber;
+		firstSequenceNumberReceivedTime = now;
+
+		lastSequenceNumberReceived = packet.sequenceNumber;
+		packetBuffer.clear();
+		checkList = new boolean[Constants.CWLEN];
+
+	}
+
+	private byte[] decodeBuffer(int DATA) {
+
+		// reinit decoder
+		
+		decoder = new RQDecoder();
+		decoder.init(FECParameters.newParameters(DATA * Packet.PKTSIZE, Packet.PKTSIZE, 1));
+
+		int j;
+		int res = 3;
+		
+		for( j=0;j<packetBuffer.size()  ;j++){
+			res = decoder.handlePacket(packetBuffer.get(j).data);
+			if (res == RQDecoder.DATA_DECODE_COMPLETE)
+				break;
+		}
+		j++;
+		System.out.println("ReceiverThread.handleNetworkPacket() handled "+j+", "+decoder.isDecoded());
+
+		return decoder.getDataAsArray();
+	}
+
+	private void sendFeedBack(long now, DatagramPacket networkPacket2) {
+		int sequenceNumberWindow = lastSequenceNumberReceived - firstSequenceNumberReceived;
+		long time = lastSequenceNumberReceivedTime - firstSequenceNumberReceivedTime;
+		long interCodeWordTime = now - lastCodeWordTime;
+		lastCodeWordTime = now;
+		int thisCodeWordNumber = packetBuffer.get(0).codeWordNumber;
+		sendFeedBack(thisCodeWordNumber, estimateR(sequenceNumberWindow, time), countCheckList(checkList) ,interCodeWordTime,networkPacket2);
 	}
 
 	private void sendFeedBack(int thisCodeWordNumber, double rEst,

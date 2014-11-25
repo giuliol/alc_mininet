@@ -50,7 +50,7 @@ public class StreamerThread extends Thread{
 				try {
 					CodeWord toSend = cwbHandle.get();
 					send(toSend);
-//					Log.i(logWriter, "StreamerThread","Sent codeword "+toSend.codeWordNumber);
+					Log.i(logWriter, "StreamerThread","Sent codeword "+toSend.codeWordNumber);
 				} catch (IOException e ) {
 					e.printStackTrace();
 					Log.i(logWriter,"StreamerThread","error sending packet");
