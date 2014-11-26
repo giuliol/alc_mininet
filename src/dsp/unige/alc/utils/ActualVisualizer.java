@@ -1,6 +1,7 @@
 package dsp.unige.alc.utils;
 
 import java.awt.BorderLayout;
+import java.awt.HeadlessException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -13,36 +14,45 @@ public class ActualVisualizer implements Visualizer{
 	JFrame frame;
 	JPanel panel;
 	JLabel label;
-	
+	boolean headless = false;
+
 	public ActualVisualizer(JLabel labelRef){
 		label = labelRef;		
 	}
-	
+
 	public ActualVisualizer(){
 	}
-	
+
 	public void init(String name){
-		frame = new JFrame(name);
-		panel = new JPanel(new BorderLayout());
-		label = new JLabel();
-		panel.add(label, BorderLayout.CENTER);
-		panel.setVisible(true);
-		frame.add(panel);
-		frame.setVisible(true);
-		frame.setSize(Constants.WIDTH*2, Constants.HEIGHT*2);
+		try {
+			frame = new JFrame(name);
+			panel = new JPanel(new BorderLayout());
+			label = new JLabel();
+			panel.add(label, BorderLayout.CENTER);
+			panel.setVisible(true);
+			frame.add(panel);
+			frame.setVisible(true);
+			frame.setSize(Constants.WIDTH*2, Constants.HEIGHT*2);
+		} catch (HeadlessException e) {
+			headless = true;
+		} 
+
 	}
-	
+
 	@Override
 	public void display(byte[] img, int contentId) {
-		
-		ImageIcon image = new ImageIcon(img);
-		label.setIcon(image);
-//		frame.pack();
+		if(!headless){
+			ImageIcon image = new ImageIcon(img);
+			label.setIcon(image);
+		}
+		//		frame.pack();
 	}
 
 	public void close() {
-		frame.removeAll();
-		frame.dispose();
+		if(!headless){
+			frame.removeAll();
+			frame.dispose();
+		}
 	}
 
 }

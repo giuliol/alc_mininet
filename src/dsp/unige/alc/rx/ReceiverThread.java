@@ -1,11 +1,9 @@
 package dsp.unige.alc.rx;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.Socket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -20,9 +18,9 @@ public class ReceiverThread extends Thread {
 
 	private static final int SO_TIMEOUT = 2000;
 	private DatagramSocket socket;
-	private Socket feedbackSocket;
-	private DataOutputStream feedbackChannelWriter;
+	private DatagramSocket feedbackSocket;
 	private DatagramPacket networkPacket;
+	private DatagramPacket reportPacket;
 	private int forwardPort;
 	private RQDecoder decoder;
 	private boolean RUNNING = true;
@@ -34,17 +32,18 @@ public class ReceiverThread extends Thread {
 	private long firstSequenceNumberReceivedTime;
 	private long lastSequenceNumberReceivedTime;
 	private boolean[] checkList;
-	private int backwardPort;
+	private int feedbackPort;
 	private long lastCodeWordTime;
 	private Writer logWriter;
 	private boolean FIRST_PACKET;
+	private ByteBuffer bb;
 
 	public void setLogWriter(Writer logWriter) {
 		this.logWriter = logWriter;
 	}
 
 	public void setBackwardPort(int listeningPort) {
-		this.backwardPort = listeningPort;
+		this.feedbackPort = listeningPort;
 	}
 
 
@@ -62,6 +61,16 @@ public class ReceiverThread extends Thread {
 		}
 		networkPacket = new DatagramPacket(new byte[Packet.PKTSIZE + Packet.HEADERSIZE + RQDecoder.HEADERSIZE], Packet.PKTSIZE + Packet.HEADERSIZE + RQDecoder.HEADERSIZE);
 	}
+	
+
+	private void initFeedbackSocket(DatagramPacket networkPacket2) {
+		try {
+			feedbackSocket = new DatagramSocket(feedbackPort);
+			reportPacket = new DatagramPacket(new byte[Constants.FEEDBACK_PKTSIZE] , Constants.FEEDBACK_PKTSIZE);
+		} catch (SocketException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public void setForwardPort(int localPort){
 		this.forwardPort = localPort;
@@ -76,6 +85,7 @@ public class ReceiverThread extends Thread {
 		FIRST_PACKET = true;
 		packetBuffer = new ArrayList<Packet>();
 		checkList = new boolean[Constants.CWLEN];
+		bb =  ByteBuffer.allocate(Constants.FEEDBACK_PKTSIZE);
 
 		while(RUNNING){
 			try {
@@ -87,13 +97,7 @@ public class ReceiverThread extends Thread {
 				handleNetworkPacket(networkPacket);
 
 			} catch (IOException e) {
-				Log.i(logWriter,"ReceiverThread","timeout ");
-				try {
-					if(feedbackSocket.isConnected())
-						feedbackChannelWriter.writeBoolean(false);
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
+				e.printStackTrace();
 			}
 		}
 
@@ -101,17 +105,6 @@ public class ReceiverThread extends Thread {
 
 	}
 
-
-	private void initFeedbackSocket(DatagramPacket networkPacket2) {
-		System.out.println("ReceiverThread.initFeedbackSocket() inizializzo");
-		try {
-			feedbackSocket = new Socket(networkPacket2.getAddress(),backwardPort);
-			feedbackChannelWriter = new DataOutputStream(feedbackSocket.getOutputStream());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
 
 	private boolean firstPacket() {
 		if(FIRST_PACKET ){
@@ -131,19 +124,21 @@ public class ReceiverThread extends Thread {
 		if(isNewCodeWord(packet.codeWordNumber)){
 
 			Log.i(logWriter,"HandleNetworkPackeT()","received first codeword of "+packet.codeWordNumber);
-			
+
 			int FEC = packetBuffer.get(0).FEC;
 			int DATA = Constants.CWLEN - FEC;
-			
+
 			// send feedback
 			sendFeedBack(now, networkPacket2);
-			
+
 			// decode
+			long tic = System.currentTimeMillis();
 			byte [] decodedArray = decodeBuffer(DATA);
-			
+			Log.i(logWriter, "handleNetworkPacket()","decode time "+(System.currentTimeMillis() - tic)+" ms");
+
 			// rebuild images
 			rebuildImages( decodedArray, DATA, now, packet);
-			
+
 			packetBuffer.add(packet);
 			checkList[packet.sequenceNumber]=true;
 
@@ -154,7 +149,7 @@ public class ReceiverThread extends Thread {
 
 			packetBuffer.add(packet);
 			checkList[lastSequenceNumberReceived]=true;
-			
+
 		}
 
 	}
@@ -181,7 +176,7 @@ public class ReceiverThread extends Thread {
 
 		// handle images
 		TaggedImage tmpti = new TaggedImage(packetBuffer.get(0).contentSize);
-//		System.out.println("ReceiverThread.handleNetworkPacket() first content = "+ packetBuffer.get(0).contentId);
+		//		System.out.println("ReceiverThread.handleNetworkPacket() first content = "+ packetBuffer.get(0).contentId);
 		tmpti.id = packetBuffer.get(0).contentId;
 		for(int i=0;i<DATA;i++){
 			tmp = packetBuffer.get(i);
@@ -198,7 +193,7 @@ public class ReceiverThread extends Thread {
 						//							System.out
 						//									.println("ReceiverThread.handleNetworkPacket() i="+i+", condition = "+(tmp.contentSize - tmp.contentOffset <= Packet.NET_PAYLOAD ));
 						if(tmp.contentSize - tmp.contentOffset <= Packet.NET_PAYLOAD ){
-//							Log.i(logWriter, "receiverthread","putting "+tmpti.id);
+							//							Log.i(logWriter, "receiverthread","putting "+tmpti.id);
 							if(imageBuffer.has(1))
 								imageBuffer.put(tmpti);
 							else
@@ -219,11 +214,11 @@ public class ReceiverThread extends Thread {
 					}
 				}
 				catch (Exception e){
-					Log.i(logWriter,"receverthread","error in reconstructed metadata");
+					Log.i(logWriter,"receverthread","error in reconstructed metadata - contentid "+tmp.contentId);
 				}
 			}
 			else{
-//					Log.i(logWriter,"ReceiverThread.handleNetworkPacket()","i:"+i+" id|size "+tmp.contentId+"|"+tmp.contentSize);
+				Log.i(logWriter,"receverthread","error in reconstructed metadata (2) - contentid "+tmp.contentId);
 			}
 
 		}
@@ -240,13 +235,13 @@ public class ReceiverThread extends Thread {
 	private byte[] decodeBuffer(int DATA) {
 
 		// reinit decoder
-		
+
 		decoder = new RQDecoder();
 		decoder.init(FECParameters.newParameters(DATA * Packet.PKTSIZE, Packet.PKTSIZE, 1));
 
 		int j;
 		int res = 3;
-		
+
 		for( j=0;j<packetBuffer.size()  ;j++){
 			res = decoder.handlePacket(packetBuffer.get(j).data);
 			if (res == RQDecoder.DATA_DECODE_COMPLETE)
@@ -264,21 +259,25 @@ public class ReceiverThread extends Thread {
 		long interCodeWordTime = now - lastCodeWordTime;
 		lastCodeWordTime = now;
 		int thisCodeWordNumber = packetBuffer.get(0).codeWordNumber;
-		sendFeedBack(thisCodeWordNumber, estimateR(sequenceNumberWindow, time), countCheckList(checkList) ,interCodeWordTime,networkPacket2);
+		sendReport(thisCodeWordNumber, estimateR(sequenceNumberWindow, time), countCheckList(checkList) ,interCodeWordTime,networkPacket2);
 	}
 
-	private void sendFeedBack(int thisCodeWordNumber, double rEst,
+	private void sendReport(int thisCodeWordNumber, double rEst,
 			int countCheckList, long interCodeWordTime, DatagramPacket networkPacket2) {
 
+		bb.clear();
+		bb.putInt(thisCodeWordNumber);
+		bb.putDouble(rEst);
+		bb.putInt(countCheckList);
+		bb.putLong(interCodeWordTime);
+		bb.rewind();
+		byte[] data = new byte[Constants.FEEDBACK_PKTSIZE];
+		bb.get(data);
+		reportPacket.setData(data);
+		reportPacket.setPort(feedbackPort);
+		reportPacket.setAddress(networkPacket2.getAddress());
 		try {
-			while(!feedbackSocket.isConnected()){
-
-			}
-			feedbackChannelWriter.writeBoolean(true);
-			feedbackChannelWriter.writeInt(thisCodeWordNumber);
-			feedbackChannelWriter.writeDouble(rEst);
-			feedbackChannelWriter.writeInt(countCheckList);
-			feedbackChannelWriter.writeLong(interCodeWordTime);
+			feedbackSocket.send(reportPacket);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -311,12 +310,7 @@ public class ReceiverThread extends Thread {
 
 	private void cleanUp() {
 		socket.close();
-		try {
-			feedbackChannelWriter.close();
-			feedbackSocket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		feedbackSocket.close();
 	}
 
 	public void setFps(int fps) {
@@ -326,6 +320,5 @@ public class ReceiverThread extends Thread {
 	private double estimateR(int sequenceNumberWindow, long time){
 		return  sequenceNumberWindow * (Packet.PKTSIZE+Packet.HEADERSIZE+RQDecoder.HEADERSIZE) * 8 / (time/1000d);
 	}
-
 
 }

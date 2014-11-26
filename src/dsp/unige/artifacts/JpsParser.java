@@ -14,8 +14,6 @@ import jssim.SsimException;
 
 public class JpsParser {
 
-	private static final double LENGTH = 30;
-
 	public static void main(String[] args) {
 
 		if(args.length<1)

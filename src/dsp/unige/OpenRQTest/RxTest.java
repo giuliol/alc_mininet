@@ -29,7 +29,7 @@ public class RxTest {
 //		visualizer.init("RECEIVER");
 		
 		rxMain.setForwardPort(Constants.FORWARD_PORT);
-		rxMain.setBackwardPort(Constants.BACKWARD_PORT);
+		rxMain.setBackwardPort(Constants.FEEDBACK_PORT);
 		rxMain.setVisualizer(visualizer);
 		
 		try {
@@ -57,7 +57,7 @@ public class RxTest {
 		}
 		
 		rxMain.setForwardPort(Constants.FORWARD_PORT);
-		rxMain.setBackwardPort(Constants.BACKWARD_PORT);
+		rxMain.setBackwardPort(Constants.FEEDBACK_PORT);
 		rxMain.setVisualizer(visualizer);
 		rxMain.setWriter(logWriter);
 		
@@ -65,7 +65,7 @@ public class RxTest {
 		Log.i(logWriter,"INIT","### "+d.toString());
 		Log.i(logWriter,"INIT","Receiver for path "+path);
 		Log.i(logWriter,"INIT","Starting receiver on port "+Constants.FORWARD_PORT);
-		Log.i(logWriter,"INIT","Will feedback at transmitter on port "+Constants.BACKWARD_PORT);
+		Log.i(logWriter,"INIT","Will feedback at transmitter on port "+Constants.FEEDBACK_PORT);
 		Log.i(logWriter,"INIT","Writing video frames in "+Constants.RECEIVED_JPS_FILENAME);
 		Log.i(logWriter,"INIT","### ");
 

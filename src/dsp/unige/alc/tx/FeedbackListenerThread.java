@@ -1,23 +1,22 @@
 package dsp.unige.alc.tx;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.Writer;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.nio.ByteBuffer;
 
+import dsp.unige.alc.utils.Constants;
 import dsp.unige.alc.utils.Log;
 
 public class FeedbackListenerThread extends Thread {
 
 	CodeWordBuffer cwbHandle;
 	Decisor decisor;
-	ServerSocket feedbackServerSocket;
-	Socket feedbackSocket;
-	DataInputStream feedbackReader;
+	DatagramSocket feedbackSocket;
 	//	DatagramSocket socket;
-	//	DatagramPacket packet;
+	DatagramPacket reportPacket;
 	int feedbackPort;
 	ByteBuffer bb;
 	SessionParameters sessionParameters;
@@ -46,48 +45,16 @@ public class FeedbackListenerThread extends Thread {
 		initSocket();
 
 		while (RUNNING) {
+
 			try {
-				while(!feedbackSocket.isConnected()){
-
-				}
-				boolean feedback = feedbackReader.readBoolean();
-				if(feedback){
-
-					int codeWordNumber = feedbackReader.readInt();
-					double estimatedRate = feedbackReader.readDouble();
-					int measuredLoss = feedbackReader.readInt();
-					long interCodeWordTime = feedbackReader.readLong();
-
-
-					// acknowledge word -> delete it from cwbuffer
-					cwbHandle.ack(codeWordNumber);
-					// set estimated Rate
-					decisor.updateRate(estimatedRate);
-					// set measured Loss
-					decisor.updateLoss(measuredLoss);
-
-					Log.i(logWriter,"ListenerThread.parse()","received report for "
-							+ codeWordNumber
-							+ " "
-							+ String.format("codew. %d, est. rate: %6.2f, lost: %d",
-									codeWordNumber, estimatedRate, measuredLoss));
-
-					int FEC = decisor.decideFEC();
-					int Q = decisor.decideQ(FEC);
-
-					Log.i(logWriter,"ListenerThread.parse()","decided Q=" + Q + ", FEC=" + FEC);
-
-					sessionParameters.setQ(Q);
-					sessionParameters.setFEC(FEC);
-				}
-				else{
-					System.out.println("\nListenerThread.run() timeout, purging\n");
-					cwbHandle.purge();
-				}
-
+				
+				feedbackSocket.receive(reportPacket);
+				parse(reportPacket.getData());
+				
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+
 		}
 
 		cleanUp();
@@ -96,13 +63,7 @@ public class FeedbackListenerThread extends Thread {
 
 	private void cleanUp() {
 
-		try {
-			feedbackReader.close();
-			feedbackSocket.close();
-			feedbackServerSocket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		feedbackSocket.close();
 	}
 
 	private void parse(byte[] data) {
@@ -136,20 +97,12 @@ public class FeedbackListenerThread extends Thread {
 	}
 
 	private void initSocket() {
-		//		try {
-		//			socket = new DatagramSocket(backwardPort);
-		//			packet = new DatagramPacket(new byte[Constants.FEEDBACK_PKTSIZE],
-		//					Constants.FEEDBACK_PKTSIZE);
-		//			socket.setSoTimeout(2500);
-		//		} catch (SocketException e) {
-		//			e.printStackTrace();
-		//			Log.i(logWriter,"ListenerThread", "error opening listening datagramSocket");
-		//		}
 		try {
-			feedbackServerSocket = new ServerSocket(feedbackPort);
-			feedbackSocket = feedbackServerSocket.accept();
-			feedbackReader = new DataInputStream(feedbackSocket.getInputStream());
-		} catch (IOException e) {
+			feedbackSocket = new DatagramSocket(feedbackPort);
+			reportPacket = new DatagramPacket(new byte[Constants.FEEDBACK_PKTSIZE] ,Constants.FEEDBACK_PKTSIZE);
+			feedbackSocket.setSoTimeout(Constants.FEEDBACK_SOCKET_TIMEOUT);
+		} catch (SocketException e) {
+			Log.i(logWriter,"ListenerThread", "error opening listening datagramSocket");
 			e.printStackTrace();
 		}
 	}

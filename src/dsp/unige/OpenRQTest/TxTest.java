@@ -40,7 +40,7 @@ public class TxTest {
 
 		
 		tx.setForwardPort(Constants.FORWARD_PORT);
-		tx.setBackwardPort(Constants.BACKWARD_PORT);
+		tx.setBackwardPort(Constants.FEEDBACK_PORT);
 		tx.setLogLevel(LOG.Debug);
 		tx.init("video/highway_qcif.yuv");
 		tx.setVisualizer(visualizer);
@@ -78,7 +78,7 @@ public class TxTest {
 		}
 		
 		tx.setForwardPort(Constants.FORWARD_PORT);
-		tx.setBackwardPort(Constants.BACKWARD_PORT);
+		tx.setBackwardPort(Constants.FEEDBACK_PORT);
 		tx.setLogLevel(LOG.Debug);
 		tx.setLogWriter(logWriter);
 		tx.init(videoFile);
@@ -88,7 +88,7 @@ public class TxTest {
 		Log.i(logWriter,"INIT","### "+d.toString());
 		Log.i(logWriter,"INIT","Receiver for path "+path);
 		Log.i(logWriter,"INIT","Starting transmitter. Sending frames to "+dest +" on port "+Constants.FORWARD_PORT);
-		Log.i(logWriter,"INIT","Will listen for feedback on port "+Constants.BACKWARD_PORT);
+		Log.i(logWriter,"INIT","Will listen for feedback on port "+Constants.FEEDBACK_PORT);
 		Log.i(logWriter,"INIT","Dummy camera opened video file "+videoFile);
 		Log.i(logWriter,"INIT","Writing reference video frames on "+Constants.REFERENCE_JPS_FILENAME);
 		Log.i(logWriter,"INIT","### ");

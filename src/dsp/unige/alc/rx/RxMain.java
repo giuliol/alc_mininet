@@ -60,7 +60,7 @@ public class RxMain {
 			ReceiverThread rt = new ReceiverThread(imageBuffer, dec);
 			rt.setLogWriter(logWriter);
 			rt.setForwardPort(forwardPort);
-			rt.setBackwardPort(Constants.BACKWARD_PORT);
+			rt.setBackwardPort(Constants.FEEDBACK_PORT);
 			rt.start();
 
 			TerminatorThread tt = new TerminatorThread();
