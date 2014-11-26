@@ -74,7 +74,7 @@ public class RQCoderBenchmark {
 	
 	public void test(){
 		for(int i=0;i<10; i++){
-			double[] res = partial(0.3);
+			 partial(0.3);
 		}
 	}
 

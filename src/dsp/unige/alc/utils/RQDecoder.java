@@ -23,12 +23,6 @@ public class RQDecoder {
 
 	}
 	
-	public void init(int mSize, int mPktSize){
-		SIZE = mSize;
-		PKTSIZE = mPktSize;
-		fp = FECParameters.newParameters(SIZE, PKTSIZE, 1);
-		add = OpenRQ.newDecoderWithTwoOverhead(fp);
-	}
 	
 	public void init(FECParameters fpp){
 		fp = fpp;
