@@ -1,6 +1,7 @@
 package dsp.unige.alc.utils;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.HeadlessException;
 
 import javax.swing.ImageIcon;
@@ -14,6 +15,7 @@ public class ActualVisualizer implements Visualizer{
 	JFrame frame;
 	JPanel panel;
 	JLabel label;
+	JLabel idLabel; 
 	boolean headless = false;
 
 	public ActualVisualizer(JLabel labelRef){
@@ -28,7 +30,10 @@ public class ActualVisualizer implements Visualizer{
 			frame = new JFrame(name);
 			panel = new JPanel(new BorderLayout());
 			label = new JLabel();
+			idLabel = new JLabel();
+			idLabel.setOpaque(true);
 			panel.add(label, BorderLayout.CENTER);
+			panel.add(idLabel,BorderLayout.SOUTH);
 			panel.setVisible(true);
 			frame.add(panel);
 			frame.setVisible(true);
@@ -39,11 +44,22 @@ public class ActualVisualizer implements Visualizer{
 
 	}
 
+	int lastId = 0;
+
 	@Override
 	public void display(byte[] img, int contentId) {
 		if(!headless){
 			ImageIcon image = new ImageIcon(img);
 			label.setIcon(image);
+			idLabel.setText("id: "+contentId);
+			
+			if(contentId != lastId+1)
+				idLabel.setBackground(Color.RED);
+			else
+				idLabel.setBackground(Color.GREEN);
+			
+			lastId = contentId;
+
 		}
 		//		frame.pack();
 	}
@@ -53,6 +69,10 @@ public class ActualVisualizer implements Visualizer{
 			frame.removeAll();
 			frame.dispose();
 		}
+	}
+
+	public void setOnTheRight() {
+		frame.setLocation(Constants.WIDTH*2, frame.getLocation().y);
 	}
 
 }

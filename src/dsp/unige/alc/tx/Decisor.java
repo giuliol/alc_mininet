@@ -29,7 +29,9 @@ public class Decisor {
 	
 	public int decideFEC(){
 		int idx = (int) Math.ceil(100d*Math.min(getLoss(),Constants.CWLEN-1)/Constants.CWLEN);
-		return Math.min(33,Math.max(OPTIMAL_FEC_LUT[idx],1));
+		return Math.min(33,Math.max(OPTIMAL_FEC_LUT[idx]+2,1));
+//		Random r = new Random(System.currentTimeMillis());
+//		return 20+r.nextInt(5);
 	}
 	
 	public int decideQ(int FEC){
@@ -40,7 +42,7 @@ public class Decisor {
 		int perFrame = (int) Math.round(effectivePayload / targetFrames);
 		
 		int dec = q_r(perFrame);
-		return Math.max(Math.min(dec, 99),0);
+		return Math.max(Math.min(dec, 90),0);
 	}
 	
 	private int q_r(int perFrame) {

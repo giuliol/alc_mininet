@@ -1,27 +1,26 @@
 package dsp.unige.alc.utils;
 
-import dsp.unige.alc.tx.SessionParameters;
 
 
 public class PacketBuffer {
 
 	Packet[] data;
 	int position;
-	SessionParameters sp;
 	
-	public void setSp(SessionParameters sp) {
-		this.sp = sp;
+	int fec;
+	
+	public void setFec(int fec) {
+		this.fec = fec;
 	}
+	
 	
 	public PacketBuffer(){
 		
 	}
 	
-	public void init(int size) throws Exception{
+	public void init(int size) {
 		data = new Packet[size];
 		position = 0;
-		if(sp == null)
-			throw new Exception("Session parameters reference not set!!");
 	}
 	
 	public void reset() throws Exception{
@@ -30,7 +29,7 @@ public class PacketBuffer {
 	}
 	
 	public boolean hasBytesAvailable(int bytes){
-		return (Math.ceil((double)bytes/(Packet.NET_PAYLOAD)) <= (data.length - sp.getFEC()) - position);
+		return (Math.ceil((double)bytes/(Packet.NET_PAYLOAD)) <= (data.length - fec) - position);
 	}
 	
 	public boolean hasPacketsAvailable(int packets){
@@ -39,7 +38,9 @@ public class PacketBuffer {
 	
 	public void put(Packet[] in){
 		for(int i=0;i<in.length;i++){
+			
 			data[position++] = in[i];
+//			System.out.println("PacketBuffer.put() data["+(position-1)+"].contentId="+data[position-1].contentId+", size: "+data[position-1].contentSize + "offset: "+data[position-1].contentOffset); 
 		}
 	}
 	
@@ -73,5 +74,9 @@ public class PacketBuffer {
 
 	public void put(Packet in) {
 		data[position++] = in;
+	}
+
+	public int occupancy() {
+		return position;
 	}
 }

@@ -27,6 +27,8 @@ public class RQDecoder {
 	public void init(FECParameters fpp){
 		fp = fpp;
 		add = OpenRQ.newDecoderWithTwoOverhead(fp);
+//		add = OpenRQ.newDecoderWithZeroOverhead(fp);
+//		add = OpenRQ.newDecoder(fp, 4);
 	}
 	
 	public FECParameters getFecParameters() {
@@ -54,7 +56,7 @@ public class RQDecoder {
 //			Log.i("Test.handlePacket()","need more encoding packets!");
 			return DATA_NEED_MORE;
 		case DECODING_FAILURE:
-			Log.i("Test.handlePacket()","decode failure");
+			Log.i("RQdecoder.handlePacket()","decode failure");
 			return DATA_DECODE_FAILURE;
 		default:
 			return UNKNOWN_HANDLEPACKET_ERROR;

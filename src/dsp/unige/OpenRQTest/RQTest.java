@@ -7,6 +7,78 @@ import dsp.unige.alc.utils.RQDecoder;
 import dsp.unige.alc.utils.RQEncoder;
 
 public class RQTest {
+	
+	public double go4(int DATA, double PL){
+
+		int PKTSIZE = 1024;
+		int PKTS = DATA;
+		int SIZE = PKTSIZE*PKTS;
+		int CWLEN = 35;
+		byte[] data = new byte [SIZE];
+		
+	
+//		CREATE RANDOM DATA
+//		
+		Random R =  new Random(System.currentTimeMillis());
+		R.nextBytes(data);
+		
+		
+		
+//		ENCODING 
+//		
+		RQEncoder enc = new RQEncoder();
+		enc.init(SIZE, PKTSIZE);
+		byte[][] pkts=enc.encode(data, CWLEN-DATA);
+
+		
+		
+//		RANDOM PACKET LOSS
+//		
+		ArrayList<byte[]> list = loseReturnsList(pkts,PL,CWLEN);
+
+		
+		
+		
+//		DECODING
+//		
+		RQDecoder dec = new RQDecoder();
+		dec.init(enc.getFecParameters());
+		
+		int i;
+		System.out.println("RQTest.go4() begin");
+		for(i=0;i<list.size() && dec.handlePacket(list.get(i)) != RQDecoder.DATA_DECODE_COMPLETE ;i++)
+			;
+//			System.out.println("RQTest.go4() "+i);
+		if(!dec.isDecoded())
+			System.out.println("RQTest.go4() failure");
+		else
+			System.out.println("RQTest.go4() success");
+		double residualError = compareBytes(data,dec.getDataAsArray());
+//		System.out.println("RQTest.go() DATA:"+(DATA)+" richiesti "+(i+1)+" iterazioni, byte errati " + residualError);
+
+		return residualError;
+
+	}
+
+	
+	private ArrayList<byte[]> loseReturnsList(byte[][] pkts, double PL,int MAX) {
+		
+		ArrayList<byte[]> received = new ArrayList<byte[]>();
+		
+		Random r  = new Random(System.currentTimeMillis());
+		int lo = 0;
+		for (int i = 0; i < MAX; i++) {
+			if(pkts[i]!=null)
+				if(r.nextDouble()<PL){
+					lo++;
+					int l = pkts[i].length;
+					pkts[i] = new byte[l];
+				}
+				else
+					received.add(pkts[i]);
+		}
+		return received;
+		}
 
 	public double go(int DATA, double PL){
 
@@ -49,9 +121,24 @@ public class RQTest {
 		int i;
 		for(i=0;i<pkts.length && dec.handlePacket(pkts[i]) != RQDecoder.DATA_DECODE_COMPLETE ;i++)
 			;
-		System.out.println("RQTest.go() FEC:"+(CWLEN-DATA)+" richiesti "+i+" iterazioni");
+		
+//		System.out.println("RQTest.go() DATA:"+(DATA)+" richiesti "+(i+1)+" iterazioni");
 		return compare(data,dec.getDataAsArray());
 
+	}
+	
+	//ritorna quanti byte sbagliati....
+	private int compareBytes(byte[] data, byte[] dataArray) {
+
+		if(data.length!=dataArray.length)
+			System.out.println("Test.compare() lunghezze diverse -cominciamo bene");
+		
+		int errcount=0;
+		for (int i = 0; i < data.length; i++) {
+			if(data[i]!=dataArray[i])
+				errcount++;
+		}
+		return errcount;
 	}
 
 	//ritorna quanti pacchetti sbagliati....

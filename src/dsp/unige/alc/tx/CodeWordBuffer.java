@@ -11,9 +11,14 @@ public class CodeWordBuffer {
 	ArrayList<CodeWord> buffer;
 	int maxSize;
 	private Writer logWriter;
+	boolean OVERFLOW_DANGER;
 	
 	public CodeWordBuffer(){
 		
+	}
+	
+	public boolean getOverflowDanger(){
+		return OVERFLOW_DANGER;
 	}
 	
 	public void init(int cwbsize) {
@@ -22,6 +27,11 @@ public class CodeWordBuffer {
 	}
 
 	public synchronized void put(CodeWord word) {
+		if(buffer.size() > 0.7d * maxSize )
+			OVERFLOW_DANGER = true;
+		else
+			OVERFLOW_DANGER = false;
+		
 		if(buffer.size() < maxSize){
 			buffer.add(word);
 		}

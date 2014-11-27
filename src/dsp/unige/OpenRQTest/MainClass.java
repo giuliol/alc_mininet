@@ -89,39 +89,6 @@ public class MainClass {
 		rcb.go();
 	}
 
-	public static void testRX_and_TX(){
-		frame = new JFrame("");
-		panel = new JPanel(new BorderLayout());
-		lTx = new JLabel();
-		lRx = new JLabel();
-		panel.add(lTx, BorderLayout.WEST);
-		panel.add(lRx, BorderLayout.EAST);
-		panel.setVisible(true);
-		frame.add(panel);
-		frame.setVisible(true);
-		frame.setSize((int) (Constants.WIDTH*2.5)  , (int) (Constants.HEIGHT*1.5));
-
-		System.out.println("MainClass.main() RX start");
-		(new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				RxTest rtest = new RxTest();
-				rtest.goWithScreen(lRx);				
-			}
-		})).start();
-
-
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
-		System.out.println("MainClass.main() TX start");
-		TxTest ttest = new TxTest();
-		ttest.goWithScreen(lTx);
-	}
 
 	public static void testJpeg(){
 

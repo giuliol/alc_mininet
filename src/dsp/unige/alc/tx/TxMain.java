@@ -35,6 +35,8 @@ public class TxMain {
 	private SessionParameters sessionParameters;
 	private Visualizer visualizer;
 	private Writer logWriter;
+	private int FEC;
+	private int Q;
 
 	public void setDestination(InetAddress destination) {
 		this.destination = destination;
@@ -61,12 +63,10 @@ public class TxMain {
 		((DummyCamera)cam).setLogWriter(logWriter);
 		
 		sessionParameters = new SessionParameters();
-		sessionParameters.setQ(60);
-		sessionParameters.setFEC(5);
-
+		sessionParameters.setQ(20);
+		sessionParameters.setFEC(20);
 
 		pBuffer = new PacketBuffer();
-		pBuffer.setSp(sessionParameters);
 		try {
 			pBuffer.init(CWLEN);
 		} catch (Exception e) {
@@ -77,7 +77,6 @@ public class TxMain {
 		cwBuffer.init(CWBSIZE);
 		cwBuffer.setLogWriter(logWriter);
 		RUNNING = true;
-
 
 		decisor = new Decisor();
 
@@ -109,14 +108,17 @@ public class TxMain {
 		lt.setLogWriter(logWriter);
 		lt.start();
 		
+		Q = 50;
+		FEC = 10;
+		
 		if(checkAll())
 			while( cam.hasFrame() && isRunning()){
 				rawFrame = cam.getFrame();
 
 				contentId++;
-				compressedFrame = JpegEncoder.Compress(rawFrame, sessionParameters.getQ(),Constants.WIDTH, Constants.HEIGHT);
+				
+				compressedFrame = JpegEncoder.Compress(rawFrame, Q ,Constants.WIDTH, Constants.HEIGHT);
 				visualizeFrame(JpegEncoder.Compress(rawFrame, 100 ,Constants.WIDTH, Constants.HEIGHT),contentId);
-//				System.out.println("TxMain.go() adding "+contentId);
 				if(pBuffer.hasBytesAvailable(compressedFrame.length))		
 					// keep filling the packet buffer
 				{ 
@@ -126,16 +128,23 @@ public class TxMain {
 				else		
 					// buffer full, encode and handle to codeword buffer
 				{
-//					System.out.println("TxMain.go() no! gotta encode first..");
 					rqEnc = new RQEncoder();
-					rqEnc.init((CWLEN-sessionParameters.getFEC()) * PKTSIZE, PKTSIZE);
-					packetsBytes = rqEnc.encode(pBuffer.getData(), sessionParameters.getFEC());
+					rqEnc.init((CWLEN - FEC) * PKTSIZE, PKTSIZE);
+					packetsBytes = rqEnc.encode(pBuffer.getData(),FEC);
 					pBuffer.fillWithEncoded(packetsBytes);
-					word = CodeWord.fromPacketArray(pBuffer.getPackets(), sessionParameters.getFEC(), codeWordNumber++);
+					word = CodeWord.fromPacketArray(pBuffer.getPackets(), FEC, codeWordNumber++);
+					
+//					System.out.println("TxMain.go() word "+word.codeWordNumber+", padding: "+(Constants.CWLEN - sessionParameters.getFEC() - pBuffer.occupancy()));
+					
+					FEC = sessionParameters.getFEC();
+					Q = sessionParameters.getQ();
+					if(cwBuffer.getOverflowDanger())
+						Q = (int)0.7*Q;
+					
 					cwBuffer.put(word);
 					pBuffer.reset();
+					pBuffer.setFec(FEC);
 					pBuffer.put(Packet.fromByteArray(compressedFrame, contentId ));
-//					System.out.println("TxMain.go() added.");
 
 				}
 			}
@@ -169,7 +178,6 @@ public class TxMain {
 		
 		if(LOG_LEVEL >= LOG.Debug)
 			Log.i(logWriter,"TxMain", "exiting");
-		
 	}
 
 	public boolean isRunning(){

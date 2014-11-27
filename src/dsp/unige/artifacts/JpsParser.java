@@ -43,9 +43,10 @@ public class JpsParser {
 						received = TaggedJpegImage.readFromFileInputStream(receivedFIS);
 					} catch (EOFException e1) {
 						received.data = null;
+//						System.out.println("JpsParser.main() error reading");
 					}
 
-//								System.out.print("REF.:"+reference.contentId+", REC.:"+received.contentId+"\t");
+//								System.out.print("REF.:"+reference.contentId+", REC.:"+received.contentId+" ");
 				if(reference.contentId == received.contentId){
 					double ssim = 0;
 					try {
@@ -58,15 +59,14 @@ public class JpsParser {
 				}
 				else if (reference.contentId < received.contentId){
 					ssims.add(new TimeReferencedSSIM(0, -1));
-//					System.out.print(" + ");
+//					System.out.print(" + \n");
 					advance = false;
 				}
 				else{
 //					System.out.println("Grosso problema.. ref.id>received.id");
 					ssims.add(new TimeReferencedSSIM(0, -1));
-//					System.out.print(" + ");
+//					System.out.print(" + \n");
 				}
-
 			}
 			
 			writeResults(ssims,working_dir);
@@ -74,7 +74,6 @@ public class JpsParser {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 
 	}
 

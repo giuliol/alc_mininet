@@ -65,7 +65,7 @@ public class ReceiverThread extends Thread {
 
 	private void initFeedbackSocket(DatagramPacket networkPacket2) {
 		try {
-			feedbackSocket = new DatagramSocket(feedbackPort);
+			feedbackSocket = new DatagramSocket();
 			reportPacket = new DatagramPacket(new byte[Constants.FEEDBACK_PKTSIZE] , Constants.FEEDBACK_PKTSIZE);
 		} catch (SocketException e) {
 			e.printStackTrace();
@@ -123,8 +123,6 @@ public class ReceiverThread extends Thread {
 		long now = System.currentTimeMillis();
 		if(isNewCodeWord(packet.codeWordNumber)){
 
-			Log.i(logWriter,"HandleNetworkPackeT()","received first codeword of "+packet.codeWordNumber);
-
 			int FEC = packetBuffer.get(0).FEC;
 			int DATA = Constants.CWLEN - FEC;
 
@@ -132,27 +130,29 @@ public class ReceiverThread extends Thread {
 			sendFeedBack(now, networkPacket2);
 
 			// decode
-			long tic = System.currentTimeMillis();
-			byte [] decodedArray = decodeBuffer(DATA);
-			Log.i(logWriter, "handleNetworkPacket()","decode time "+(System.currentTimeMillis() - tic)+" ms");
+			byte [] decodedArray = decodeBuffer(DATA,packetBuffer);
+			Log.i(logWriter, "handleNetworkPacket()","processing cw " + packetBuffer.get(0).codeWordNumber);
 
 			// rebuild images
 			rebuildImages( decodedArray, DATA, now, packet);
 
-			packetBuffer.add(packet);
-			checkList[packet.sequenceNumber]=true;
+			
+			// finally...
+			firstSequenceNumberReceived = packet.sequenceNumber;
+			firstSequenceNumberReceivedTime = now;
+			packetBuffer.clear();
+			checkList = new boolean[Constants.CWLEN];
 
 		}
-		else{
-			lastSequenceNumberReceived = packet.sequenceNumber;
+		else
 			lastSequenceNumberReceivedTime = now;
-
-			packetBuffer.add(packet);
-			checkList[lastSequenceNumberReceived]=true;
-
-		}
+		
+		lastSequenceNumberReceived = packet.sequenceNumber;
+		packetBuffer.add(packet);
+		checkList[lastSequenceNumberReceived]=true;
 
 	}
+
 
 	private void rebuildImages(byte[] decodedArray, int DATA, long now, Packet packet) {
 		ByteBuffer bb;
@@ -171,6 +171,7 @@ public class ReceiverThread extends Thread {
 			tmp.contentId = bb.getInt(Packet.PKTSIZE * i);
 			tmp.contentSize = bb.getInt(Packet.PKTSIZE * i + Integer.SIZE/8);
 			tmp.contentOffset = bb.getInt(Packet.PKTSIZE * i + Integer.SIZE/8 * 2);
+//			System.out.println("receiverthread.rebuildimages() "+i+" recovered cid "+tmp.contentId+", size "+tmp.contentSize+", offset "+tmp.contentOffset);
 			packetBuffer.add(tmp);
 		}
 
@@ -214,25 +215,18 @@ public class ReceiverThread extends Thread {
 					}
 				}
 				catch (Exception e){
-					Log.i(logWriter,"receverthread","error in reconstructed metadata - contentid "+tmp.contentId);
+					Log.i(logWriter,"receverthread","error in reconstructed metadata - contentid "+tmp.contentId+" i="+i+", size "+tmp.contentSize+", offset "+tmp.contentOffset+", decoded "+decoder.isDecoded());
 				}
 			}
 			else{
-				Log.i(logWriter,"receverthread","error in reconstructed metadata (2) - contentid "+tmp.contentId);
+				//padding
 			}
 
 		}
 
-		firstSequenceNumberReceived = packet.sequenceNumber;
-		firstSequenceNumberReceivedTime = now;
-
-		lastSequenceNumberReceived = packet.sequenceNumber;
-		packetBuffer.clear();
-		checkList = new boolean[Constants.CWLEN];
-
 	}
 
-	private byte[] decodeBuffer(int DATA) {
+	private byte[] decodeBuffer(int DATA, ArrayList<Packet> packetBuffer2) {
 
 		// reinit decoder
 
@@ -243,7 +237,7 @@ public class ReceiverThread extends Thread {
 		int res = 3;
 
 		for( j=0;j<packetBuffer.size()  ;j++){
-			res = decoder.handlePacket(packetBuffer.get(j).data);
+			res = decoder.handlePacket(packetBuffer2.get(j).data);
 			if (res == RQDecoder.DATA_DECODE_COMPLETE)
 				break;
 		}
