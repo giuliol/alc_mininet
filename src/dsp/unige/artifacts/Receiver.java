@@ -15,7 +15,7 @@ public class Receiver {
 			int path = Integer.parseInt(args[0]);
 			RxTest rtest = new RxTest();
 			rtest.setPath(path);
-			rtest.goWithDummyScreen();	
+			rtest.start();	
 			System.out.println("Receiver done, exiting");
 			System.exit(0);
 		}

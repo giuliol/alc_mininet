@@ -21,7 +21,7 @@ public class TxTest {
 		this.path = path;
 	}
 	
-	public void goWithDummyScreen(String dest){
+	public void start(String dest, boolean ADAPTIVE){
 		TxMain tx =  new TxMain();
 		try {
 			tx.setDestination(InetAddress.getByName(dest));
@@ -50,6 +50,7 @@ public class TxTest {
 		tx.setLogLevel(LOG.Debug);
 		tx.setLogWriter(logWriter);
 		tx.init(videoFile);
+		tx.setADAPTIVE(ADAPTIVE);
 		tx.setVisualizer(visualizer);
 		
 		Date d =  new Date(System.currentTimeMillis());
@@ -59,6 +60,7 @@ public class TxTest {
 		Log.i(logWriter,"INIT","Will listen for feedback on port "+Constants.FEEDBACK_PORT);
 		Log.i(logWriter,"INIT","Dummy camera opened video file "+videoFile);
 		Log.i(logWriter,"INIT","Writing reference video frames on "+Constants.REFERENCE_JPS_FILENAME);
+		Log.i(logWriter,"INIT","Transmitter adaptive ? "+ADAPTIVE);
 		Log.i(logWriter,"INIT","### ");
 
 		try {

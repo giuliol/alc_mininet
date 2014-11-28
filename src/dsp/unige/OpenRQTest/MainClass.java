@@ -1,14 +1,11 @@
 package dsp.unige.OpenRQTest;
 
-import java.awt.BorderLayout;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import dsp.unige.alc.benchmark.JpegCoderBenchmark;
 import dsp.unige.alc.benchmark.RQCoderBenchmark;
-import dsp.unige.alc.utils.Constants;
 
 
 public class MainClass {
@@ -39,15 +36,15 @@ public class MainClass {
 	}
 
 
-	private static void startTx(String dest) {
+	private static void startTx(String dest, boolean adaptive) {
 		TxTest ttest = new TxTest();
-		ttest.goWithDummyScreen(dest);
+		ttest.start(dest,adaptive);
 		System.out.println("Transmitter done, exiting");
 	}
 
 	private static void startRx() {
 		RxTest rtest = new RxTest();
-		rtest.goWithDummyScreen();	
+		rtest.start();	
 		System.out.println("Receiver done, exiting");
 	}
 

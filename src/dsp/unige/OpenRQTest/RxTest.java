@@ -21,33 +21,14 @@ public class RxTest {
 		this.path = path;
 	}
 
-	public void goWithScreen(JLabel l){
-		RxMain rxMain = new RxMain();
-		rxMain.init();
-		
-		ActualVisualizer visualizer = new ActualVisualizer(l);
-//		visualizer.init("RECEIVER");
-		
-		rxMain.setForwardPort(Constants.FORWARD_PORT);
-		rxMain.setBackwardPort(Constants.FEEDBACK_PORT);
-		rxMain.setVisualizer(visualizer);
-		
-		try {
-			rxMain.go();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
 	
 	
-	public void goWithDummyScreen(){
+	public void start(){
 		RxMain rxMain = new RxMain();
 		rxMain.init();
 		
 		DoubleVisualizer visualizer = new DoubleVisualizer();
 		visualizer.init(path+"/"+Constants.RECEIVED_JPS_FILENAME, "RECEIVER, path "+path);
-//		DummyVisualizer visualizer =  new DummyVisualizer();
-//		visualizer.init(path+"/"+Constants.RECEIVED_JPS_FILENAME);
 		
 		Writer logWriter = null;
 		try {

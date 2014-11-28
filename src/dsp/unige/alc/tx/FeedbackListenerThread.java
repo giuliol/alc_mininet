@@ -19,7 +19,16 @@ public class FeedbackListenerThread extends Thread {
 	DatagramPacket reportPacket;
 	int feedbackPort;
 	ByteBuffer bb;
+	boolean ADAPTIVE = true;
 	SessionParameters sessionParameters;
+
+	public boolean isADAPTIVE() {
+		return ADAPTIVE;
+	}
+
+	public void setADAPTIVE(boolean aDAPTIVE) {
+		ADAPTIVE = aDAPTIVE;
+	}
 
 	boolean RUNNING = true;
 	private Writer logWriter;
@@ -47,10 +56,10 @@ public class FeedbackListenerThread extends Thread {
 		while (RUNNING) {
 
 			try {
-				
+
 				feedbackSocket.receive(reportPacket);
 				parse(reportPacket.getData());
-				
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -89,11 +98,11 @@ public class FeedbackListenerThread extends Thread {
 		int FEC = decisor.decideFEC();
 		int Q = decisor.decideQ( FEC);
 
-		Log.i(logWriter,"ListenerThread.parse()","decided Q=" + Q + ", FEC=" + FEC);
 
-		sessionParameters.setQ(Q);
-		sessionParameters.setFEC(FEC);
-
+		if(isADAPTIVE()){
+			sessionParameters.setQ(Q);
+			sessionParameters.setFEC(FEC);
+		}
 	}
 
 	private void initSocket() {

@@ -2,13 +2,13 @@ package dsp.unige.artifacts;
 
 
 
-public class Test {
+public class SelfTest {
 	
 	public static void main(String[] args) {
 	
 		
 		final String [] rArgs = {"0"};
-		final String [] tArgs = {"127.0.0.1","0"};
+		final String [] tArgs = {"127.0.0.1","0","1"};
 		
 		(new Thread(new Runnable() {
 			

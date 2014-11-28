@@ -27,7 +27,7 @@ public class TxMain {
 	private PacketBuffer pBuffer;
 	private CodeWordBuffer cwBuffer;
 	private Decisor decisor;
-
+	private boolean ADAPTIVE;
 	private InetAddress destination;
 	private int forwardPort;
 	private int backwardPort;
@@ -37,6 +37,10 @@ public class TxMain {
 	private Writer logWriter;
 	private int FEC;
 	private int Q;
+	
+	public void setADAPTIVE(boolean aDAPTIVE) {
+		ADAPTIVE = aDAPTIVE;
+	}
 
 	public void setDestination(InetAddress destination) {
 		this.destination = destination;
@@ -63,8 +67,11 @@ public class TxMain {
 		((DummyCamera)cam).setLogWriter(logWriter);
 		
 		sessionParameters = new SessionParameters();
-		sessionParameters.setQ(20);
-		sessionParameters.setFEC(20);
+		sessionParameters.setQ(50);
+		sessionParameters.setFEC(1);
+		
+		Q = 50;
+		FEC = 1;
 
 		pBuffer = new PacketBuffer();
 		try {
@@ -81,6 +88,7 @@ public class TxMain {
 		decisor = new Decisor();
 
 	}
+	
 
 	public void setVisualizer(Visualizer visualizer) {
 		this.visualizer = visualizer;
@@ -106,10 +114,8 @@ public class TxMain {
 		lt.setDecisor(decisor);
 		lt.setBackwardPort(backwardPort);
 		lt.setLogWriter(logWriter);
+		lt.setADAPTIVE(ADAPTIVE);
 		lt.start();
-		
-		Q = 50;
-		FEC = 10;
 		
 		if(checkAll())
 			while( cam.hasFrame() && isRunning()){
@@ -138,8 +144,12 @@ public class TxMain {
 					
 					FEC = sessionParameters.getFEC();
 					Q = sessionParameters.getQ();
-					if(cwBuffer.getOverflowDanger())
+					Log.i(logWriter,"TxMain","new parameters: FEC="+FEC+", Q="+Q);
+					
+					if(cwBuffer.getOverflowDanger() && ADAPTIVE){
+						
 						Q = (int)0.7*Q;
+					}
 					
 					cwBuffer.put(word);
 					pBuffer.reset();

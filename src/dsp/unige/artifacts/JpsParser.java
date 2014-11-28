@@ -14,6 +14,8 @@ import jssim.SsimException;
 
 public class JpsParser {
 
+	private static boolean VERBOSE;
+
 	public static void main(String[] args) {
 
 		if(args.length<1)
@@ -22,6 +24,8 @@ public class JpsParser {
 		String working_dir = args[0];
 		try {
 
+			if(args.length>1)
+				VERBOSE = true;
 
 			FileInputStream receivedFIS = new FileInputStream(new File(working_dir+"/RECEIVED.jps"));
 			FileInputStream referenceFIS = new FileInputStream(new File(working_dir+"/REFERENCE.jps"));
@@ -32,43 +36,52 @@ public class JpsParser {
 			ArrayList<TimeReferencedSSIM> ssims = new ArrayList<>();
 
 			boolean advance = true;
-			
+
 
 			while(referenceFIS.available()>0){
 
 				reference = TaggedJpegImage.readFromFileInputStream(referenceFIS);
-				setProgress(reference.contentId,2000);
+				if(!VERBOSE)
+					setProgress(reference.contentId,2000);
 				if(advance)
 					try {
 						received = TaggedJpegImage.readFromFileInputStream(receivedFIS);
 					} catch (EOFException e1) {
 						received.data = null;
-//						System.out.println("JpsParser.main() error reading");
+						if(VERBOSE)
+							System.out.println("JpsParser.main() error reading");
 					}
 
-//								System.out.print("REF.:"+reference.contentId+", REC.:"+received.contentId+" ");
+				if(VERBOSE)
+					System.out.print("REF.:"+reference.contentId+", REC.:"+received.contentId+" ");
 				if(reference.contentId == received.contentId){
 					double ssim = 0;
 					try {
-						 ssim = getSSIM(reference.data , received.data);
+						ssim = getSSIM(reference.data , received.data);
 					} catch (Exception e) {
+						if(VERBOSE)
+							System.out.println("error reading file. Any more received? "+receivedFIS.available());
 					}
 					ssims.add(new TimeReferencedSSIM(ssim, received.tstamp));
 					advance = true;
-//					System.out.print(ssim+" \n");
+					if(VERBOSE)
+						System.out.print(ssim+" \n");
 				}
 				else if (reference.contentId < received.contentId){
 					ssims.add(new TimeReferencedSSIM(0, -1));
-//					System.out.print(" + \n");
+					if(VERBOSE)
+						System.out.print(" + \n");
 					advance = false;
 				}
 				else{
-//					System.out.println("Grosso problema.. ref.id>received.id");
 					ssims.add(new TimeReferencedSSIM(0, -1));
-//					System.out.print(" + \n");
+					if(VERBOSE){
+						System.out.println("Grosso problema.. ref.id>received.id");
+						System.out.print(" + \n");
+					}
 				}
 			}
-			
+
 			writeResults(ssims,working_dir);
 
 		} catch (IOException e) {
@@ -81,22 +94,22 @@ public class JpsParser {
 		int pr = (int) Math.round((double)progress/(double)max*100);
 		printProgBar(pr);
 	}
-	
+
 	public static void printProgBar(int percent){
-	    StringBuilder bar = new StringBuilder("[");
+		StringBuilder bar = new StringBuilder("[");
 
-	    for(int i = 0; i < 50; i++){
-	        if( i < (percent/2)){
-	            bar.append("=");
-	        }else if( i == (percent/2)){
-	            bar.append(">");
-	        }else{
-	            bar.append(" ");
-	        }
-	    }
+		for(int i = 0; i < 50; i++){
+			if( i < (percent/2)){
+				bar.append("=");
+			}else if( i == (percent/2)){
+				bar.append(">");
+			}else{
+				bar.append(" ");
+			}
+		}
 
-	    bar.append("]   " + percent + "%     ");
-	    System.out.print("\r" + bar.toString());
+		bar.append("]   " + percent + "%     ");
+		System.out.print("\r" + bar.toString());
 	}
 
 	private static void writeResults(ArrayList<TimeReferencedSSIM> ssims,String working_dir) throws IOException {
@@ -104,13 +117,13 @@ public class JpsParser {
 		double avg = 0;
 		int lost = 0;
 		int count = 0;
-		
+
 		FileOutputStream rfos = new FileOutputStream(new File(working_dir+"/results.txt"));
 		OutputStreamWriter rosw = new OutputStreamWriter(rfos);
-		
+
 		FileOutputStream sfos = new FileOutputStream(new File(working_dir+"/ssims.csv"));
 		OutputStreamWriter sosw = new OutputStreamWriter(sfos);
-		
+
 		for (TimeReferencedSSIM timeReferencedSSIM : ssims) {
 			avg += timeReferencedSSIM.ssim;
 			sosw.write(timeReferencedSSIM.time +";"+timeReferencedSSIM.ssim+"\n");
@@ -123,8 +136,8 @@ public class JpsParser {
 		rosw.close();
 		sosw.flush();
 		sosw.close();
-		System.out.println("\n\nAvg. ssim: "+(String.format("%2.4f",avg/count))+", "+lost+" frames lost");
-		
+		System.out.println("\n\nAvg. ssim: "+(String.format("%2.4f",avg/count))+", "+lost+" frames lost \n\n");
+
 	}
 
 	private static double getSSIM(byte[] fullQuality, byte[] compressed) {
