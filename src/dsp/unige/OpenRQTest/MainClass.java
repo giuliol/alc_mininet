@@ -44,7 +44,7 @@ public class MainClass {
 
 	private static void startRx() {
 		RxTest rtest = new RxTest();
-		rtest.start();	
+		rtest.start(false);	
 		System.out.println("Receiver done, exiting");
 	}
 

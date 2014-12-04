@@ -23,12 +23,12 @@ public class RxTest {
 
 	
 	
-	public void start(){
+	public void start(boolean HEADLESS){
 		RxMain rxMain = new RxMain();
 		rxMain.init();
 		
 		DoubleVisualizer visualizer = new DoubleVisualizer();
-		visualizer.init(path+"/"+Constants.RECEIVED_JPS_FILENAME, "RECEIVER, path "+path);
+		visualizer.init(path+"/"+Constants.RECEIVED_JPS_FILENAME, "RECEIVER, path "+path, HEADLESS);
 		
 		Writer logWriter = null;
 		try {

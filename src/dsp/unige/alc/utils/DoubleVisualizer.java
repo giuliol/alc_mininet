@@ -8,12 +8,12 @@ public class DoubleVisualizer implements Visualizer {
 	
 	boolean HASWINDOW;
 	
-	public void init(String path,String name){
+	public void init(String path,String name, boolean HEADLESS){
 		dv = new DummyVisualizer();
 		dv.init(path);
 		
 		// lays out nicely the windows
-		if(name.contains("RECEIVER") || name.contains("receiver")){
+		if( !HEADLESS && (name.contains("RECEIVER") || name.contains("receiver"))){
 			av = new ActualVisualizer();
 			av.init(name);
 			av.setOnTheRight();
