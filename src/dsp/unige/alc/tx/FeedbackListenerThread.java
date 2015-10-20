@@ -97,11 +97,10 @@ public class FeedbackListenerThread extends Thread {
 
 		int FEC = decisor.decideFEC();
 		int Q = decisor.decideQ( FEC);
-
+		sessionParameters.setFEC(FEC);
 
 		if(isADAPTIVE()){
 			sessionParameters.setQ(Q);
-			sessionParameters.setFEC(FEC);
 		}
 	}
 
