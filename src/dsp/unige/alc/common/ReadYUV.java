@@ -1,4 +1,4 @@
-package dsp.unige.alc.utils;
+package dsp.unige.alc.common;
 
 /*
  * ReadYUV.java

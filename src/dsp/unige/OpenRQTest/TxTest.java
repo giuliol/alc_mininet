@@ -7,11 +7,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 
+import dsp.unige.alc.common.Constants;
+import dsp.unige.alc.common.DoubleVisualizer;
+import dsp.unige.alc.common.Log;
+import dsp.unige.alc.common.Constants.LOG;
 import dsp.unige.alc.tx.TxMain;
-import dsp.unige.alc.utils.Constants;
-import dsp.unige.alc.utils.Constants.LOG;
-import dsp.unige.alc.utils.DoubleVisualizer;
-import dsp.unige.alc.utils.Log;
 
 public class TxTest {
 
@@ -34,7 +34,7 @@ public class TxTest {
 		String videoFile = path+"/video/highway_qcif.yuv";
 		
 		DoubleVisualizer visualizer = new DoubleVisualizer();
-		visualizer.init(path+"/"+Constants.REFERENCE_JPS_FILENAME, "TRANSMITTER, path "+path, true);
+		visualizer.init(path+"/"+Constants.REFERENCE_JPS_FILENAME, "TRANSMITTER, path "+path, false);
 //		DummyVisualizer visualizer =  new DummyVisualizer();
 //		visualizer.init(path+"/"+Constants.REFERENCE_JPS_FILENAME);
 		

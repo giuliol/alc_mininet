@@ -1,8 +1,8 @@
 package dsp.unige.alc.tx;
 
-import dsp.unige.alc.utils.CodeWord;
-import dsp.unige.alc.utils.Constants;
-import dsp.unige.alc.utils.Packet;
+import dsp.unige.alc.common.CodeWord;
+import dsp.unige.alc.common.Constants;
+import dsp.unige.alc.common.Packet;
 
 public class Decisor {
 	
@@ -42,7 +42,7 @@ public class Decisor {
 		int perFrame = (int) Math.round(effectivePayload / targetFrames);
 		
 		int dec = q_r(perFrame);
-		return Math.max(Math.min(dec, 90),0);
+		return Math.max(Math.min(dec, Constants.MAX_Q),0);
 	}
 	
 	private int q_r(int perFrame) {

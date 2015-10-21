@@ -10,9 +10,9 @@ import java.util.HashMap;
 
 import jssim.SsimCalculator;
 import jssim.SsimException;
-import dsp.unige.alc.utils.Constants;
-import dsp.unige.alc.utils.DummyCamera;
-import dsp.unige.alc.utils.JpegEncoder;
+import dsp.unige.alc.common.Constants;
+import dsp.unige.alc.common.DummyCamera;
+import dsp.unige.alc.common.JpegEncoder;
 
 public class JpegCoderBenchmark {
 	

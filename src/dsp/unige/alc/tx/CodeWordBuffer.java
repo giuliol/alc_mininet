@@ -3,8 +3,8 @@ package dsp.unige.alc.tx;
 import java.io.Writer;
 import java.util.ArrayList;
 
-import dsp.unige.alc.utils.CodeWord;
-import dsp.unige.alc.utils.Log;
+import dsp.unige.alc.common.CodeWord;
+import dsp.unige.alc.common.Log;
 
 public class CodeWordBuffer {
 	

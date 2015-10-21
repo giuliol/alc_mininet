@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import dsp.unige.alc.utils.Constants;
+import dsp.unige.alc.common.Constants;
 
 public class TerminatorThread extends Thread {
 

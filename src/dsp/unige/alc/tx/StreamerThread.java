@@ -12,11 +12,11 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 
-import dsp.unige.alc.utils.CodeWord;
-import dsp.unige.alc.utils.Constants;
-import dsp.unige.alc.utils.Log;
-import dsp.unige.alc.utils.Packet;
-import dsp.unige.alc.utils.RQDecoder;
+import dsp.unige.alc.common.CodeWord;
+import dsp.unige.alc.common.Constants;
+import dsp.unige.alc.common.Log;
+import dsp.unige.alc.common.Packet;
+import dsp.unige.alc.common.RQDecoder;
 
 public class StreamerThread extends Thread{
 

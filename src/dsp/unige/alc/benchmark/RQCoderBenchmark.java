@@ -8,7 +8,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 
 import dsp.unige.OpenRQTest.RQTest;
-import dsp.unige.alc.utils.Constants;
+import dsp.unige.alc.common.Constants;
 
 public class RQCoderBenchmark {
 

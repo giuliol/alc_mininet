@@ -3,11 +3,11 @@ package dsp.unige.alc.rx;
 import java.io.Writer;
 
 import net.fec.openrq.parameters.FECParameters;
-import dsp.unige.alc.utils.Constants;
-import dsp.unige.alc.utils.Log;
-import dsp.unige.alc.utils.Packet;
-import dsp.unige.alc.utils.RQDecoder;
-import dsp.unige.alc.utils.Visualizer;
+import dsp.unige.alc.common.Constants;
+import dsp.unige.alc.common.Log;
+import dsp.unige.alc.common.Packet;
+import dsp.unige.alc.common.RQDecoder;
+import dsp.unige.alc.common.Visualizer;
 
 public class RxMain {
 

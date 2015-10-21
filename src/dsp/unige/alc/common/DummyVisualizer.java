@@ -1,4 +1,4 @@
-package dsp.unige.alc.utils;
+package dsp.unige.alc.common;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -63,6 +63,11 @@ public class DummyVisualizer implements Visualizer {
 			Log.i("DummyVisualizer","error closing the stream");
 		}
 
+	}
+
+	@Override
+	public void display(byte[] img, int contentId, String misc) {
+		display(img,contentId);
 	}
 
 }

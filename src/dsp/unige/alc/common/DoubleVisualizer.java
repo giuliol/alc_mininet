@@ -1,10 +1,10 @@
-package dsp.unige.alc.utils;
+package dsp.unige.alc.common;
 
 
 public class DoubleVisualizer implements Visualizer {
 
 	DummyVisualizer dv;
-	ActualVisualizer av;
+	WindowVisualizer wv;
 	
 	boolean HASWINDOW;
 	
@@ -13,10 +13,10 @@ public class DoubleVisualizer implements Visualizer {
 		dv.init(path);
 		
 		// lays out nicely the windows
-		if( !HEADLESS && (name.contains("RECEIVER") || name.contains("receiver"))){
-			av = new ActualVisualizer();
-			av.init(name);
-			av.setOnTheRight();
+		if( !HEADLESS ){
+			wv = new WindowVisualizer();
+			wv.init(name);
+			wv.setOnTheRight();
 			HASWINDOW = true;
 		}
 		
@@ -25,13 +25,20 @@ public class DoubleVisualizer implements Visualizer {
 	public void display(byte[] img, int contentId) {
 		dv.display(img, contentId);
 		if(HASWINDOW)
-			av.display(img, contentId);
+			wv.display(img, contentId);
 	}
 	
 	public void close(){
 		dv.close();
 		if(HASWINDOW)
-			av.close();
+			wv.close();
 	}
+	
+	@Override
+	public void display(byte[] img, int contentId, String misc) {
+		dv.display(img, contentId);
+		if(HASWINDOW)
+			wv.display(img, contentId , misc);	
+		}
 
 }

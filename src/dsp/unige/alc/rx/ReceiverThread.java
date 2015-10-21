@@ -9,10 +9,10 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import net.fec.openrq.parameters.FECParameters;
-import dsp.unige.alc.utils.Constants;
-import dsp.unige.alc.utils.Log;
-import dsp.unige.alc.utils.Packet;
-import dsp.unige.alc.utils.RQDecoder;
+import dsp.unige.alc.common.Constants;
+import dsp.unige.alc.common.Log;
+import dsp.unige.alc.common.Packet;
+import dsp.unige.alc.common.RQDecoder;
 
 public class ReceiverThread extends Thread {
 

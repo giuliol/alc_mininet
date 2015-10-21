@@ -7,11 +7,11 @@ import java.util.Date;
 
 import javax.swing.JLabel;
 
+import dsp.unige.alc.common.Constants;
+import dsp.unige.alc.common.DoubleVisualizer;
+import dsp.unige.alc.common.Log;
+import dsp.unige.alc.common.WindowVisualizer;
 import dsp.unige.alc.rx.RxMain;
-import dsp.unige.alc.utils.ActualVisualizer;
-import dsp.unige.alc.utils.Constants;
-import dsp.unige.alc.utils.DoubleVisualizer;
-import dsp.unige.alc.utils.Log;
 
 public class RxTest {
 	

@@ -7,8 +7,8 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 
-import dsp.unige.alc.utils.Constants;
-import dsp.unige.alc.utils.Log;
+import dsp.unige.alc.common.Constants;
+import dsp.unige.alc.common.Log;
 
 public class FeedbackListenerThread extends Thread {
 
@@ -54,20 +54,15 @@ public class FeedbackListenerThread extends Thread {
 		initSocket();
 
 		while (RUNNING) {
-
 			try {
-
 				feedbackSocket.receive(reportPacket);
 				parse(reportPacket.getData());
 
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
 		}
-
 		cleanUp();
-
 	}
 
 	private void cleanUp() {
@@ -96,7 +91,7 @@ public class FeedbackListenerThread extends Thread {
 						codeWordNumber, estimatedRate, measuredLoss));
 
 		int FEC = decisor.decideFEC();
-		int Q = decisor.decideQ( FEC);
+		int Q = decisor.decideQ(FEC);
 		sessionParameters.setFEC(FEC);
 
 		if(isADAPTIVE()){

@@ -3,17 +3,17 @@ package dsp.unige.alc.tx;
 import java.io.Writer;
 import java.net.InetAddress;
 
-import dsp.unige.alc.utils.Camera;
-import dsp.unige.alc.utils.CodeWord;
-import dsp.unige.alc.utils.Constants;
-import dsp.unige.alc.utils.Constants.LOG;
-import dsp.unige.alc.utils.DummyCamera;
-import dsp.unige.alc.utils.JpegEncoder;
-import dsp.unige.alc.utils.Log;
-import dsp.unige.alc.utils.Packet;
-import dsp.unige.alc.utils.PacketBuffer;
-import dsp.unige.alc.utils.RQEncoder;
-import dsp.unige.alc.utils.Visualizer;
+import dsp.unige.alc.common.Camera;
+import dsp.unige.alc.common.CodeWord;
+import dsp.unige.alc.common.Constants;
+import dsp.unige.alc.common.DummyCamera;
+import dsp.unige.alc.common.JpegEncoder;
+import dsp.unige.alc.common.Log;
+import dsp.unige.alc.common.Packet;
+import dsp.unige.alc.common.PacketBuffer;
+import dsp.unige.alc.common.RQEncoder;
+import dsp.unige.alc.common.Visualizer;
+import dsp.unige.alc.common.Constants.LOG;
 
 public class TxMain {
 
@@ -37,6 +37,7 @@ public class TxMain {
 	private Writer logWriter;
 	private int FEC;
 	private int Q;
+	private String info;
 	
 	public void setADAPTIVE(boolean aDAPTIVE) {
 		ADAPTIVE = aDAPTIVE;
@@ -67,10 +68,10 @@ public class TxMain {
 		((DummyCamera)cam).setLogWriter(logWriter);
 		
 		sessionParameters = new SessionParameters();
-		sessionParameters.setQ(50);
+		sessionParameters.setQ(Constants.MAX_Q);
 		sessionParameters.setFEC(1);
 		
-		Q = 50;
+		Q = Constants.MAX_Q;
 		FEC = 1;
 
 		pBuffer = new PacketBuffer();
@@ -181,7 +182,8 @@ public class TxMain {
 	}
 
 	private void visualizeFrame(byte[] rawFrame,int id) {
-		visualizer.display(rawFrame, id);
+		info = " FEC:"+FEC+", Q:"+Q+", Est.Rate:"+String.format("%6.2f",decisor.getRate()/1000d)+", Est.Loss:"+decisor.getLoss();
+		visualizer.display(rawFrame, id, info);
 	}
 	private void cleanUp(){
 		cam.close();

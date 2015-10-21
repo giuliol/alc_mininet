@@ -1,11 +1,11 @@
-package dsp.unige.alc.utils;
+package dsp.unige.alc.common;
 
 public abstract class Constants {
 
 	public static final int CWLEN = 35;
 	public static final int PKTSIZE = 1024;
 	public static final int BPF = 38016;
-	public static final int FPS = 25;
+	public static final int FPS = 15;
 	public static final int WIDTH = 176;
 	public static final int HEIGHT = 144;
 	public static final long STREAMER_SLEEPTIME = 2;  // ms between packets of the same word
@@ -24,7 +24,8 @@ public abstract class Constants {
 	public static final String TERMINATION_MSG = "DIE!";
 	public static final int TERMINATION_SOCKET_PORT = 5550;
 	public static final int IMAGE_BUFFER_SIZE = 1000;
-	public static final int FEEDBACK_SOCKET_TIMEOUT = 2500;  
+	public static final int FEEDBACK_SOCKET_TIMEOUT = 2500;
+	public static final int MAX_Q = 50;  
 
 	public static class LOG{
 		public static int Silent = 0;

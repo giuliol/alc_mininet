@@ -5,8 +5,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import dsp.unige.alc.utils.JpegEncoder;
-import dsp.unige.alc.utils.ReadYUV;
+import dsp.unige.alc.common.JpegEncoder;
+import dsp.unige.alc.common.ReadYUV;
 
 public class JPEGTest {
 

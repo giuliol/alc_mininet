@@ -1,4 +1,4 @@
-package dsp.unige.alc.utils;
+package dsp.unige.alc.common;
 
 import net.fec.openrq.ArrayDataDecoder;
 import net.fec.openrq.EncodingPacket;

@@ -1,4 +1,4 @@
-package dsp.unige.alc.utils;
+package dsp.unige.alc.common;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -10,7 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 
-public class ActualVisualizer implements Visualizer{
+public class WindowVisualizer implements Visualizer{
 
 	JFrame frame;
 	JPanel panel;
@@ -18,11 +18,11 @@ public class ActualVisualizer implements Visualizer{
 	JLabel idLabel; 
 	boolean headless = false;
 
-	public ActualVisualizer(JLabel labelRef){
+	public WindowVisualizer(JLabel labelRef){
 		label = labelRef;		
 	}
 
-	public ActualVisualizer(){
+	public WindowVisualizer(){
 	}
 
 	public void init(String name){
@@ -51,7 +51,7 @@ public class ActualVisualizer implements Visualizer{
 		if(!headless){
 			ImageIcon image = new ImageIcon(img);
 			label.setIcon(image);
-			idLabel.setText("id: "+contentId);
+			idLabel.setText("F: "+contentId);
 			
 			if(contentId != lastId+1)
 				idLabel.setBackground(Color.RED);
@@ -62,6 +62,25 @@ public class ActualVisualizer implements Visualizer{
 
 		}
 		//		frame.pack();
+	}
+	
+	@Override
+	public void display(byte[] img, int contentId, String misc) {
+		
+		if(!headless){
+			ImageIcon image = new ImageIcon(img);
+			label.setIcon(image);
+			idLabel.setText("F. "+contentId+misc);
+
+			if(contentId != lastId+1)
+				idLabel.setBackground(Color.RED);
+			else
+				idLabel.setBackground(Color.GREEN);
+			
+			lastId = contentId;
+
+		}
+
 	}
 
 	public void close() {
@@ -74,5 +93,7 @@ public class ActualVisualizer implements Visualizer{
 	public void setOnTheRight() {
 		frame.setLocation(Constants.WIDTH*2, frame.getLocation().y);
 	}
+
+
 
 }
