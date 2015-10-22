@@ -93,7 +93,7 @@ public class DummyCamera implements Camera{
 	@Override
 	public boolean hasFrame(){
 		try {
-			return (fis.available() >= bpf );
+			return (fis.available() >= bpf ); // TODO rimuovi
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;

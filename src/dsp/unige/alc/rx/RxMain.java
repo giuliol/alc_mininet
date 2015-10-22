@@ -22,7 +22,8 @@ public class RxMain {
 	private ImageBuffer imageBuffer;
 	private Visualizer visualizer;
 	private Writer logWriter;
-
+	private String info;
+	
 	public void setVisualizer(Visualizer visualizer) {
 		this.visualizer = visualizer;
 	}
@@ -62,6 +63,7 @@ public class RxMain {
 			rt.setForwardPort(forwardPort);
 			rt.setBackwardPort(Constants.FEEDBACK_PORT);
 			rt.start();
+			
 
 			TerminatorThread tt = new TerminatorThread();
 			tt.setCallerHandle(this);
@@ -71,7 +73,8 @@ public class RxMain {
 			while(RUNNING || imageBuffer.hasToVisualize()){
 				if(imageBuffer.hasToVisualize()){
 					img = imageBuffer.get();
-					visualizer.display(img.bytes, img.id);
+//					info = " R:"+
+					visualizer.display(img.bytes, img.id, rt.getInfo());
 				}
 				try {
 					Thread.sleep(Math.round(1000d/(Constants.FPS)));

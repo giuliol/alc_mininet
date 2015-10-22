@@ -37,6 +37,8 @@ public class ReceiverThread extends Thread {
 	private Writer logWriter;
 	private boolean FIRST_PACKET;
 	private ByteBuffer bb;
+	private String info;
+	
 
 	public void setLogWriter(Writer logWriter) {
 		this.logWriter = logWriter;
@@ -246,7 +248,7 @@ public class ReceiverThread extends Thread {
 				break;
 		}
 		j++;
-		System.out.println("ReceiverThread.handleNetworkPacket() handled "+j+", "+decoder.isDecoded());
+//		System.out.println("ReceiverThread.handleNetworkPacket() handled "+j+", "+decoder.isDecoded());
 
 		return decoder.getDataAsArray();
 	}
@@ -264,7 +266,7 @@ public class ReceiverThread extends Thread {
 	private void sendReport(int thisCodeWordNumber, double rEst,
 			int countCheckList, long interCodeWordTime, DatagramPacket networkPacket2) {
 
-		Log.i(logWriter, "sendReport()","Entrato in sendreport() ");
+//		Log.i(logWriter, "sendReport()","Entrato in sendreport() ");
 
 		bb.clear();
 		bb.putInt(thisCodeWordNumber);
@@ -272,6 +274,8 @@ public class ReceiverThread extends Thread {
 		bb.putInt(countCheckList);
 		bb.putLong(interCodeWordTime);
 		bb.rewind();
+		
+		info = String.format(" - R:%3.2f kbps, L:%2.2f %%", rEst/1000d, (double)countCheckList/(double)Constants.CWLEN*100d);
 		
 		byte[] data = new byte[Constants.FEEDBACK_PKTSIZE];
 		bb.get(data);
@@ -292,11 +296,15 @@ public class ReceiverThread extends Thread {
 				recBool +="_";
 			
 		} 
-		Log.i(logWriter,"ReceiverThread.handleNetworkPacket()","Checklist: "+recBool);
-		Log.i(logWriter,"ReceiverThread.handleNetworkPacket()",String.format("\nFirstTS(%d):%d\nLastTS(%d):%d",firstSequenceNumberReceived,firstSequenceNumberReceivedTime,lastSequenceNumberReceived,lastSequenceNumberReceivedTime ));
+//		Log.i(logWriter,"ReceiverThread.handleNetworkPacket()","Checklist: "+recBool);
+//		Log.i(logWriter,"ReceiverThread.handleNetworkPacket()",String.format("\nFirstTS(%d):%d\nLastTS(%d):%d",firstSequenceNumberReceived,firstSequenceNumberReceivedTime,lastSequenceNumberReceived,lastSequenceNumberReceivedTime ));
 
 		Log.i(logWriter,"ReceiverThread.handleNetworkPacket()","Sent report for "+thisCodeWordNumber+", estimated "+rEst);
+		
+	}
 
+	public String getInfo() {
+		return info;
 	}
 
 	private int countCheckList(boolean[] checkList2) {
@@ -334,7 +342,7 @@ public class ReceiverThread extends Thread {
 		
 		Log.i(logWriter,"ReceiverThread.estimateR()","window:"+sequenceNumberWindow+", time:"+time);
 		
-		return  sequenceNumberWindow * (Packet.PKTSIZE+Packet.HEADERSIZE+RQDecoder.HEADERSIZE) * 8d / (time/1000d);
+		return  (sequenceNumberWindow+1) * (Packet.PKTSIZE+Packet.HEADERSIZE+RQDecoder.HEADERSIZE) * 8d / (time/1000d);
 	}
 
 }
