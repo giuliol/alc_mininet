@@ -19,7 +19,7 @@ public class Log {
 		String text = new SimpleDateFormat("hh:mm:ss.SSS").format(new Date(time));
 
 		try {
-			System.out.println("["+text+"] "+tag + " " + msg);
+//			System.out.println("["+time+"] "+tag + " " + msg);
 			out.write("["+text+"] "+tag + " " + msg + "\n");
 		} catch (IOException e) {
 			e.printStackTrace();

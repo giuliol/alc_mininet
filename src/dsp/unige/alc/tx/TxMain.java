@@ -72,7 +72,7 @@ public class TxMain {
 		sessionParameters.setFEC(1);
 		
 		Q = Constants.MAX_Q;
-		FEC = 1;
+		FEC = 2;
 
 		pBuffer = new PacketBuffer();
 		try {
@@ -182,7 +182,7 @@ public class TxMain {
 	}
 
 	private void visualizeFrame(byte[] rawFrame,int id) {
-		info = " FEC:"+FEC+", Q:"+Q+", Est.Rate:"+String.format("%6.2f",decisor.getRate()/1000d)+", Est.Loss:"+decisor.getLoss();
+		info = " FEC:"+FEC+", Q:"+Q+", R:"+String.format("%6.2f",decisor.getRate()/1000d)+", L:"+decisor.getLoss();
 		visualizer.display(rawFrame, id, info);
 	}
 	private void cleanUp(){

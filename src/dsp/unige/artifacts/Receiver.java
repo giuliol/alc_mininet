@@ -1,5 +1,8 @@
 package dsp.unige.artifacts;
 
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
+
 import dsp.unige.OpenRQTest.RxTest;
 
 public class Receiver {
@@ -19,8 +22,13 @@ public class Receiver {
 			else
 				HEADLESS = true;
 			
-			
-			
+			try {
+				PrintStream ps;
+				ps = new PrintStream(path+"/R"+path+"_errors.log");
+				System.setErr(ps);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
 			RxTest rtest = new RxTest();
 			rtest.setPath(path);
 			rtest.start(HEADLESS);	

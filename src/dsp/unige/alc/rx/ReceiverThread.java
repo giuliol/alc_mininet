@@ -94,9 +94,13 @@ public class ReceiverThread extends Thread {
 					initFeedbackSocket(networkPacket);
 					socket.setSoTimeout(SO_TIMEOUT);
 				}
+
 				handleNetworkPacket(networkPacket);
 
-			} catch (IOException e) {
+
+			} catch (Exception e) {
+				Log.i(logWriter, "run()","timeout"); 
+				System.err.print("\n["+System.currentTimeMillis()+"]");
 				e.printStackTrace();
 			}
 		}
@@ -121,6 +125,7 @@ public class ReceiverThread extends Thread {
 
 		Packet packet = Packet.parseNetworkPacket(networkPacket2);
 		long now = System.currentTimeMillis();
+
 		if(isNewCodeWord(packet.codeWordNumber)){
 
 			int FEC = packetBuffer.get(0).FEC;
@@ -131,7 +136,6 @@ public class ReceiverThread extends Thread {
 
 			// decode
 			byte [] decodedArray = decodeBuffer(DATA,packetBuffer);
-			Log.i(logWriter, "handleNetworkPacket()","processing cw " + packetBuffer.get(0).codeWordNumber);
 
 			// rebuild images
 			rebuildImages( decodedArray, DATA, now, packet);
@@ -254,10 +258,13 @@ public class ReceiverThread extends Thread {
 		lastCodeWordTime = now;
 		int thisCodeWordNumber = packetBuffer.get(0).codeWordNumber;
 		sendReport(thisCodeWordNumber, estimateR(sequenceNumberWindow, time), countCheckList(checkList) ,interCodeWordTime,networkPacket2);
+			
 	}
 
 	private void sendReport(int thisCodeWordNumber, double rEst,
 			int countCheckList, long interCodeWordTime, DatagramPacket networkPacket2) {
+
+		Log.i(logWriter, "sendReport()","Entrato in sendreport() ");
 
 		bb.clear();
 		bb.putInt(thisCodeWordNumber);
@@ -265,6 +272,7 @@ public class ReceiverThread extends Thread {
 		bb.putInt(countCheckList);
 		bb.putLong(interCodeWordTime);
 		bb.rewind();
+		
 		byte[] data = new byte[Constants.FEEDBACK_PKTSIZE];
 		bb.get(data);
 		reportPacket.setData(data);
@@ -275,6 +283,17 @@ public class ReceiverThread extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		String recBool = "";
+		for (boolean b : checkList) {
+			if(b)
+				recBool +="O";
+			else
+				recBool +="_";
+			
+		} 
+		Log.i(logWriter,"ReceiverThread.handleNetworkPacket()","Checklist: "+recBool);
+		Log.i(logWriter,"ReceiverThread.handleNetworkPacket()",String.format("\nFirstTS(%d):%d\nLastTS(%d):%d",firstSequenceNumberReceived,firstSequenceNumberReceivedTime,lastSequenceNumberReceived,lastSequenceNumberReceivedTime ));
 
 		Log.i(logWriter,"ReceiverThread.handleNetworkPacket()","Sent report for "+thisCodeWordNumber+", estimated "+rEst);
 
@@ -312,7 +331,10 @@ public class ReceiverThread extends Thread {
 	}
 
 	private double estimateR(int sequenceNumberWindow, long time){
-		return  sequenceNumberWindow * (Packet.PKTSIZE+Packet.HEADERSIZE+RQDecoder.HEADERSIZE) * 8 / (time/1000d);
+		
+		Log.i(logWriter,"ReceiverThread.estimateR()","window:"+sequenceNumberWindow+", time:"+time);
+		
+		return  sequenceNumberWindow * (Packet.PKTSIZE+Packet.HEADERSIZE+RQDecoder.HEADERSIZE) * 8d / (time/1000d);
 	}
 
 }

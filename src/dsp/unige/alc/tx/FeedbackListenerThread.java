@@ -7,6 +7,7 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 
+import dsp.unige.alc.common.CodeWord;
 import dsp.unige.alc.common.Constants;
 import dsp.unige.alc.common.Log;
 
@@ -55,11 +56,16 @@ public class FeedbackListenerThread extends Thread {
 
 		while (RUNNING) {
 			try {
+				Log.i(logWriter,"ListenerThread.run()","Ready to receive.");
 				feedbackSocket.receive(reportPacket);
+				
 				parse(reportPacket.getData());
 
 			} catch (IOException e) {
+				Log.i(logWriter,"ListenerThread.run()","timeout.");
+				System.err.print("\n["+System.currentTimeMillis()+"]");
 				e.printStackTrace();
+				cwbHandle.purge();
 			}
 		}
 		cleanUp();
@@ -76,7 +82,10 @@ public class FeedbackListenerThread extends Thread {
 		int codeWordNumber = bb.getInt();
 		double estimatedRate = bb.getDouble();
 		int measuredLoss = bb.getInt();
+		long interCWtime = bb.getLong();
 
+		double estimatedRate2 = CodeWord.CODEWORD_SIZE / (double)interCWtime;
+		
 		// acknowledge word -> delete it from cwbuffer
 		cwbHandle.ack(codeWordNumber);
 		// set estimated Rate

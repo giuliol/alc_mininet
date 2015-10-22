@@ -19,14 +19,15 @@ public class TerminatorThread extends Thread {
 			
 
 			ServerSocket serverSocket = new ServerSocket(Constants.TERMINATION_SOCKET_PORT);
-			 System.out.println("Waiting for client on port " +
-			            serverSocket.getLocalPort() + "...");
+//			 System.out.println("Waiting for client on port " +
+//			            serverSocket.getLocalPort() + "...");
 			Socket server = serverSocket.accept();
-			System.out.println("TerminatorThread.run() Connected");
+//			System.out.println("TerminatorThread.run() Connected");
 			DataInputStream in = new DataInputStream(server.getInputStream());
 			while(true){
 				String msg = in.readUTF();
 				if(msg.equals(Constants.TERMINATION_MSG)){
+					System.err.write("terminating".getBytes());
 					callerHandle.stopRunning();
 					DataOutputStream out = new DataOutputStream(server.getOutputStream());
 					out.writeUTF(Constants.TERMINATION_ACK);

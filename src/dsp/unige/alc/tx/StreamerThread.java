@@ -51,6 +51,15 @@ public class StreamerThread extends Thread{
 				try {
 					CodeWord toSend = cwbHandle.get();
 					send(toSend);
+					
+					try {
+						Thread.sleep(Constants.STREAMER_SLEEPTIME);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+						Log.i(logWriter,"StreamerThread","error sleeping");
+					}
+
+					
 					Log.i(logWriter, "StreamerThread","Sent codeword "+toSend.codeWordNumber);
 				} catch (IOException e ) {
 					e.printStackTrace();
@@ -116,14 +125,7 @@ public class StreamerThread extends Thread{
 			forwardPacket.setData(p.buildPacket());
 			
 //			if(r.nextDouble()>0.3)
-				forwardSocket.send(forwardPacket);
-
-			try {
-				Thread.sleep(Constants.STREAMER_SLEEPTIME);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				Log.i(logWriter,"StreamerThread","error sleeping");
-			}
+			forwardSocket.send(forwardPacket);
 
 		}
 	}

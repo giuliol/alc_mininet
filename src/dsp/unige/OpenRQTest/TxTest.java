@@ -9,6 +9,7 @@ import java.util.Date;
 
 import dsp.unige.alc.common.Constants;
 import dsp.unige.alc.common.DoubleVisualizer;
+import dsp.unige.alc.common.FastFileWriter;
 import dsp.unige.alc.common.Log;
 import dsp.unige.alc.common.Constants.LOG;
 import dsp.unige.alc.tx.TxMain;
@@ -34,7 +35,7 @@ public class TxTest {
 		String videoFile = path+"/video/highway_qcif.yuv";
 		
 		DoubleVisualizer visualizer = new DoubleVisualizer();
-		visualizer.init(path+"/"+Constants.REFERENCE_JPS_FILENAME, "TRANSMITTER, path "+path, false);
+		visualizer.init(path+"/"+Constants.REFERENCE_JPS_FILENAME, "TRANSMITTER, path "+path, true);
 //		DummyVisualizer visualizer =  new DummyVisualizer();
 //		visualizer.init(path+"/"+Constants.REFERENCE_JPS_FILENAME);
 		

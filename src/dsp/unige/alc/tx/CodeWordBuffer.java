@@ -37,6 +37,7 @@ public class CodeWordBuffer {
 		}
 		else{
 			Log.i(logWriter,"CodeWordBuffer.put()","WORD DROP");
+			purge();
 		}
 	}
 	
@@ -79,5 +80,6 @@ public class CodeWordBuffer {
 	public void setLogWriter(Writer logWriter) {
 		this.logWriter = logWriter;
 	}
+
 	
 }
