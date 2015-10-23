@@ -5,7 +5,7 @@ public abstract class Constants {
 	public static final int CWLEN = 35;
 	public static final int PKTSIZE = 1024;
 	public static final int BPF = 38016;
-	public static final int FPS = 25;
+	public static final int FPS = 20;
 	public static final int WIDTH = 176;
 	public static final int HEIGHT = 144;
 	public static final long STREAMER_SLEEPTIME = 2;  // ms between packets of the same word
@@ -27,7 +27,7 @@ public abstract class Constants {
 	public static final int FEEDBACK_SOCKET_TIMEOUT = 2000;
 	public static final int MAX_Q = 90;
 	public static final int MAX_FEC = CWLEN - 5;
-	public static final int MIN_Q = 5;  
+	public static final int MIN_Q = 0;  
 
 	public static class LOG{
 		public static int Silent = 0;
