@@ -128,7 +128,7 @@ public class ReceiverThread extends Thread {
 		Packet packet = Packet.parseNetworkPacket(networkPacket2);
 		long now = System.currentTimeMillis();
 
-		if(isNewCodeWord(packet.codeWordNumber)){
+		if(isNewCodeWord(packet.codeWordNumber) && !packetBuffer.isEmpty()){
 
 			int FEC = packetBuffer.get(0).FEC;
 			int DATA = Constants.CWLEN - FEC;

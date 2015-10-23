@@ -36,7 +36,7 @@ public class MainClass {
 	}
 
 
-	private static void startTx(String dest, boolean adaptive) {
+	private static void startTx(String dest, int adaptive) {
 		TxTest ttest = new TxTest();
 		ttest.start(dest,adaptive);
 		System.out.println("Transmitter done, exiting");

@@ -7,7 +7,6 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 
-import dsp.unige.alc.common.CodeWord;
 import dsp.unige.alc.common.Constants;
 import dsp.unige.alc.common.Log;
 
@@ -20,14 +19,14 @@ public class FeedbackListenerThread extends Thread {
 	DatagramPacket reportPacket;
 	int feedbackPort;
 	ByteBuffer bb;
-	boolean ADAPTIVE = true;
+	int ADAPTIVE = 2;
 	SessionParameters sessionParameters;
 
-	public boolean isADAPTIVE() {
+	public int isADAPTIVE() {
 		return ADAPTIVE;
 	}
 
-	public void setADAPTIVE(boolean aDAPTIVE) {
+	public void setADAPTIVE(int aDAPTIVE) {
 		ADAPTIVE = aDAPTIVE;
 	}
 
@@ -82,10 +81,7 @@ public class FeedbackListenerThread extends Thread {
 		int codeWordNumber = bb.getInt();
 		double estimatedRate = bb.getDouble();
 		int measuredLoss = bb.getInt();
-		long interCWtime = bb.getLong();
 
-		double estimatedRate2 = CodeWord.CODEWORD_SIZE / (double)interCWtime;
-		
 		// acknowledge word -> delete it from cwbuffer
 		cwbHandle.ack(codeWordNumber);
 		// set estimated Rate
@@ -101,9 +97,18 @@ public class FeedbackListenerThread extends Thread {
 
 		int FEC = decisor.decideFEC();
 		int Q = decisor.decideQ(FEC);
-		sessionParameters.setFEC(FEC);
+		
+		if(isADAPTIVE()==0){
+			sessionParameters.setQ(Constants.MIN_Q);
+			sessionParameters.setFEC(Constants.MAX_FEC);
+		}
 
-		if(isADAPTIVE()){
+		if(isADAPTIVE()==1){
+			sessionParameters.setFEC(FEC);
+			sessionParameters.setQ(Constants.MIN_Q);
+		}
+		if(isADAPTIVE()==2){
+			sessionParameters.setFEC(FEC);
 			sessionParameters.setQ(Q);
 		}
 	}

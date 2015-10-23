@@ -51,7 +51,13 @@ public class Decisor {
 			;
 		
 		double deltai = Math.abs(perFrame - SIZES_LUT[i]);
-		double deltaii = Math.abs(perFrame - SIZES_LUT[i+1]);
+		
+		double deltaii;
+		if(i+1<SIZES_LUT.length)
+			deltaii = Math.abs(perFrame - SIZES_LUT[i+1]);
+		else
+			deltaii = deltai;
+		
 		if(deltai<deltaii)
 			return Q_LUT[i];
 		else 

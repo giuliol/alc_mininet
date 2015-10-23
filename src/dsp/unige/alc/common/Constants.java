@@ -25,7 +25,9 @@ public abstract class Constants {
 	public static final int TERMINATION_SOCKET_PORT = 5550;
 	public static final int IMAGE_BUFFER_SIZE = 1000;
 	public static final int FEEDBACK_SOCKET_TIMEOUT = 2000;
-	public static final int MAX_Q = 90;  
+	public static final int MAX_Q = 90;
+	public static final int MAX_FEC = CWLEN - 5;
+	public static final int MIN_Q = 5;  
 
 	public static class LOG{
 		public static int Silent = 0;

@@ -22,7 +22,7 @@ public class TxTest {
 		this.path = path;
 	}
 	
-	public void start(String dest, boolean ADAPTIVE){
+	public void start(String dest,  int ADAPTIVE){
 		TxMain tx =  new TxMain();
 		try {
 			tx.setDestination(InetAddress.getByName(dest));

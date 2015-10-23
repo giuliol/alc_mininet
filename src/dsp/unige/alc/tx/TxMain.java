@@ -27,7 +27,7 @@ public class TxMain {
 	private PacketBuffer pBuffer;
 	private CodeWordBuffer cwBuffer;
 	private Decisor decisor;
-	private boolean ADAPTIVE;
+	private int ADAPTIVE;
 	private InetAddress destination;
 	private int forwardPort;
 	private int backwardPort;
@@ -39,7 +39,7 @@ public class TxMain {
 	private int Q;
 	private String info;
 	
-	public void setADAPTIVE(boolean aDAPTIVE) {
+	public void setADAPTIVE(int aDAPTIVE) {
 		ADAPTIVE = aDAPTIVE;
 	}
 
@@ -147,7 +147,7 @@ public class TxMain {
 					Q = sessionParameters.getQ();
 					Log.i(logWriter,"TxMain","new parameters: FEC="+FEC+", Q="+Q);
 					
-					if(cwBuffer.getOverflowDanger() && ADAPTIVE){
+					if(cwBuffer.getOverflowDanger() && ADAPTIVE==2){
 						
 						Q = (int)0.7*Q;
 					}

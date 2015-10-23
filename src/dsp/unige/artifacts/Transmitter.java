@@ -10,14 +10,17 @@ public class Transmitter {
 
 	public static void main(String[] args) {
 		if(args.length<3){
-			System.out.println("error: syntax is\n java -jar transmitter <destination_IP> <path> <adaptive>");
+			System.out.println("error: syntax is\n java -jar transmitter <destination_IP> <path> <adaptive>\n "
+					+ "<adaptive> = 0 fully static\n"
+					+ "<adaptive> = 1 adaptive FEC\n"
+					+ "<adaptive> = 2 fully adaptive");
 			return;
 		}
 		else
 		{
 			String dest = args[0];
 			int path = Integer.parseInt(args[1]);
-			boolean adaptive = Integer.parseInt(args[2]) == 1 ;
+			int adaptive = Integer.parseInt(args[2])  ;
 			TxTest ttest = new TxTest();
 			ttest.setPath(path);
 			
